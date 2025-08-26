@@ -1,18 +1,18 @@
-package postgres
+package universal
 
 import (
 	"context"
 	"fmt"
-	"naborly/internal/api/common"postgres2 "naborly/internal/postgres"
-
+	"saas-go/pg"
+	"saas-go/universal"
 )
 
 type PgDescription struct {
-	Db          *postgres2.PgDb
-	TableEntity TableEntity
+	Db          *pg.PgDb
+	TableEntity pg.TableEntity
 }
 
-func (p *PgDescription) Update(model *common.DescriptionModel) error {
+func (p *PgDescription) Update(model *universal.DescriptionModel) error {
 	query := fmt.Sprintf("update %s set description_value = $1, description_image_url = $2 where id = $3", p.TableEntity.Name)
 	_, err := p.Db.Pool.Exec(context.Background(), query, model.Value, model.ImageUrl, p.TableEntity.Id)
 	if err != nil {
@@ -21,6 +21,6 @@ func (p *PgDescription) Update(model *common.DescriptionModel) error {
 	return nil
 }
 
-func (p *PgDescription) Model() *common.DescriptionModel {
-	return &common.DescriptionModel{}
+func (p *PgDescription) Model() *universal.DescriptionModel {
+	return &universal.DescriptionModel{}
 }

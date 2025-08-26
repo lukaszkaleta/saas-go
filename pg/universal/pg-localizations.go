@@ -1,4 +1,4 @@
-package postgres
+package universal
 
 import (
 	"context"
@@ -8,12 +8,12 @@ import (
 )
 
 type PgLocalizations struct {
-	Db    *postgres2.PgDb
+	Db    *pg.PgDb
 	Owner *RelationEntity
 }
 
-func (pgLocalizations *PgLocalizations) Add(country string, language string, translation string) (common.Localization, error) {
-	slugedName := common.SluggedName(translation)
+func (pgLocalizations *PgLocalizations) Add(country string, language string, translation string) (universal.Localization, error) {
+	slugedName := universal.SluggedName(translation)
 	localizationId := int64(0)
 
 	query := fmt.Sprintf("INSERT INTO %s (%s, country, language, translation_value, translation_slug) VALUES( $1, $2, $3, $4, $5) returning id",
@@ -38,8 +38,8 @@ func (pgLocalizations *PgLocalizations) Add(country string, language string, tra
 		Id:    localizationId,
 		Owner: pgLocalizations.Owner,
 	}
-	return common.NewSolidLocalization(
-		&common.LocalizationModel{
+	return universal.NewSolidLocalization(
+		&universal.LocalizationModel{
 			Id:          localizationId,
 			OwnerId:     pgLocalizations.Owner.RelationId,
 			Country:     country,

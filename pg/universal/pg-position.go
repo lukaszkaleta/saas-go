@@ -1,4 +1,4 @@
-package postgres
+package universal
 
 import (
 	"context"
@@ -8,11 +8,11 @@ import (
 )
 
 type PgPosition struct {
-	Db          *postgres2.PgDb
+	Db          *pg.PgDb
 	TableEntity TableEntity
 }
 
-func (pos *PgPosition) Update(model *common.PositionModel) error {
+func (pos *PgPosition) Update(model *universal.PositionModel) error {
 	query := fmt.Sprintf("update %s set position_latitude = $1, position_longitude = $2 where id = $3", pos.TableEntity.Name)
 	_, err := pos.Db.Pool.Exec(context.Background(), query, model.Lat, model.Lon, pos.TableEntity.Id)
 	if err != nil {
@@ -21,6 +21,6 @@ func (pos *PgPosition) Update(model *common.PositionModel) error {
 	return nil
 }
 
-func (pos *PgPosition) Model() *common.PositionModel {
-	return &common.PositionModel{}
+func (pos *PgPosition) Model() *universal.PositionModel {
+	return &universal.PositionModel{}
 }

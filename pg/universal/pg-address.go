@@ -1,18 +1,18 @@
-package postgres
+package universal
 
 import (
 	"context"
 	"fmt"
-	"naborly/internal/api/common"postgres2 "naborly/internal/postgres"
-
+	"saas-go/pg"
+	"saas-go/universal"
 )
 
 type PgAddress struct {
-	Db          *postgres2.PgDb
-	TableEntity TableEntity
+	Db          *pg.PgDb
+	TableEntity pg.TableEntity
 }
 
-func (addr *PgAddress) Update(model *common.AddressModel) error {
+func (addr *PgAddress) Update(model *universal.AddressModel) error {
 	query := fmt.Sprintf("update %s set address_line1 = $1, address_line2 = $2, address_city = $3, address_postal_code = $4, address_district = $5 where id = $6", addr.TableEntity.Name)
 	_, err := addr.Db.Pool.Exec(context.Background(), query, model.Line1, model.Line2, model.City, model.PostalCode, model.District, addr.TableEntity.Id)
 	if err != nil {
@@ -21,6 +21,6 @@ func (addr *PgAddress) Update(model *common.AddressModel) error {
 	return nil
 }
 
-func (addr *PgAddress) Model() *common.AddressModel {
-	return &common.AddressModel{}
+func (addr *PgAddress) Model() *universal.AddressModel {
+	return &universal.AddressModel{}
 }
