@@ -3,13 +3,13 @@ package universal
 import (
 	"context"
 	"fmt"
-	"naborly/internal/api/common"postgres2 "naborly/internal/postgres"
-
+	"saas-go/pg"
+	"saas-go/universal"
 )
 
 type PgPerson struct {
 	Db          *pg.PgDb
-	TableEntity TableEntity
+	TableEntity pg.TableEntity
 }
 
 func (pg *PgPerson) Update(model *universal.PersonModel) error {

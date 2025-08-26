@@ -3,14 +3,14 @@ package universal
 import (
 	"context"
 	"fmt"
-	"naborly/internal/api/common"
-	postgres2 "naborly/internal/postgres"
+	"saas-go/pg"
+	"saas-go/universal"
 )
 
 type PgLocalization struct {
 	Db    *pg.PgDb
 	Id    int64
-	Owner *RelationEntity
+	Owner *pg.RelationEntity
 }
 
 func (p *PgLocalization) Update(model *universal.LocalizationModel) error {
