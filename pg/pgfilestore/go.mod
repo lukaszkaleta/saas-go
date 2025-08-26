@@ -1,4 +1,4 @@
-module github.com/lukaszkaleta/saas-go/pg/pg-filestore
+module github.com/lukaszkaleta/saas-go/pg/pgfilestore
 
 go 1.24.6
 
