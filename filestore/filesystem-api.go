@@ -45,3 +45,7 @@ func (addr SolidFileSystem) Update(newModel *FileSystemModel) error {
 func (addr SolidFileSystem) Model() *FileSystemModel {
 	return addr.model
 }
+
+func (addr SolidFileSystem) Records() Records {
+	return nil
+}
