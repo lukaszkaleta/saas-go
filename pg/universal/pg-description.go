@@ -3,8 +3,8 @@ package universal
 import (
 	"context"
 	"fmt"
-	"saas-go/pg"
-	"saas-go/universal"
+	"github.com/lukaszkaleta/saas-go/pg"
+	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type PgDescription struct {

@@ -1,8 +1,8 @@
 package universal
 
 import (
-	"saas-go/pg"
-	"saas-go/universal"
+	"github.com/lukaszkaleta/saas-go/pg"
+	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type PgRatings struct {
