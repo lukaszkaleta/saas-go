@@ -1,4 +1,4 @@
-package pg_universal
+package pguniversal
 
 import (
 	"github.com/lukaszkaleta/saas-go/pg/database"
