@@ -2,12 +2,12 @@ package pgfilestoe
 
 import (
 	"github.com/lukaszkaleta/saas-go/filestore"
-	"github.com/lukaszkaleta/saas-go/pg"
+	"github.com/lukaszkaleta/saas-go/pg/database"
 )
 
 type PgFileSystem struct {
-	Db    *pg.PgDb
-	Owner pg.RelationEntity
+	Db    *database.PgDb
+	Owner database.RelationEntity
 }
 
 func (p *PgFileSystem) Update(model *filestore.FileSystemModel) error {

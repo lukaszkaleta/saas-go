@@ -1,15 +1,15 @@
-package pguniversal
+package universal
 
 import (
 	"context"
 	"fmt"
-	"github.com/lukaszkaleta/saas-go/pg"
+	"github.com/lukaszkaleta/saas-go/pg/database"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type PgAddress struct {
-	Db          *pg.PgDb
-	TableEntity pg.TableEntity
+	Db          *database.PgDb
+	TableEntity database.TableEntity
 }
 
 func (addr *PgAddress) Update(model *universal.AddressModel) error {

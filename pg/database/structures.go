@@ -1,4 +1,4 @@
-package pg
+package database
 
 type TableEntity struct {
 	Name string
