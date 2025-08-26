@@ -1,4 +1,4 @@
-package postgres
+package pg_filestoe
 
 import (
 	"github.com/lukaszkaleta/saas-go/filestore"

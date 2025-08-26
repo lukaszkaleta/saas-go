@@ -1,4 +1,4 @@
-package universal
+package pg_universal
 
 import (
 	"github.com/lukaszkaleta/saas-go/pg"
