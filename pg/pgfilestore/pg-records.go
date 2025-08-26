@@ -1,4 +1,4 @@
-package pg_filestoe
+package pgfilestoe
 
 import (
 	"context"
