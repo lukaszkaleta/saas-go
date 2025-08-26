@@ -1,16 +1,16 @@
-package universal
+package pg_universal
 
 import (
-	"github.com/lukaszkaleta/saas-go/pg"
+	"github.com/lukaszkaleta/saas-go/pg/database"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type PgRating struct {
-	db *pg.PgDb
+	db *database.PgDb
 	Id int64
 }
 
-func NewPgRating(db *pg.PgDb, id int64) universal.Rating {
+func NewPgRating(db *database.PgDb, id int64) universal.Rating {
 	return &PgRating{db, id}
 }
 

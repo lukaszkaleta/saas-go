@@ -1,15 +1,16 @@
-package universal
+package pg_universal
 
 import (
 	"context"
 	"fmt"
-	"github.com/lukaszkaleta/saas-go/pg"
+
+	"github.com/lukaszkaleta/saas-go/pg/database"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type PgLocalizations struct {
-	Db    *pg.PgDb
-	Owner *pg.RelationEntity
+	Db    *database.PgDb
+	Owner *database.RelationEntity
 }
 
 func (pgLocalizations *PgLocalizations) Add(country string, language string, translation string) (universal.Localization, error) {

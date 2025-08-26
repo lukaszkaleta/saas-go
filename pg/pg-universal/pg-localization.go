@@ -1,16 +1,17 @@
-package universal
+package pg_universal
 
 import (
 	"context"
 	"fmt"
-	"github.com/lukaszkaleta/saas-go/pg"
+
+	"github.com/lukaszkaleta/saas-go/pg/database"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type PgLocalization struct {
-	Db    *pg.PgDb
+	Db    *database.PgDb
 	Id    int64
-	Owner *pg.RelationEntity
+	Owner *database.RelationEntity
 }
 
 func (p *PgLocalization) Update(model *universal.LocalizationModel) error {

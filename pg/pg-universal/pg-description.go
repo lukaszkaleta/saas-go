@@ -1,15 +1,15 @@
-package universal
+package pg_universal
 
 import (
 	"context"
 	"fmt"
-	"github.com/lukaszkaleta/saas-go/pg"
+	"github.com/lukaszkaleta/saas-go/pg/database"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type PgDescription struct {
-	Db          *pg.PgDb
-	TableEntity pg.TableEntity
+	Db          *database.PgDb
+	TableEntity database.TableEntity
 }
 
 func (p *PgDescription) Update(model *universal.DescriptionModel) error {
