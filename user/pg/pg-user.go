@@ -13,7 +13,7 @@ type PgUser struct {
 }
 
 func (pgUser *PgUser) Address() universal.Address {
-	return &unversalPg.PgAddress{pgUser.Db, pgUser.tableEntity()}
+	return &unversalPg.PgAddress{pgUser.Db, pgUser.TableEntity()}
 }
 
 func (pgUser *PgUser) Model() *user.UserModel {
@@ -21,11 +21,11 @@ func (pgUser *PgUser) Model() *user.UserModel {
 }
 
 func (pgUser *PgUser) Person() universal.Person {
-	return &unversalPg.PgPerson{pgUser.Db, pgUser.tableEntity()}
+	return &unversalPg.PgPerson{pgUser.Db, pgUser.TableEntity()}
 }
 
 func (pgUser *PgUser) Ratings() universal.Ratings {
-	return unversalPg.NewPgRatings(pgUser.Db, pgUser.tableEntity())
+	return unversalPg.NewPgRatings(pgUser.Db, pgUser.TableEntity())
 }
 
 func (pgUser *PgUser) Settings() user.UserSettings {
@@ -40,6 +40,6 @@ func (pgUser *PgUser) Archive() error {
 	return nil
 }
 
-func (pgUser *PgUser) tableEntity() pg.TableEntity {
+func (pgUser *PgUser) TableEntity() pg.TableEntity {
 	return pgUser.Db.TableEntity("users", pgUser.Id)
 }
