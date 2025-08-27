@@ -7,15 +7,18 @@ import (
 )
 
 type AmazonS3Records struct {
-	Records    filestore.Records
-	bucketName string
-	s3Bucket   *S3Bucket
+	records  filestore.Records
+	s3Bucket *S3Bucket
+}
+
+func NewAmazonS3Records(records filestore.Records, s3Bucket *S3Bucket) *AmazonS3Records {
+	return &AmazonS3Records{records: records, s3Bucket: s3Bucket}
 }
 
 func (s3Records *AmazonS3Records) Add(ctx context.Context, model *filestore.RecordModel) (filestore.Record, error) {
-	err := s3Records.s3Bucket.UploadFile(ctx, s3Records.bucketName, model.Name.Slug, model.Url)
+	err := s3Records.s3Bucket.UploadFile(ctx, model.Name.Slug, model.Url)
 	if err != nil {
 		return nil, err
 	}
-	return s3Records.Records.Add(ctx, model)
+	return s3Records.records.Add(ctx, model)
 }
