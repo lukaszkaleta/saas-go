@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lukaszkaleta/saas-go/pg/database"
+	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type PgLocalization struct {
-	Db    *database.PgDb
+	Db    *pg.PgDb
 	Id    int64
-	Owner *database.RelationEntity
+	Owner *pg.RelationEntity
 }
 
 func (p *PgLocalization) Update(model *universal.LocalizationModel) error {

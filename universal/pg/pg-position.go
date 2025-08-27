@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lukaszkaleta/saas-go/pg/database"
+	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type PgPosition struct {
-	Db          *database.PgDb
-	TableEntity database.TableEntity
+	Db          *pg.PgDb
+	TableEntity pg.TableEntity
 }
 
 func (pos *PgPosition) Update(model *universal.PositionModel) error {

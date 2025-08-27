@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lukaszkaleta/saas-go/pg/database"
+	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type PgLocalizations struct {
-	Db    *database.PgDb
-	Owner *database.RelationEntity
+	Db    *pg.PgDb
+	Owner *pg.RelationEntity
 }
 
 func (pgLocalizations *PgLocalizations) Add(country string, language string, translation string) (universal.Localization, error) {

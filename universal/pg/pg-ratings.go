@@ -1,16 +1,16 @@
 package pg
 
 import (
-	"github.com/lukaszkaleta/saas-go/pg/database"
+	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type PgRatings struct {
-	db         *database.PgDb
-	ownerTable database.TableEntity
+	db         *pg.PgDb
+	ownerTable pg.TableEntity
 }
 
-func NewPgRatings(db *database.PgDb, ownerTable database.TableEntity) universal.Ratings {
+func NewPgRatings(db *pg.PgDb, ownerTable pg.TableEntity) universal.Ratings {
 	return &PgRatings{db: db, ownerTable: ownerTable}
 }
 

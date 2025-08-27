@@ -1,13 +1,13 @@
 package pgfilestoe
 
 import (
-	"github.com/lukaszkaleta/saas-go/pg/database"
+	"github.com/lukaszkaleta/saas-go/database/pg"
 )
 
 type PgFileSystems struct {
-	Db *database.PgDb
+	Db *pg.PgDb
 }
 
-func NewPgFileSystems(db *database.PgDb) *PgFileSystems {
+func NewPgFileSystems(db *pg.PgDb) *PgFileSystems {
 	return &PgFileSystems{Db: db}
 }
