@@ -9,12 +9,14 @@ import (
 type UserSettings interface {
 	Model() *UserSettingsModel
 	Radar() universal.Radar
+	Avatar() universal.Description
 }
 
 // Model
 
 type UserSettingsModel struct {
-	Radar *universal.RadarModel `json:"radar"`
+	Radar  *universal.RadarModel       `json:"radar"`
+	Avatar *universal.DescriptionModel `json:"avatar"`
 }
 
 func NewUserSettingsModel() *UserSettingsModel {
@@ -51,4 +53,8 @@ func (u SolidUserSettings) Radar() universal.Radar {
 		)
 	}
 	return universal.NewSolidRadar(u.Model().Radar, nil)
+}
+
+func (u SolidUserSettings) Avatar() universal.Description {
+
 }

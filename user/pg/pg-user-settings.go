@@ -3,6 +3,7 @@ package pguser
 import (
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
+	universalPg "github.com/lukaszkaleta/saas-go/universal/pg"
 	"github.com/lukaszkaleta/saas-go/user"
 )
 
@@ -21,4 +22,8 @@ func (pgUserSetting *PgUserSettings) Model() *user.UserSettingsModel {
 
 func (pgUserSetting *PgUserSettings) Radar() universal.Radar {
 	return nil
+}
+
+func (pgUserSetting *PgUserSettings) Avatar() universal.Description {
+	universalPg.newDes
 }
