@@ -1,4 +1,4 @@
-package postgres
+package pguser
 
 import (
 	"github.com/lukaszkaleta/saas-go/database/pg"
