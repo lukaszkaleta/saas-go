@@ -3,6 +3,7 @@ package pg
 import (
 	"context"
 	"fmt"
+	"io/fs"
 	"os"
 	"strings"
 
@@ -26,8 +27,13 @@ func (db *PgDb) ExecuteSql(sql string) error {
 	return err
 }
 
-func (db *PgDb) ExecuteFile(path string) error {
-	sqlStatements, err := os.ReadFile(path)
+func (db *PgDb) ExecuteFileFromFs(fs fs.FS, path string) error {
+	open, err := fs.Open(path)
+	if err != nil {
+		return err
+	}
+	var sqlStatements []byte
+	_, err = open.Read(sqlStatements)
 	if err != nil {
 		return err
 	}
