@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/lukaszkaleta/saas-go/filestore"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
@@ -12,6 +13,7 @@ type User interface {
 	Person() universal.Person
 	Address() universal.Address
 	Settings() UserSettings
+	FileSystem(name string) (filestore.FileSystem, error)
 	Archive() error
 }
 
@@ -81,6 +83,10 @@ func (u SolidUser) Settings() UserSettings {
 
 func (u SolidUser) Account() Account {
 	return u.user.Account()
+}
+
+func (u SolidUser) FileSystem(name string) (filestore.FileSystem, error) {
+	return u.user.FileSystem(name)
 }
 
 func (u SolidUser) Archive() error {

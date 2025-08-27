@@ -2,6 +2,7 @@ package pguser
 
 import (
 	"github.com/lukaszkaleta/saas-go/database/pg"
+	"github.com/lukaszkaleta/saas-go/filestore"
 	"github.com/lukaszkaleta/saas-go/universal"
 	unversalPg "github.com/lukaszkaleta/saas-go/universal/pg"
 	"github.com/lukaszkaleta/saas-go/user"
@@ -38,6 +39,10 @@ func (pgUser *PgUser) Account() user.Account {
 
 func (pgUser *PgUser) Archive() error {
 	return nil
+}
+
+func (pgUser *PgUser) FileSystem(name string) (filestore.FileSystem, error) {
+	return nil, nil
 }
 
 func (pgUser *PgUser) TableEntity() pg.TableEntity {

@@ -5,6 +5,7 @@ go 1.24.6
 require (
 	github.com/lukaszkaleta/saas-go/database/pg v0.1.8
 	github.com/lukaszkaleta/saas-go/universal/pg v0.1.8
+	github.com/lukaszkaleta/saas-go/filestore/pg v0.1.22
 	github.com/lukaszkaleta/saas-go/user v0.1.8
 )
 
@@ -24,3 +25,4 @@ replace github.com/lukaszkaleta/saas-go/user => ../../user
 replace github.com/lukaszkaleta/saas-go/database/pg => ../../database/pg
 
 replace github.com/lukaszkaleta/saas-go/universal/pg => ../../universal/pg
+replace github.com/lukaszkaleta/saas-go/filestore/pg => ../../filestore/pg

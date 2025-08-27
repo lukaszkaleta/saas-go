@@ -16,3 +16,11 @@ CREATE TABLE if not exists users (
     settings_radar_position_latitude int not null default 0,
     settings_radar_position_longitude int not null default 0
 );
+
+create table if not exists user_filesystem (
+    id serial primary key,
+    name text not null default '',
+    user_id bigint not null references users,
+    filesystem_id bigint not null references filestore_filesystem
+)
+
