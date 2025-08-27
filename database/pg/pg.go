@@ -26,6 +26,15 @@ func (db *PgDb) ExecuteSql(sql string) error {
 	return err
 }
 
+func (db *PgDb) ExecuteFile(path string) error {
+	sqlStatements, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	sqlArray := strings.Split(string(sqlStatements), ";")
+	return db.ExecuteSqls(sqlArray)
+}
+
 func NewPg() *PgDb {
 
 	databaseUrl := os.Getenv("DATABASE_URL")
