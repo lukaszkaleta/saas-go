@@ -1,7 +1,7 @@
-VERSION := v0.1.3
+VERSION := v0.1.6
 tags:
 	git tag "universal/${VERSION}"
+	git tag "universal/pg/${VERSION}"
 	git tag "filestore/${VERSION}"
-	git tag "pg/database/${VERSION}"
-	git tag "pg/pg-universal/${VERSION}"
-	git tag "pg/pg-filestore/${VERSION}"
+	git tag "filestore/pg/${VERSION}"
+	git tag "database/pg/${VERSION}"

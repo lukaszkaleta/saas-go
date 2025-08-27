@@ -1,8 +1,9 @@
-package pguniversal
+package pg
 
 import (
 	"context"
 	"fmt"
+
 	"github.com/lukaszkaleta/saas-go/pg/database"
 	"github.com/lukaszkaleta/saas-go/universal"
 )

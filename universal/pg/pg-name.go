@@ -1,4 +1,4 @@
-package pguniversal
+package pg
 
 import (
 	"context"

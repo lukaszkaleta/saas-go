@@ -1,4 +1,4 @@
-module github.com/lukaszkaleta/saas-go/pg/pgfilestore
+module github.com/lukaszkaleta/saas-go/filestore/pg
 
 go 1.24.6
 
@@ -18,6 +18,6 @@ require (
 	golang.org/x/text v0.28.0 // indirect
 )
 
-replace github.com/lukaszkaleta/saas-go/filestore => ../../filestore
+replace github.com/lukaszkaleta/saas-go/filestore => ./..
 
-replace github.com/lukaszkaleta/saas-go/pg/database => ../database
+replace github.com/lukaszkaleta/saas-go/pg/database => ./../../database
