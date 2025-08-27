@@ -1,5 +1,9 @@
 package universal
 
+import (
+	"os"
+)
+
 // API
 
 type Description interface {
@@ -50,3 +54,6 @@ func (addr SolidDescription) Update(newModel *DescriptionModel) error {
 func (addr SolidDescription) Model() *DescriptionModel {
 	return addr.model
 }
+
+type DescriptionFromUrl func(url string) (*DescriptionModel, error)
+type DescriptionFromFile func(file os.File) (*DescriptionModel, error)
