@@ -2,11 +2,11 @@ package postgres
 
 import (
 	"context"
-	"naborly/internal/api/user"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
+	"github.com/lukaszkaleta/saas-go/user"
 )
 
 type PgUsers struct {

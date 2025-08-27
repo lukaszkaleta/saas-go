@@ -2,14 +2,16 @@ package postgres
 
 import (
 	"context"
-	"naborly/internal/api/user"
+
+	"github.com/lukaszkaleta/saas-go/database/pg"
+	"github.com/lukaszkaleta/saas-go/user"
 )
 
 type PgUserSearch struct {
-	Db *PgDb
+	Db *pg.PgDb
 }
 
-func NewPgUserSearch(db *PgDb) user.UserSearch {
+func NewPgUserSearch(db *pg.PgDb) user.UserSearch {
 	return &PgUserSearch{Db: db}
 }
 
@@ -19,7 +21,7 @@ func (s *PgUserSearch) ByPhone(phone string) (user.User, error) {
 		return nil, err
 	}
 	userModel := new(user.UserModel)
-	id := 0
+	id := int64(0)
 	err = UserRowScan(rows, userModel, &id)
 	pgUser := &PgUser{Db: s.Db, Id: id}
 	if err != nil {

@@ -49,7 +49,7 @@ func NewPg() *PgDb {
 	return &PgDb{Pool: dbpool}
 }
 
-func (db *PgDb) tableEntity(name string, id int64) TableEntity {
+func (db *PgDb) TableEntity(name string, id int64) TableEntity {
 	return TableEntity{Name: name, Id: id}
 }
 

@@ -1,32 +1,31 @@
 package postgres
 
 import (
-	"naborly/internal/api/common"
-	"naborly/internal/api/offer"
-	"naborly/internal/api/rating"
-	"naborly/internal/api/user"postgres2 "naborly/internal/postgres"
-
+	"github.com/lukaszkaleta/saas-go/database/pg"
+	"github.com/lukaszkaleta/saas-go/universal"
+	unversalPg "github.com/lukaszkaleta/saas-go/universal/pg"
+	"github.com/lukaszkaleta/saas-go/user"
 )
 
 type PgUser struct {
-	Db *PgDb
+	Db *pg.PgDb
 	Id int64
 }
 
-func (pgUser *PgUser) Address() common.Address {
-	return &PgAddress{pgUser.Db, pgUser.tableEntity()}
+func (pgUser *PgUser) Address() universal.Address {
+	return &unversalPg.PgAddress{pgUser.Db, pgUser.tableEntity()}
 }
 
 func (pgUser *PgUser) Model() *user.UserModel {
 	return &user.UserModel{}
 }
 
-func (pgUser *PgUser) Person() common.Person {
-	return &PgPerson{pgUser.Db, pgUser.tableEntity()}
+func (pgUser *PgUser) Person() universal.Person {
+	return &unversalPg.PgPerson{pgUser.Db, pgUser.tableEntity()}
 }
 
-func (pgUser *PgUser) Ratings() rating.Ratings {
-	return NewPgRatings(pgUser.Db, pgUser.tableEntity())
+func (pgUser *PgUser) Ratings() universal.Ratings {
+	return unversalPg.NewPgRatings(pgUser.Db, pgUser.tableEntity())
 }
 
 func (pgUser *PgUser) Settings() user.UserSettings {
@@ -41,15 +40,6 @@ func (pgUser *PgUser) Archive() error {
 	return nil
 }
 
-func (pgUser *PgUser) Offers() offer.Offers {
-	tableEntity := pgUser.tableEntity()
-	return postgres2.PgRelationOffers{
-		Db:       pgUser.Db,
-		offers:   &postgres2.PgOffers{Db: pgUser.Db},
-		relation: tableEntity.RelationEntityWithColumnName("user_offer", "user_id"),
-	}
-}
-
-func (pgUser *PgUser) tableEntity() TableEntity {
-	return pgUser.Db.tableEntity("users", pgUser.Id)
+func (pgUser *PgUser) tableEntity() pg.TableEntity {
+	return pgUser.Db.TableEntity("users", pgUser.Id)
 }
