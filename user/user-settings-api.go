@@ -47,14 +47,14 @@ func (u SolidUserSettings) Model() *UserSettingsModel {
 
 func (u SolidUserSettings) Radar() universal.Radar {
 	if u.userSettings != nil {
-		return universal.NewSolidRadar(
-			u.Model().Radar,
-			u.userSettings.Radar(),
-		)
+		return universal.NewSolidRadar(u.Model().Radar, u.userSettings.Radar())
 	}
 	return universal.NewSolidRadar(u.Model().Radar, nil)
 }
 
 func (u SolidUserSettings) Avatar() universal.Description {
-
+	if u.userSettings != nil {
+		return universal.NewSolidDescription(u.Model().Avatar, u.userSettings.Avatar())
+	}
+	return universal.NewSolidDescription(u.Model().Avatar, nil)
 }

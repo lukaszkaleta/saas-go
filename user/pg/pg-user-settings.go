@@ -25,5 +25,9 @@ func (pgUserSetting *PgUserSettings) Radar() universal.Radar {
 }
 
 func (pgUserSetting *PgUserSettings) Avatar() universal.Description {
-	universalPg.newDes
+	return universalPg.NewPgDescription(
+		pgUserSetting.Db,
+		pg.TableEntity{Name: "users", Id: pgUserSetting.Id},
+		"avatar_value",
+		"avatar_url")
 }

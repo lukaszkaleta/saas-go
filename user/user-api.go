@@ -17,6 +17,12 @@ type User interface {
 	Archive() error
 }
 
+type UserFs string
+
+const (
+	UserAvatarFs UserFs = "user-avatar"
+)
+
 // Model
 
 type UserModel struct {

@@ -42,6 +42,7 @@ func (pgUser *PgUser) Archive() error {
 }
 
 func (pgUser *PgUser) FileSystem(name string) (filestore.FileSystem, error) {
+	sql := "select * from filestore_filesystem where name = "
 	return nil, nil
 }
 
