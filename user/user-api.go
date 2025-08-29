@@ -1,6 +1,9 @@
 package user
 
 import (
+	"context"
+	"os"
+
 	"github.com/lukaszkaleta/saas-go/filestore"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
@@ -100,3 +103,13 @@ func (u SolidUser) Archive() error {
 }
 
 // Relations
+
+func MakeUserAvatar(ctx context.Context, user User, file os.File) (error, string) {
+	fs, err := user.FileSystem(string(UserAvatarFs))
+	if err != nil {
+		return err, ""
+	}
+
+	fs.Records().Add(ctx)
+	user.Settings().Avatar().Update()
+}

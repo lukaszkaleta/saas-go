@@ -7,7 +7,7 @@ import "github.com/lukaszkaleta/saas-go/universal"
 type FileSystem interface {
 	Model() *FileSystemModel
 	Update(newModel *FileSystemModel) error
-	Records() *Records
+	Records() Records
 }
 
 // Builder
@@ -46,6 +46,9 @@ func (addr SolidFileSystem) Model() *FileSystemModel {
 	return addr.model
 }
 
-func (addr SolidFileSystem) Records() *Records {
-	return nil
+func (addr SolidFileSystem) Records() Records {
+	if addr.FileSystem == nil {
+		return NoRecords{}
+	}
+	return addr.FileSystem.Records()
 }

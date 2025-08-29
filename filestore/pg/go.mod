@@ -3,8 +3,9 @@ module github.com/lukaszkaleta/saas-go/filestore/pg
 go 1.24.6
 
 require (
-	github.com/lukaszkaleta/saas-go/database/pg v0.1.6
-	github.com/lukaszkaleta/saas-go/filestore v0.1.6
+	github.com/lukaszkaleta/saas-go/database/pg v0.1.28
+	github.com/lukaszkaleta/saas-go/filestore v0.1.28
+	github.com/lukaszkaleta/saas-go/universal/pg v0.1.28
 )
 
 require (
@@ -21,3 +22,5 @@ require (
 replace github.com/lukaszkaleta/saas-go/filestore => ../../filestore
 
 replace github.com/lukaszkaleta/saas-go/database/pg => ../../database/pg
+
+replace github.com/lukaszkaleta/saas-go/universal/pg => ../../universal/pg

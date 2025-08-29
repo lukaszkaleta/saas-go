@@ -26,6 +26,15 @@ func (model *RecordModel) Change(newModel *RecordModel) {
 	model.Description.Change(newModel.Description)
 }
 
+func EmptyRecordModel() *RecordModel {
+	return &RecordModel{
+		Id:          0,
+		Url:         "",
+		Name:        &universal.NameModel{},
+		Description: &universal.DescriptionModel{},
+	}
+}
+
 // Solid
 
 type SolidRecord struct {
@@ -33,8 +42,8 @@ type SolidRecord struct {
 	Record Record
 }
 
-func NewSolidRecord(model *RecordModel, Record Record) Record {
-	return &SolidRecord{model, Record}
+func NewSolidRecord(model *RecordModel, record Record) Record {
+	return &SolidRecord{model, record}
 }
 
 func (addr SolidRecord) Update(newModel *RecordModel) error {

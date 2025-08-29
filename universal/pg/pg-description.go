@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
@@ -39,3 +40,18 @@ func (p *PgDescription) Update(model *universal.DescriptionModel) error {
 func (p *PgDescription) Model() *universal.DescriptionModel {
 	return &universal.DescriptionModel{}
 }
+
+func UseMapDescription(model *universal.DescriptionModel) MapName {
+	return func(row pgx.CollectableRow) {
+		err := row.Scan(&model.Value)
+		if err != nil {
+			fmt.Printf("Error scanning description value: %v\n", err)
+		}
+		err = row.Scan(&model.ImageUrl)
+		if err != nil {
+			fmt.Printf("Error scanning description image url: %v\n", err)
+		}
+	}
+}
+
+type MapDescription func(row pgx.CollectableRow)
