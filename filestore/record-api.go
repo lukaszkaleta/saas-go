@@ -30,8 +30,8 @@ func EmptyRecordModel() *RecordModel {
 	return &RecordModel{
 		Id:          0,
 		Url:         "",
-		Name:        &universal.NameModel{},
-		Description: &universal.DescriptionModel{},
+		Name:        &universal.EmptyNameModel{},
+		Description: &universal.EmptyDescriptionModel{},
 	}
 }
 

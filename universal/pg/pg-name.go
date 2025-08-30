@@ -6,7 +6,6 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
-	"github.com/lukaszkaleta/saas-go/filestore"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 

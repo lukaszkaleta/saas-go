@@ -27,6 +27,13 @@ type DescriptionModel struct {
 	ImageUrl string `json:"imageUrl"`
 }
 
+func EmptyDescriptionModel() *DescriptionModel {
+	return &DescriptionModel{
+		Value:    "",
+		ImageUrl: "",
+	}
+}
+
 func (model *DescriptionModel) Change(newModel *DescriptionModel) {
 	model.Value = newModel.Value
 	model.ImageUrl = newModel.ImageUrl

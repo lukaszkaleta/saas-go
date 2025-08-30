@@ -38,7 +38,7 @@ func (p PgRecord) Update(newModel *filestore.RecordModel) error {
 
 func MapRecord(row pgx.CollectableRow) (*filestore.RecordModel, error) {
 	record := filestore.EmptyRecordModel()
-	pguniversal.UseMapName(record.Name)
-	pguniversal.UseMapDescription(record.Description)
+	pguniversal.UseMapName(record.Name)(row)
+	pguniversal.UseMapDescription(record.Description)(row)
 	return record, nil
 }

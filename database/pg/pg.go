@@ -43,9 +43,10 @@ func (db *PgDb) ExecuteFileFromFs(fs fs.FS, path string) error {
 
 func NewPg() *PgDb {
 
-	databaseUrl := os.Getenv("DATABASE_URL")
+	dbUrlKey := "DATABASE_URL"
+	databaseUrl := os.Getenv(dbUrlKey)
 	if databaseUrl == "" {
-		fmt.Fprintf(os.Stderr, "Database url is not configered, Please provide environment variable: %v\n")
+		fmt.Fprintf(os.Stderr, "Database url is not configered, Please provide environment variable: %s\n", dbUrlKey)
 		os.Exit(1)
 	}
 	dbpool, err := pgxpool.New(context.Background(), databaseUrl)

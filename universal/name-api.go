@@ -3,6 +3,8 @@ package universal
 import (
 	"regexp"
 	"strings"
+
+	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 // API
@@ -26,6 +28,13 @@ func NameFromModel(model *NameModel) Name {
 type NameModel struct {
 	Value string `json:"value"`
 	Slug  string `json:"slug"`
+}
+
+func EmptyNameModel() *NameModel {
+	return &NameModel{
+		Value: "",
+		Slug:  "",
+	}
 }
 
 func SluggedName(name string) *NameModel {
