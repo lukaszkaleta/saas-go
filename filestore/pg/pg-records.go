@@ -29,10 +29,10 @@ func (records *PgRecords) Add(ctx context.Context, model *filestore.RecordModel)
 
 func RecordNamedArgs(model *filestore.RecordModel) pgx.NamedArgs {
 	return pgx.NamedArgs{
-		"@id":                  model.Id,
-		"@nameValue":           model.Name.Value,
-		"@nameSlug":            model.Name.Slug,
-		"@descriptionValue":    model.Description.Value,
-		"@descriptionImageUrl": model.Description.ImageUrl,
+		"id":                  model.Id,
+		"nameValue":           model.Name.Value,
+		"nameSlug":            model.Name.Slug,
+		"descriptionValue":    model.Description.Value,
+		"descriptionImageUrl": model.Description.ImageUrl,
 	}
 }
