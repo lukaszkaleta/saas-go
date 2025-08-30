@@ -3,8 +3,6 @@ package universal
 import (
 	"regexp"
 	"strings"
-
-	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 // API
