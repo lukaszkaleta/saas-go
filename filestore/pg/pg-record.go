@@ -1,4 +1,4 @@
-package pgfilestoe
+package pgfilestore
 
 import (
 	"context"
@@ -14,7 +14,7 @@ type PgRecord struct {
 }
 
 func (p PgRecord) Model() *filestore.RecordModel {
-	query := "select * from record where id=@id"
+	query := "select * from filestore_record where id=@id"
 	rows, err := p.Db.Pool.Query(context.Background(), query, pgx.NamedArgs{"id": p.Id})
 	if err != nil {
 		return nil

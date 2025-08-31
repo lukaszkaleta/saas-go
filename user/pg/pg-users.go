@@ -47,7 +47,6 @@ func (pgUsers *PgUsers) ById(id int64) (user.User, error) {
 		&id,
 		&accountRow.Token,
 		&personRow.FirstName,
-		&personRow.FirstName,
 		&personRow.LastName,
 		&personRow.Email,
 		&personRow.Phone,

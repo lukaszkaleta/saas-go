@@ -1,4 +1,4 @@
-package pgfilestoe
+package pgfilestore
 
 import (
 	"context"
@@ -13,7 +13,7 @@ type PgRecords struct {
 }
 
 func (pg *PgRecords) Add(ctx context.Context, model *filestore.RecordModel) (filestore.Record, error) {
-	sql := "insert into filestore_filesystem (name_value, name_slug, description_value, description_image_url) values (@nameValue, @nameSlug, @descriptionValue, @descriptionImageUrl) returning id"
+	sql := "insert into filestore_record (name_value, name_slug, description_value, description_image_url) values (@nameValue, @nameSlug, @descriptionValue, @descriptionImageUrl) returning id"
 	recordId := int64(0)
 	row := pg.Db.Pool.QueryRow(ctx, sql, RecordNamedArgs(model))
 	err := row.Scan(&recordId)

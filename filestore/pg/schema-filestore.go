@@ -1,4 +1,4 @@
-package pgfilestoe
+package pgfilestore
 
 import (
 	"embed"
