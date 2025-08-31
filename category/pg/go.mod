@@ -3,12 +3,10 @@ module github.com/lukaszkaleta/saas-go/user/pg
 go 1.24.6
 
 require (
-	github.com/lukaszkaleta/saas-go/universal v0.1.31
-	github.com/lukaszkaleta/saas-go/filestore v0.1.31
-	github.com/lukaszkaleta/saas-go/database/pg v0.1.31
-	github.com/lukaszkaleta/saas-go/filestore/pg v0.1.31
-	github.com/lukaszkaleta/saas-go/universal/pg v0.1.31
-	github.com/lukaszkaleta/saas-go/user v0.1.31
+	github.com/lukaszkaleta/saas-go/category v0.1.31
+	github.com/lukaszkaleta/saas-go/database/pg v0.1.37
+	github.com/lukaszkaleta/saas-go/universal v0.1.37
+	github.com/lukaszkaleta/saas-go/universal/pg v0.1.37
 )
 
 require (
@@ -21,12 +19,10 @@ require (
 	golang.org/x/text v0.28.0 // indirect
 )
 
-replace github.com/lukaszkaleta/saas-go/user => ../../user
+replace github.com/lukaszkaleta/saas-go/category => ../../category
 
 replace github.com/lukaszkaleta/saas-go/universal => ../../universal
-replace github.com/lukaszkaleta/saas-go/filestore => ../../filestore
+
 replace github.com/lukaszkaleta/saas-go/database/pg => ../../database/pg
 
 replace github.com/lukaszkaleta/saas-go/universal/pg => ../../universal/pg
-
-replace github.com/lukaszkaleta/saas-go/filestore/pg => ../../filestore/pg

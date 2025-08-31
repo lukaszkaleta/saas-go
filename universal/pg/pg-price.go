@@ -13,9 +13,9 @@ type PgPrice struct {
 	TableEntity pg.TableEntity
 }
 
-func (p *PgPrice) Update(model *universal.PriceModel) error {
+func (p *PgPrice) Update(ctx context.Context, model *universal.PriceModel) error {
 	query := fmt.Sprintf("update %s set price_value = $1, price_currency = $2 where id = $3", p.TableEntity.Name)
-	_, err := p.Db.Pool.Exec(context.Background(), query, model.Value, model.Currency, p.TableEntity.Id)
+	_, err := p.Db.Pool.Exec(ctx, query, model.Value, model.Currency, p.TableEntity.Id)
 	if err != nil {
 		return err
 	}
