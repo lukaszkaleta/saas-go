@@ -21,7 +21,7 @@ func NewPgDescriptionFromDb(db *pg.PgDb, id int64) *PgDescription {
 }
 
 func NewPgDescriptionFromTable(db *pg.PgDb, entity pg.TableEntity) *PgDescription {
-	return NewPgDescription(db, entity, "description_value", "description_url")
+	return NewPgDescription(db, entity, "description_value", "description_image_url")
 }
 
 func NewPgDescription(db *pg.PgDb, entity pg.TableEntity, valueColumn string, urlColumn string) *PgDescription {
