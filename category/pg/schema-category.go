@@ -9,6 +9,6 @@ import (
 //go:embed ddl
 var ddlFs embed.FS
 
-func NewFilestoreSchema(db *pg.PgDb) pg.Schema {
+func NewCategorySchema(db *pg.PgDb) pg.Schema {
 	return pg.NewDefaultSchema(db, ddlFs)
 }
