@@ -7,6 +7,7 @@ github.com/jackc/pgx/v5 v5.7.5 h1:JHGfMnQY+IEtGM63d+NGMjoRpysB2JBwDr5fsngwmJs=
 github.com/jackc/pgx/v5 v5.7.5/go.mod h1:aruU7o91Tc2q2cFp5h4uP3f6ztExVpyVv88Xl/8Vl8M=
 github.com/jackc/puddle/v2 v2.2.2 h1:PR8nw+E/1w0GLuRFSmiioY6UooMp6KJv0/61nB7icHo=
 github.com/jackc/puddle/v2 v2.2.2/go.mod h1:vriiEXHvEE654aYKXXjOvZM39qJ0q+azkZFrfEOc3H4=
+github.com/lukaszkaleta/saas-go/filestore v0.1.31/go.mod h1:gKfu6TB2GKuNc5DcpsUy5qyXZ4+zU6DRddG7E4LbvEg=
 github.com/lukaszkaleta/saas-go/universal v0.1.8 h1:gCcbLw2zHapsq72t8H9j1zSOM9KnRzqKxkAFYkWU7Mc=
 github.com/lukaszkaleta/saas-go/universal v0.1.8/go.mod h1:9+/pNz8F6COqJC5gygwUVO7Y0zO2SRNT+oFC3liRY38=
 github.com/lukaszkaleta/saas-go/universal v0.1.30/go.mod h1:9+/pNz8F6COqJC5gygwUVO7Y0zO2SRNT+oFC3liRY38=

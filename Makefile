@@ -1,4 +1,4 @@
-VERSION := v0.1.31
+VERSION := v0.1.34
 tags:
 	git tag "database/pg/${VERSION}"
 	git tag "universal/${VERSION}"
@@ -15,4 +15,6 @@ build:
 	cd universal/pg && go build && cd ../..
 	cd filestore && go build && cd ..
 	cd filestore/pg && go build && cd ../..
+	cd user && go build && cd ..
+	cd user/pg && go build && cd ../..
 
