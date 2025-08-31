@@ -39,4 +39,47 @@ func TestPgRecord_Update(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	record, err = records.ById(record.Model().Id)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestPgRecord_Model(t *testing.T) {
+	teardownSuite, db := setupTest(t)
+	defer teardownSuite(t)
+
+	records := PgRecords{Db: db}
+	recordModel := &filestore.RecordModel{
+		Name:        universal.SluggedName("file-name"),
+		Description: &universal.DescriptionModel{Value: "file-description", ImageUrl: "file-image-url"},
+	}
+	record, err := records.Add(t.Context(), recordModel)
+	if err != nil {
+		t.Fatal(err)
+	}
+	record, err = records.ById(record.Model().Id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	model := record.Model()
+	Equal[string](t, model.Name.Value, recordModel.Name.Value)
+	Equal[string](t, model.Name.Slug, recordModel.Name.Slug)
+	Equal[string](t, model.Description.Value, recordModel.Description.Value)
+	Equal[string](t, model.Description.ImageUrl, recordModel.Description.ImageUrl)
+}
+
+func Equal[V comparable](t *testing.T, got, expected V) {
+	t.Helper()
+
+	if expected != got {
+		t.Errorf(`assert.Equal(
+t,
+got:
+%v
+,
+expected:
+%v
+)`, got, expected)
+	}
 }

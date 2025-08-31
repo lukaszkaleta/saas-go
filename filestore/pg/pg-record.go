@@ -6,7 +6,6 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/filestore"
-	pguniversal "github.com/lukaszkaleta/saas-go/universal/pg"
 )
 
 type PgRecord struct {
@@ -28,17 +27,28 @@ func (p PgRecord) Model() *filestore.RecordModel {
 }
 
 func (p PgRecord) Update(newModel *filestore.RecordModel) error {
+	newModel.Id = p.Id
 	query := "update filestore_record set name_value = @nameValue, name_slug = @nameSlug where id = @id"
-	_, err := p.Db.Pool.Exec(context.Background(), query, RecordNamedArgs(newModel))
+	cmd, err := p.Db.Pool.Exec(context.Background(), query, RecordNamedArgs(newModel))
 	if err != nil {
 		return err
+	}
+	if cmd.RowsAffected() == 0 {
+		return pgx.ErrNoRows
 	}
 	return nil
 }
 
 func MapRecord(row pgx.CollectableRow) (*filestore.RecordModel, error) {
 	record := filestore.EmptyRecordModel()
-	pguniversal.UseMapName(record.Name)(row)
-	pguniversal.UseMapDescription(record.Description)(row)
+	err := row.Scan(
+		&record.Id,
+		&record.Name.Value,
+		&record.Name.Slug,
+		&record.Description.Value,
+		&record.Description.ImageUrl)
+	if err != nil {
+		return nil, err
+	}
 	return record, nil
 }

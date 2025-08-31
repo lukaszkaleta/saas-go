@@ -23,6 +23,13 @@ func (model *FileSystemModel) Change(newModel *FileSystemModel) {
 	model.Name.Change(newModel.Name.Value)
 }
 
+func EmptyFileSystemModel() *FileSystemModel {
+	return &FileSystemModel{
+		Id:   0,
+		Name: universal.EmptyNameModel(),
+	}
+}
+
 // Solid
 
 type SolidFileSystem struct {
