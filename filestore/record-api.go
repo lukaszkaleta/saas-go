@@ -1,6 +1,10 @@
 package filestore
 
-import "github.com/lukaszkaleta/saas-go/universal"
+import (
+	"os"
+
+	"github.com/lukaszkaleta/saas-go/universal"
+)
 
 // API
 
@@ -31,6 +35,15 @@ func EmptyRecordModel() *RecordModel {
 		Id:          0,
 		Url:         "",
 		Name:        universal.EmptyNameModel(),
+		Description: universal.EmptyDescriptionModel(),
+	}
+}
+
+func FileRecordModel(file os.File) *RecordModel {
+	return &RecordModel{
+		Id:          0,
+		Url:         file.Name(),
+		Name:        universal.SluggedName(file.Name()),
 		Description: universal.EmptyDescriptionModel(),
 	}
 }
