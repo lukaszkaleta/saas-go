@@ -1,4 +1,4 @@
-module github.com/lukaszkaleta/saas-go/user/pg
+module github.com/lukaszkaleta/saas-go/category/pg
 
 go 1.24.6
 
