@@ -3,6 +3,7 @@ package aws_s3
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -15,6 +16,7 @@ import (
 type S3Bucket struct {
 	s3Client *s3.Client
 	name     string
+	region   string
 }
 
 func NewS3Bucket(s3Client *s3.Client, name string) *S3Bucket {
@@ -22,13 +24,13 @@ func NewS3Bucket(s3Client *s3.Client, name string) *S3Bucket {
 }
 
 // UploadFile reads from a file and puts the data into an object in a bucket.
-func (basics S3Bucket) UploadFile(ctx context.Context, objectKey string, pathToFile string) error {
+func (basics S3Bucket) UploadFile(ctx context.Context, objectKey string, pathToFile string) (string, error) {
 	file, err := os.Open(pathToFile)
 	if err != nil {
 		log.Printf("Couldn't open file %v to upload. Here's why: %v\n", pathToFile, err)
 	} else {
 		defer file.Close()
-		_, err = basics.s3Client.PutObject(ctx, &s3.PutObjectInput{
+		_, err := basics.s3Client.PutObject(ctx, &s3.PutObjectInput{
 			Bucket: aws.String(basics.name),
 			Key:    aws.String(objectKey),
 			Body:   file,
@@ -50,6 +52,7 @@ func (basics S3Bucket) UploadFile(ctx context.Context, objectKey string, pathToF
 				log.Printf("Failed attempt to wait for object %s to exist.\n", objectKey)
 			}
 		}
+		return fmt.Sprintf("https://%s.s3-%s.amazonaws.com/%s", basics.name, basics.region, objectKey), err
 	}
-	return err
+	return "", err
 }
