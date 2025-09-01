@@ -1,4 +1,4 @@
-VERSION := v0.1.43
+VERSION := v0.1.44
 tags:
 	git tag "database/pg/${VERSION}"
 	git tag "universal/${VERSION}"
@@ -8,6 +8,8 @@ tags:
 	git tag "filestore/integration/aws-s3/${VERSION}"
 	git tag "category/${VERSION}"
 	git tag "category/pg/${VERSION}"
+	git tag "offer/${VERSION}"
+	git tag "offer/pg/${VERSION}"
 	git tag "user/${VERSION}"
 	git tag "user/pg/${VERSION}"
 
@@ -19,6 +21,8 @@ build:
 	cd filestore/pg && go build && cd ../..
 	cd category && go build && cd ..
 	cd category/pg && go build && cd ../..
+	cd offer && go build && cd ..
+	cd offer/pg && go build && cd ../..
 	cd user && go build && cd ..
 	cd user/pg && go build && cd ../..
 
