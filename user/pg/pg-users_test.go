@@ -37,3 +37,19 @@ func TestPgUsers_Add(t *testing.T) {
 		t.Fatal("Expected same users")
 	}
 }
+
+func TestPgUsers_ById(t *testing.T) {
+	teardownSuite, db := setupTest(t)
+	defer teardownSuite(t)
+
+	users := PgUsers{Db: db}
+	personModel := &universal.PersonModel{Phone: "01234"}
+	user, _ := users.Add(personModel)
+	user, err := users.ById(user.Model().Id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if (user.Model().Person.Phone) != personModel.Phone {
+		t.Fatal("Expected user with phone")
+	}
+}

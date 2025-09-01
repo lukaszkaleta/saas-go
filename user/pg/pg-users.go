@@ -46,34 +46,17 @@ func (pgUsers *PgUsers) Add(model *universal.PersonModel) (user.User, error) {
 }
 
 func (pgUsers *PgUsers) ById(id int64) (user.User, error) {
-	personRow := new(universal.PersonModel)
-	accountRow := new(user.AccountModel)
-	addressRow := new(universal.AddressModel)
-	query := "select * from users where id = $1"
-	row := pgUsers.Db.Pool.QueryRow(context.Background(), query, id)
-	err := row.Scan(
-		&id,
-		&accountRow.Token,
-		&personRow.FirstName,
-		&personRow.LastName,
-		&personRow.Email,
-		&personRow.Phone,
-		&addressRow.Line1,
-		&addressRow.Line2,
-		&addressRow.City,
-		&addressRow.PostalCode,
-		&addressRow.District,
-	)
-	pgUser := &PgUser{Db: pgUsers.Db, Id: id}
+	sql := "select * from users where id = @id"
+	rows, err := pgUsers.Db.Pool.Query(context.Background(), sql, pgx.NamedArgs{"id": id})
 	if err != nil {
-		return pgUser, err
+		return nil, err
 	}
-
-	return user.NewSolidUser(
-		&user.UserModel{Id: id, Person: personRow, Address: addressRow},
-		pgUser,
-		id,
-	), nil
+	pgUser := PgUser{
+		Db: pgUsers.Db,
+		Id: id,
+	}
+	userModel, err := pgx.CollectOneRow(rows, MapUser)
+	return user.NewSolidUser(userModel, pgUser, id), err
 }
 
 func (pgUsers *PgUsers) ListAll() ([]user.User, error) {
