@@ -37,6 +37,15 @@ func (p *PgDescription) Update(model *universal.DescriptionModel) error {
 	return nil
 }
 
+func (p *PgDescription) UpdateImageUrl(imageUrl *string) error {
+	query := fmt.Sprintf("update %s set %s = $1 where id = $2", p.tableEntity.Name, p.urlColumn)
+	_, err := p.db.Pool.Exec(context.Background(), query, imageUrl, p.tableEntity.Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (p *PgDescription) Model() *universal.DescriptionModel {
 	return &universal.DescriptionModel{}
 }

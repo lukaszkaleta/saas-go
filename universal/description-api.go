@@ -9,6 +9,7 @@ import (
 type Description interface {
 	Model() *DescriptionModel
 	Update(newModel *DescriptionModel) error
+	UpdateImageUrl(imageUrl *string) error
 }
 
 // Builder
@@ -50,16 +51,24 @@ func NewSolidDescription(model *DescriptionModel, Description Description) Descr
 	return &SolidDescription{model, Description}
 }
 
-func (addr SolidDescription) Update(newModel *DescriptionModel) error {
-	addr.model.Change(newModel)
-	if addr.Description == nil {
+func (sd SolidDescription) Update(newModel *DescriptionModel) error {
+	sd.model.Change(newModel)
+	if sd.Description == nil {
 		return nil
 	}
-	return addr.Description.Update(newModel)
+	return sd.Description.Update(newModel)
 }
 
-func (addr SolidDescription) Model() *DescriptionModel {
-	return addr.model
+func (sd SolidDescription) UpdateImageUrl(imageUrl *string) error {
+	sd.model.ImageUrl = *imageUrl
+	if sd.Description == nil {
+		return nil
+	}
+	return sd.Description.UpdateImageUrl(imageUrl)
+}
+
+func (sd SolidDescription) Model() *DescriptionModel {
+	return sd.model
 }
 
 type DescriptionFromUrl func(url string) (*DescriptionModel, error)
