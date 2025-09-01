@@ -21,9 +21,10 @@ func AmazonS3RecordsFromClient(s3Client *s3.Client, bucketName string, records f
 }
 
 func (s3Records *AmazonS3Records) Add(ctx context.Context, model *filestore.RecordModel) (filestore.Record, error) {
-	err := s3Records.s3Bucket.UploadFile(ctx, model.Name.Slug, model.Url)
+	url, err := s3Records.s3Bucket.UploadFile(ctx, model.Name.Slug, model.Url)
 	if err != nil {
 		return nil, err
 	}
+	model.Url = url
 	return s3Records.records.Add(ctx, model)
 }
