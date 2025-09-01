@@ -16,7 +16,6 @@ import (
 type S3Bucket struct {
 	s3Client *s3.Client
 	name     string
-	region   string
 }
 
 func NewS3Bucket(s3Client *s3.Client, name string) *S3Bucket {
@@ -52,7 +51,8 @@ func (basics S3Bucket) UploadFile(ctx context.Context, objectKey string, pathToF
 				log.Printf("Failed attempt to wait for object %s to exist.\n", objectKey)
 			}
 		}
-		return fmt.Sprintf("https://%s.s3-%s.amazonaws.com/%s", basics.name, basics.region, objectKey), err
+		region := basics.s3Client.Options().Region
+		return fmt.Sprintf("https://%s.s3-%s.amazonaws.com/%s", basics.name, region, objectKey), err
 	}
 	return "", err
 }
