@@ -27,6 +27,16 @@ func (model *AddressModel) Change(newModel *AddressModel) {
 	model.District = newModel.District
 }
 
+func EmptyAddressModel() *AddressModel {
+	return &AddressModel{
+		Line1:      "",
+		Line2:      "",
+		City:       "",
+		PostalCode: "",
+		District:   "",
+	}
+}
+
 // Solid
 
 type SolidAddress struct {

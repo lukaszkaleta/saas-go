@@ -24,6 +24,15 @@ func (model *PersonModel) Change(newModel *PersonModel) {
 	model.Phone = newModel.Phone
 }
 
+func EmptyPersonModel() *PersonModel {
+	return &PersonModel{
+		FirstName: "",
+		LastName:  "",
+		Email:     "",
+		Phone:     "",
+	}
+}
+
 // Solid
 
 type SolidPerson struct {

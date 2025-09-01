@@ -43,6 +43,16 @@ func NewUserModel() *UserModel {
 	}
 }
 
+func EmptyUserModel() *UserModel {
+	return &UserModel{
+		Id:       0,
+		Person:   universal.EmptyPersonModel(),
+		Address:  universal.EmptyAddressModel(),
+		Account:  EmptyAccountModel(),
+		Settings: EmptyUserSettingsModel(),
+	}
+}
+
 // Solid
 
 type SolidUser struct {

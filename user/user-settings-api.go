@@ -25,6 +25,13 @@ func NewUserSettingsModel() *UserSettingsModel {
 	}
 }
 
+func EmptyUserSettingsModel() *UserSettingsModel {
+	return &UserSettingsModel{
+		Avatar: universal.EmptyDescriptionModel(),
+		Radar:  universal.EmptyRadarModel(),
+	}
+}
+
 // Solid
 
 type SolidUserSettings struct {

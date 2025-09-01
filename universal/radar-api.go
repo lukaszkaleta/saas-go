@@ -28,6 +28,13 @@ func NewRadarModel() *RadarModel {
 	}
 }
 
+func EmptyRadarModel() *RadarModel {
+	return &RadarModel{
+		Position:  EmptyPositionModel(),
+		Perimeter: 0,
+	}
+}
+
 func (model *RadarModel) Change(newModel *RadarModel) {
 	model.Position.Change(newModel.Position)
 	model.Perimeter = newModel.Perimeter

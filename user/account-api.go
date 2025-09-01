@@ -19,6 +19,12 @@ func (model *AccountModel) Change(newModel *AccountModel) {
 	model.Token = newModel.Token
 }
 
+func EmptyAccountModel() *AccountModel {
+	return &AccountModel{
+		Token: "",
+	}
+}
+
 // Solid
 
 type SolidAccount struct {

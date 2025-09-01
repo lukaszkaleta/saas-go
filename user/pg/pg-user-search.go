@@ -3,6 +3,7 @@ package pguser
 import (
 	"context"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/user"
 )
@@ -16,16 +17,19 @@ func NewPgUserSearch(db *pg.PgDb) user.UserSearch {
 }
 
 func (s *PgUserSearch) ByPhone(phone string) (user.User, error) {
-	rows, err := s.Db.Pool.Query(context.Background(), "select * from user where person_numner = $1", phone)
+	query := "select * from users where person_phone = @phone"
+	rows, err := s.Db.Pool.Query(context.Background(), query, pgx.NamedArgs{"phone": phone})
 	if err != nil {
 		return nil, err
 	}
-	userModel := new(user.UserModel)
-	id := int64(0)
-	err = UserRowScan(rows, userModel, &id)
-	pgUser := &PgUser{Db: s.Db, Id: id}
+	userModels, err := pgx.CollectRows(rows, MapUser)
 	if err != nil {
-		return pgUser, err
+		return nil, err
 	}
-	return user.NewSolidUser(userModel, pgUser, id), nil
+	if userModels == nil || len(userModels) == 0 {
+		return nil, nil
+	}
+	userModel := userModels[0]
+	pgUser := PgUser{Db: s.Db, Id: userModel.Id}
+	return user.NewSolidUser(userModel, pgUser, userModel.Id), nil
 }

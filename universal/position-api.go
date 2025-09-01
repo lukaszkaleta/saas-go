@@ -26,6 +26,10 @@ type PositionModel struct {
 	Lon int `json:"lon"`
 }
 
+func EmptyPositionModel() *PositionModel {
+	return &PositionModel{}
+}
+
 func (model *PositionModel) Change(newModel *PositionModel) {
 	model.Lat = newModel.Lat
 	model.Lon = newModel.Lon

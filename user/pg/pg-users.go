@@ -22,6 +22,14 @@ func (pgUsers *PgUsers) Search() user.UserSearch {
 }
 
 func (pgUsers *PgUsers) Add(model *universal.PersonModel) (user.User, error) {
+	userWithPhone, err := pgUsers.Search().ByPhone(model.Phone)
+	if err != nil {
+		return nil, err
+	}
+	if userWithPhone != nil {
+		return userWithPhone, nil
+	}
+
 	userId := int64(0)
 	query := "INSERT INTO users(person_first_name, person_last_name, person_email, person_phone) VALUES( $1, $2, $3, $4 ) returning id"
 	row := pgUsers.Db.Pool.QueryRow(context.Background(), query, model.FirstName, model.LastName, model.Email, model.Phone)

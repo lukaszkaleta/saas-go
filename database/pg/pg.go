@@ -41,14 +41,7 @@ func (db *PgDb) ExecuteFileFromFs(fs fs.FS, path string) error {
 	return db.ExecuteSqls(sqlArray)
 }
 
-func NewPg() *PgDb {
-
-	dbUrlKey := "DATABASE_URL"
-	databaseUrl := os.Getenv(dbUrlKey)
-	if databaseUrl == "" {
-		fmt.Fprintf(os.Stderr, "Database url is not configered, Please provide environment variable: %s\n", dbUrlKey)
-		os.Exit(1)
-	}
+func NewPgWithUrl(databaseUrl string) *PgDb {
 	dbpool, err := pgxpool.New(context.Background(), databaseUrl)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to create DATABASE connection pool: %v\n", err)
@@ -63,6 +56,20 @@ func NewPg() *PgDb {
 	}
 
 	return &PgDb{Pool: dbpool}
+}
+
+func LocalPgWithName(dbName string) *PgDb {
+	return NewPgWithUrl(fmt.Sprintf("postgresql://naborly:naborly@localhost:5432/%s", dbName))
+}
+
+func NewPg() *PgDb {
+	dbUrlKey := "DATABASE_URL"
+	databaseUrl := os.Getenv(dbUrlKey)
+	if databaseUrl == "" {
+		fmt.Fprintf(os.Stderr, "Database url is not configered, Please provide environment variable: %s\n", dbUrlKey)
+		os.Exit(1)
+	}
+	return NewPgWithUrl(databaseUrl)
 }
 
 func (db *PgDb) TableEntity(name string, id int64) TableEntity {
