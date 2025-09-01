@@ -4,12 +4,12 @@ go 1.24.6
 
 require (
 	github.com/jackc/pgx/v5 v5.7.5
-	github.com/lukaszkaleta/saas-go/database/pg v0.1.42
-	github.com/lukaszkaleta/saas-go/filestore v0.1.42
-	github.com/lukaszkaleta/saas-go/universal v0.1.42
+	github.com/lukaszkaleta/saas-go/database/pg v0.1.43
+	github.com/lukaszkaleta/saas-go/filestore v0.1.43
+	github.com/lukaszkaleta/saas-go/filestore/pg v0.1.43
 	github.com/lukaszkaleta/saas-go/offer v0.1.42
-	github.com/lukaszkaleta/saas-go/universal/pg v0.1.42
-	github.com/lukaszkaleta/saas-go/filestore/pg v0.1.42
+	github.com/lukaszkaleta/saas-go/universal v0.1.43
+	github.com/lukaszkaleta/saas-go/universal/pg v0.1.43
 )
 
 require (
@@ -22,9 +22,11 @@ require (
 )
 
 replace github.com/lukaszkaleta/saas-go/filestore => ../../filestore
+
 replace github.com/lukaszkaleta/saas-go/offer => ../../offer
 
 replace github.com/lukaszkaleta/saas-go/database/pg => ../../database/pg
 
 replace github.com/lukaszkaleta/saas-go/universal/pg => ../../universal/pg
+
 replace github.com/lukaszkaleta/saas-go/filestore/pg => ../../filestore/pg

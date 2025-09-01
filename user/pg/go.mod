@@ -3,12 +3,12 @@ module github.com/lukaszkaleta/saas-go/user/pg
 go 1.24.6
 
 require (
-	github.com/lukaszkaleta/saas-go/database/pg v0.1.42
-	github.com/lukaszkaleta/saas-go/filestore v0.1.42
-	github.com/lukaszkaleta/saas-go/filestore/pg v0.1.42
-	github.com/lukaszkaleta/saas-go/universal v0.1.42
-	github.com/lukaszkaleta/saas-go/universal/pg v0.1.42
-	github.com/lukaszkaleta/saas-go/user v0.1.42
+	github.com/lukaszkaleta/saas-go/database/pg v0.1.43
+	github.com/lukaszkaleta/saas-go/filestore v0.1.43
+	github.com/lukaszkaleta/saas-go/filestore/pg v0.1.43
+	github.com/lukaszkaleta/saas-go/universal v0.1.43
+	github.com/lukaszkaleta/saas-go/universal/pg v0.1.43
+	github.com/lukaszkaleta/saas-go/user v0.1.43
 )
 
 require (

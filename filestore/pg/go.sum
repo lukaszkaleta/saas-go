@@ -15,6 +15,8 @@ github.com/lukaszkaleta/saas-go/universal v0.1.31 h1:5TrPmiZP4Zrv7luYWhJ7B0l+Xi6
 github.com/lukaszkaleta/saas-go/universal v0.1.31/go.mod h1:9+/pNz8F6COqJC5gygwUVO7Y0zO2SRNT+oFC3liRY38=
 github.com/lukaszkaleta/saas-go/universal v0.1.42 h1:/cszLDtioUp4wSJuG3hI07COVEsq29i7ll01evy7/90=
 github.com/lukaszkaleta/saas-go/universal v0.1.42/go.mod h1:9+/pNz8F6COqJC5gygwUVO7Y0zO2SRNT+oFC3liRY38=
+github.com/lukaszkaleta/saas-go/universal v0.1.43 h1:vOubrcoPaJRO4xVaOTynqqdF76uFBzcYEusc0hO8cqE=
+github.com/lukaszkaleta/saas-go/universal v0.1.43/go.mod h1:9+/pNz8F6COqJC5gygwUVO7Y0zO2SRNT+oFC3liRY38=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

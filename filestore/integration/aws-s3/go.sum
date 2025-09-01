@@ -39,3 +39,5 @@ github.com/aws/smithy-go v1.23.0 h1:8n6I3gXzWJB2DxBDnfxgBaSX6oe0d/t10qGz7OKqMCE=
 github.com/aws/smithy-go v1.23.0/go.mod h1:t1ufH5HMublsJYulve2RKmHDC15xu1f26kHCp/HgceI=
 github.com/lukaszkaleta/saas-go/universal v0.1.42 h1:/cszLDtioUp4wSJuG3hI07COVEsq29i7ll01evy7/90=
 github.com/lukaszkaleta/saas-go/universal v0.1.42/go.mod h1:9+/pNz8F6COqJC5gygwUVO7Y0zO2SRNT+oFC3liRY38=
+github.com/lukaszkaleta/saas-go/universal v0.1.43 h1:vOubrcoPaJRO4xVaOTynqqdF76uFBzcYEusc0hO8cqE=
+github.com/lukaszkaleta/saas-go/universal v0.1.43/go.mod h1:9+/pNz8F6COqJC5gygwUVO7Y0zO2SRNT+oFC3liRY38=
