@@ -38,8 +38,10 @@ func (pgUsers *PgUsers) Add(model *universal.PersonModel) (user.User, error) {
 		Db: pgUsers.Db,
 		Id: userId,
 	}
+	userModel := user.EmptyUserModel()
+	userModel.Person = model
 	return user.NewSolidUser(
-		&user.UserModel{Id: userId, Person: model, Address: &universal.AddressModel{}},
+		userModel,
 		pgUser,
 		userId,
 	), nil
