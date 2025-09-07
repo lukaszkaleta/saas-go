@@ -40,6 +40,7 @@ func (pgUsers *PgUsers) Add(model *universal.PersonModel) (user.User, error) {
 	}
 	userModel := user.EmptyUserModel()
 	userModel.Person = model
+	userModel.Id = userId
 	return user.NewSolidUser(
 		userModel,
 		pgUser,
