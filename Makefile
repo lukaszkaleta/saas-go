@@ -1,4 +1,4 @@
-VERSION := v0.1.57
+VERSION := v0.1.58
 tags:
 	git tag "database/pg/${VERSION}"
 	git tag "universal/${VERSION}"

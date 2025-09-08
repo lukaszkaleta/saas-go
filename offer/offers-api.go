@@ -1,6 +1,10 @@
 package offer
 
-import "github.com/lukaszkaleta/saas-go/universal"
+import (
+	"strconv"
+
+	"github.com/lukaszkaleta/saas-go/universal"
+)
 
 type Offers interface {
 	AddFromPosition(model *universal.PositionModel) (Offer, error)
@@ -29,7 +33,7 @@ func GeoOffers(offers []Offer) universal.GeoFeatureCollection[OfferHint] {
 	for i := range offers {
 		m := offers[i]
 		pt := universal.NewGeoPoint(m.Model().Position.LonF(), m.Model().Position.LatF())
-		features = append(features, universal.NewGeoFeature[OfferHint](m.Model().Id, pt, *m.Model().Hint()))
+		features = append(features, universal.NewGeoFeature[OfferHint](strconv.FormatInt(m.Model().Id, 10), pt, *m.Model().Hint()))
 	}
 	return universal.NewGeoFeatureCollection(features)
 }
