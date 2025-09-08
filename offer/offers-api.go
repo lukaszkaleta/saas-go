@@ -29,7 +29,7 @@ func GeoOffers(offers []Offer) universal.GeoFeatureCollection[OfferHint] {
 	for i := range offers {
 		m := offers[i]
 		pt := universal.NewGeoPoint(m.Model().Position.LonF(), m.Model().Position.LatF())
-		features = append(features, universal.NewGeoFeature[OfferHint](pt, *m.Model().Hint()))
+		features = append(features, universal.NewGeoFeature[OfferHint](m.Model().Id, pt, *m.Model().Hint()))
 	}
 	return universal.NewGeoFeatureCollection(features)
 }

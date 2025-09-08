@@ -28,8 +28,8 @@ type OfferModel struct {
 
 func (m *OfferModel) Hint() *OfferHint {
 	return &OfferHint{
-		Position: m.Position,
-		Price:    m.Price.UserFriendly(),
+		Id:    m.Id,
+		Price: m.Price.UserFriendly(),
 	}
 }
 

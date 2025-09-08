@@ -13,6 +13,7 @@ type GeoPoint struct {
 // Feature is a generic GeoJSON Feature with typed properties.
 // T is the type of the Properties payload.
 type GeoFeature[T any] struct {
+	Id         string `json:"id"`
 	Type       string `json:"type"`
 	Geometry   any    `json:"geometry"`
 	Properties T      `json:"properties"`
@@ -31,8 +32,8 @@ func NewGeoPoint(lon, lat float64) GeoPoint {
 }
 
 // NewFeature creates a Feature with provided geometry and properties.
-func NewGeoFeature[T any](geometry any, properties T) GeoFeature[T] {
-	return GeoFeature[T]{Type: "Feature", Geometry: geometry, Properties: properties}
+func NewGeoFeature[T any](id string, geometry any, properties T) GeoFeature[T] {
+	return GeoFeature[T]{Id: id, Type: "Feature", Geometry: geometry, Properties: properties}
 }
 
 // NewFeatureCollection constructs a FeatureCollection from features.
