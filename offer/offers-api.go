@@ -18,9 +18,18 @@ func OfferHints(offers []Offer) []*OfferHint {
 	var hints []*OfferHint
 	for _, o := range offers {
 		if o != nil {
-
 			hints = append(hints, o.Model().Hint()) // note the = instead of :=
 		}
 	}
 	return hints
+}
+
+func GeoOffers(offers []Offer) universal.GeoFeatureCollection[OfferHint] {
+	features := make([]universal.GeoFeature[OfferHint], 0, len(offers))
+	for i := range offers {
+		m := offers[i]
+		pt := universal.NewGeoPoint(m.Model().Position.LonF(), m.Model().Position.LatF())
+		features = append(features, universal.NewGeoFeature[OfferHint](pt, *m.Model().Hint()))
+	}
+	return universal.NewGeoFeatureCollection(features)
 }
