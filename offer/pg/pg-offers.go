@@ -3,6 +3,7 @@ package pgoffer
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/offer"
@@ -30,6 +31,7 @@ func (pgOffers *PgOffers) AddFromPosition(model *universal.PositionModel) (offer
 			Position:    model,
 			Address:     &universal.AddressModel{},
 			Price:       &universal.PriceModel{},
+			State:       offer.OfferStatus{Draft: time.Now()},
 		},
 		&pgOffer,
 		offerId,

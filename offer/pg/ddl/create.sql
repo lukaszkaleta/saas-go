@@ -10,7 +10,10 @@ CREATE TABLE if not exists offer (
                                      position_latitude int not null default 0,
                                      position_longitude int not null default 0,
                                      price_value int not null default 0,
-                                     price_currency text not null default 'NOK'
+                                     price_currency text not null default 'NOK',
+                                     status_draft timestamp not null default now(),
+                                     status_published timestamp,
+                                     status_closed timestamp
 );
 
 CREATE TABLE if not exists offer_filesystem (

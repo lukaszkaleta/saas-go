@@ -1,6 +1,8 @@
 package offer
 
 import (
+	"time"
+
 	"github.com/lukaszkaleta/saas-go/filestore"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
@@ -14,6 +16,33 @@ type Offer interface {
 	Price() universal.Price
 	Description() universal.Description
 	FileSystem() filestore.FileSystem
+	State() universal.State
+}
+
+type OfferStatus struct {
+	Draft     time.Time `json:"draft"`
+	Published time.Time `json:"published"`
+	Closed    time.Time `json:"closed"`
+}
+
+func (o *OfferStatus) Current() string {
+	if !o.Closed.IsZero() {
+		return OfferClosed
+	}
+	if !o.Published.IsZero() {
+		return OfferClosed
+	}
+	return OfferDraft
+}
+
+const (
+	OfferDraft     string = "draft"
+	OfferPublished string = "published"
+	OfferClosed    string = "closed"
+)
+
+func OfferStatuses() []string {
+	return []string{OfferDraft, OfferPublished, OfferClosed}
 }
 
 // Model
@@ -24,6 +53,7 @@ type OfferModel struct {
 	Price       *universal.PriceModel       `json:"price"`
 	Address     *universal.AddressModel     `json:"address"`
 	Description *universal.DescriptionModel `json:"description"`
+	State       OfferStatus                 `json:"state"`
 }
 
 func (m *OfferModel) Hint() *OfferHint {
@@ -109,4 +139,16 @@ func (solidOffer *SolidOffer) Description() universal.Description {
 
 func (solidOffer *SolidOffer) FileSystem() filestore.FileSystem {
 	return solidOffer.Offer.FileSystem()
+}
+
+func (solidOffer *SolidOffer) State() universal.State {
+	available := OfferStatuses()
+	current := solidOffer.Model().State.Current()
+	if solidOffer.Offer != nil {
+		return universal.NewSolidState(
+			current,
+			available,
+			solidOffer.Offer.State())
+	}
+	return universal.NewSolidState(current, available, nil)
 }

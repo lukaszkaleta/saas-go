@@ -3,6 +3,7 @@ package pgoffer
 import (
 	"context"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/offer"
 	"github.com/lukaszkaleta/saas-go/universal"
@@ -26,37 +27,13 @@ func (globalOffers *PgGlobalOffers) NearBy(radar *universal.RadarModel) ([]offer
 	}
 
 	for rows.Next() {
-		descriptionRow := new(universal.DescriptionModel)
-		addressRow := new(universal.AddressModel)
-		priceRow := new(universal.PriceModel)
-		positionRow := new(universal.PositionModel)
-		err := rows.Scan(
-			&id,
-			&descriptionRow.Value,
-			&descriptionRow.ImageUrl,
-			&addressRow.Line1,
-			&addressRow.Line2,
-			&addressRow.City,
-			&addressRow.PostalCode,
-			&addressRow.District,
-			&positionRow.Lat,
-			&positionRow.Lon,
-			&priceRow.Value,
-			&priceRow.Currency,
-		)
 		pgOffer := &PgOffer{Db: globalOffers.Db, Id: id}
+		offerModel, err := MapOffer(rows)
 		if err != nil {
 			return nil, err
 		}
-
 		solidOffer := offer.NewSolidOffer(
-			&offer.OfferModel{
-				Id:          id,
-				Description: descriptionRow,
-				Address:     addressRow,
-				Price:       priceRow,
-				Position:    positionRow,
-			},
+			offerModel,
 			pgOffer,
 			id)
 		offers = append(offers, solidOffer)
@@ -65,48 +42,20 @@ func (globalOffers *PgGlobalOffers) NearBy(radar *universal.RadarModel) ([]offer
 }
 
 func (globalOffers *PgGlobalOffers) ById(id int64) (offer.Offer, error) {
-	query := "select * from offer where id = $1"
-	rows, err := globalOffers.Db.Pool.Query(context.Background(), query)
+	query := "select * from offer where id = @id"
+	rows, err := globalOffers.Db.Pool.Query(context.Background(), query, pgx.NamedArgs{"id": id})
 	if err != nil {
 		return nil, err
 	}
-	if rows.Next() {
+	if !rows.Next() {
 		return nil, nil
 	}
 
-	descriptionRow := new(universal.DescriptionModel)
-	addressRow := new(universal.AddressModel)
-	priceRow := new(universal.PriceModel)
-	positionRow := new(universal.PositionModel)
-	err = rows.Scan(
-		&id,
-		&descriptionRow.Value,
-		&descriptionRow.ImageUrl,
-		&addressRow.Line1,
-		&addressRow.Line2,
-		&addressRow.City,
-		&addressRow.PostalCode,
-		&addressRow.District,
-		&positionRow.Lat,
-		&positionRow.Lon,
-		&priceRow.Value,
-		&priceRow.Currency,
-	)
 	pgOffer := &PgOffer{Db: globalOffers.Db, Id: id}
+	offerModel, err := MapOffer(rows)
 	if err != nil {
 		return nil, err
 	}
 
-	solidOffer := offer.NewSolidOffer(
-		&offer.OfferModel{
-			Id:          id,
-			Description: descriptionRow,
-			Address:     addressRow,
-			Price:       priceRow,
-			Position:    positionRow,
-		},
-		pgOffer,
-		id)
-
-	return solidOffer, nil
+	return offer.NewSolidOffer(offerModel, pgOffer, offerModel.Id), nil
 }
