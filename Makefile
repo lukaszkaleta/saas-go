@@ -2,6 +2,7 @@ VERSION := v0.1.67
 tags:
 	git add .
 	git commit -m 'incremental version ...'
+	git push
 	git tag "database/pg/${VERSION}"
 	git tag "universal/${VERSION}"
 	git tag "universal/pg/${VERSION}"
