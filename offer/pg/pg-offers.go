@@ -2,6 +2,7 @@ package pgoffer
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -63,4 +64,17 @@ func NewPgRelationOffers(pfOffers *PgOffers, relation pg.RelationEntity) PgRelat
 		Offers:   pfOffers,
 		Relation: relation,
 	}
+}
+
+func (p PgRelationOffers) AddWithPlace(positionModel *universal.PositionModel, addressModel *universal.AddressModel) (offer.Offer, error) {
+	newOffer, err := p.Offers.AddWithPlace(positionModel, addressModel)
+	if err != nil {
+		return newOffer, err
+	}
+	query := fmt.Sprintf("INSERT INTO %s(offer_id, %s) VALUES( $1, $2 )", p.Relation.TableName, p.Relation.ColumnName)
+	_, err = p.Db.Pool.Exec(context.Background(), query, newOffer.Model().Id, p.Relation.RelationId)
+	if err != nil {
+		return newOffer, err
+	}
+	return newOffer, nil
 }
