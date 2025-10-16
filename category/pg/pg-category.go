@@ -31,6 +31,7 @@ func MapCategory(row pgx.CollectableRow) (*category.CategoryModel, error) {
 	categoryModel := category.EmptyCategoryModel()
 	err := row.Scan(
 		&categoryModel.Id,
+		&categoryModel.ParentId,
 		&categoryModel.Name.Value,
 		&categoryModel.Name.Slug,
 		&categoryModel.Description.Value,

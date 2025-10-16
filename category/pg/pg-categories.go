@@ -95,7 +95,10 @@ func (pgCategories *PgCategories) ById(id int64) (category.Category, error) {
 		Id: id,
 	}
 	categoryModel, err := pgx.CollectOneRow(rows, MapCategory)
-	return category.NewSolidCategory(categoryModel, pgCategory), err
+	if err != nil {
+		return nil, err
+	}
+	return category.NewSolidCategory(categoryModel, pgCategory), nil
 }
 
 // Relation
