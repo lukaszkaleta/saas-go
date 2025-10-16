@@ -52,7 +52,7 @@ func (pgCategories *PgCategories) AddWithParent(parent category.Category, nameVa
 	return category.NewSolidCategory(
 		&category.CategoryModel{
 			Id:          categoryId,
-			ParentId:    parent.Model().Id,
+			ParentId:    &parent.Model().Id,
 			Name:        &universal.NameModel{Value: nameValue, Slug: nameSlug},
 			Description: &universal.DescriptionModel{},
 		},
