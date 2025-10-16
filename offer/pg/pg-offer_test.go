@@ -35,7 +35,10 @@ func TestPgOffer_Status(t *testing.T) {
 	defer teardownSuite(t)
 
 	offers := PgOffers{Db: db}
-	newOffer, err := offers.AddFromPosition(&universal.PositionModel{Lon: 1, Lat: 1})
+	newOffer, err := offers.AddWithPlace(
+		&universal.PositionModel{Lon: 1, Lat: 1},
+		universal.EmptyAddressModel(),
+	)
 	if err != nil {
 		t.Error(err)
 	}

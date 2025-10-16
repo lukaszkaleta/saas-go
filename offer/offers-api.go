@@ -7,7 +7,7 @@ import (
 )
 
 type Offers interface {
-	AddFromPosition(model *universal.PositionModel) (Offer, error)
+	AddWithPlace(positionModel *universal.PositionModel, addressModel *universal.AddressModel) (Offer, error)
 }
 
 func OfferModels(offers []Offer) []*OfferModel {

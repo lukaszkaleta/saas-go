@@ -19,7 +19,7 @@ func NewPgGlobalOffers(Db *pg.PgDb) offer.GlobalOffers {
 
 func (globalOffers *PgGlobalOffers) NearBy(radar *universal.RadarModel) ([]offer.Offer, error) {
 	id := int64(0)
-	query := "select * from offer"
+	query := "select * from job"
 	offers := []offer.Offer{}
 	rows, err := globalOffers.Db.Pool.Query(context.Background(), query)
 	if err != nil {
@@ -42,7 +42,7 @@ func (globalOffers *PgGlobalOffers) NearBy(radar *universal.RadarModel) ([]offer
 }
 
 func (globalOffers *PgGlobalOffers) ById(id int64) (offer.Offer, error) {
-	query := "select * from offer where id = @id"
+	query := "select * from job where id = @id"
 	rows, err := globalOffers.Db.Pool.Query(context.Background(), query, pgx.NamedArgs{"id": id})
 	if err != nil {
 		return nil, err
