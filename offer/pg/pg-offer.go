@@ -57,11 +57,11 @@ func (pgOffer *PgOffer) State() universal.State {
 }
 
 func (pgOffer *PgOffer) tableEntity() pg.TableEntity {
-	return pgOffer.Db.TableEntity("offer", pgOffer.Id)
+	return pgOffer.Db.TableEntity("job", pgOffer.Id)
 }
 
 func (pgOffer *PgOffer) localizationRelationEntity() pg.TableEntity {
-	return pgOffer.Db.TableEntity("offer", pgOffer.Id)
+	return pgOffer.Db.TableEntity("job", pgOffer.Id)
 }
 
 func MapOffer(row pgx.CollectableRow) (*offer.OfferModel, error) {
