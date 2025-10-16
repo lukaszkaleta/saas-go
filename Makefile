@@ -1,4 +1,4 @@
-VERSION := v0.1.68
+VERSION := v0.1.69
 tags:
 	git add .
 	git commit -m 'incremental version ...'
@@ -16,9 +16,6 @@ tags:
 	git tag "user/${VERSION}"
 	git tag "user/pg/${VERSION}"
 	git push --tags
-	git add .
-	git commit -m 'next version ...'
-	git push
 
 build:
 	cd universal && go build && cd ..
