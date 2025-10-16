@@ -71,7 +71,7 @@ func (p PgRelationOffers) AddWithPlace(positionModel *universal.PositionModel, a
 	if err != nil {
 		return newOffer, err
 	}
-	query := fmt.Sprintf("INSERT INTO %s(offer_id, %s) VALUES( $1, $2 )", p.Relation.TableName, p.Relation.ColumnName)
+	query := fmt.Sprintf("INSERT INTO %s(job_id, %s) VALUES( $1, $2 )", p.Relation.TableName, p.Relation.ColumnName)
 	_, err = p.Db.Pool.Exec(context.Background(), query, newOffer.Model().Id, p.Relation.RelationId)
 	if err != nil {
 		return newOffer, err
