@@ -3,6 +3,7 @@ package pgcategory
 import (
 	"context"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/category"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
@@ -81,6 +82,20 @@ func (pgCategories *PgCategories) AllLocalized(country string, language string) 
 		categories = append(categories, categoryModel)
 	}
 	return categories, nil
+}
+
+func (pgCategories *PgCategories) ById(id int64) (category.Category, error) {
+	query := "select * from category where id = @id"
+	rows, err := pgCategories.Db.Pool.Query(context.Background(), query, pgx.NamedArgs{"id": id})
+	if err != nil {
+		return nil, err
+	}
+	pgCategory := PgCategory{
+		Db: pgCategories.Db,
+		Id: id,
+	}
+	categoryModel, err := pgx.CollectOneRow(rows, MapCategory)
+	return category.NewSolidCategory(categoryModel, pgCategory), err
 }
 
 // Relation

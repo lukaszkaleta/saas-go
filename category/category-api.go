@@ -12,10 +12,12 @@ type Category interface {
 
 // Builder
 
-func CategoryFromModel(model *CategoryModel) Category {
-	return SolidCategory{
-		model:    model,
-		Category: nil,
+func EmptyCategoryModel() *CategoryModel {
+	return &CategoryModel{
+		Id:          0,
+		ParentId:    0,
+		Name:        universal.EmptyNameModel(),
+		Description: universal.EmptyDescriptionModel(),
 	}
 }
 
@@ -23,7 +25,7 @@ func CategoryFromModel(model *CategoryModel) Category {
 
 type CategoryModel struct {
 	Id          int64                       `json:"id"`
-	ParentId    *int64                      `json:"parentId"`
+	ParentId    int64                       `json:"parentId"`
 	Description *universal.DescriptionModel `json:"description"`
 	Name        *universal.NameModel        `json:"name"`
 }
