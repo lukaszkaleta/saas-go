@@ -15,7 +15,7 @@ type Category interface {
 func EmptyCategoryModel() *CategoryModel {
 	return &CategoryModel{
 		Id:          0,
-		ParentId:    0,
+		ParentId:    nil,
 		Name:        universal.EmptyNameModel(),
 		Description: universal.EmptyDescriptionModel(),
 	}
@@ -25,7 +25,7 @@ func EmptyCategoryModel() *CategoryModel {
 
 type CategoryModel struct {
 	Id          int64                       `json:"id"`
-	ParentId    int64                       `json:"parentId"`
+	ParentId    *int64                      `json:"parentId"`
 	Description *universal.DescriptionModel `json:"description"`
 	Name        *universal.NameModel        `json:"name"`
 }
