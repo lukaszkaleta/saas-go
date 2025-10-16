@@ -1,4 +1,4 @@
-VERSION := v0.1.65
+VERSION := v0.1.66
 tags:
 	git tag "database/pg/${VERSION}"
 	git tag "universal/${VERSION}"
@@ -15,6 +15,7 @@ tags:
 	git push --tags
 	git add .
 	git commit -m 'next version ...'
+	git push
 
 build:
 	cd universal && go build && cd ..
