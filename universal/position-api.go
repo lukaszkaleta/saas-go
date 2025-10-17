@@ -15,15 +15,15 @@ func PositionFromModel(model *PositionModel) Position {
 	}
 }
 
-func NewPosition(lat int, lon int) Position {
+func NewPosition(lat float64, lon float64) Position {
 	return PositionFromModel(&PositionModel{lat, lon})
 }
 
 // Model
 
 type PositionModel struct {
-	Lat int `json:"lat"`
-	Lon int `json:"lon"`
+	Lat float64 `json:"lat"`
+	Lon float64 `json:"lon"`
 }
 
 func EmptyPositionModel() *PositionModel {
@@ -33,18 +33,6 @@ func EmptyPositionModel() *PositionModel {
 func (model *PositionModel) Change(newModel *PositionModel) {
 	model.Lat = newModel.Lat
 	model.Lon = newModel.Lon
-}
-
-func (model *PositionModel) LatF() float64 {
-	return model.f(model.Lat)
-}
-
-func (model *PositionModel) LonF() float64 {
-	return model.f(model.Lon)
-}
-
-func (model *PositionModel) f(v int) float64 {
-	return float64(v) / 1000000
 }
 
 // Solid

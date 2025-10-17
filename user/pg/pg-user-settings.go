@@ -17,11 +17,11 @@ func NewPgUserSettings(db *pg.PgDb, id int64) user.UserSettings {
 }
 
 func (pgUserSetting *PgUserSettings) Model() *user.UserSettingsModel {
-	return nil
+	return &user.UserSettingsModel{}
 }
 
 func (pgUserSetting *PgUserSettings) Radar() universal.Radar {
-	return nil
+	return &universalPg.PgRadar{Db: pgUserSetting.Db, TableEntity: pg.TableEntity{Name: "users", Id: pgUserSetting.Id}}
 }
 
 func (pgUserSetting *PgUserSettings) Avatar() universal.Description {

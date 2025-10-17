@@ -8,7 +8,7 @@ import (
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
-func setupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
+func pgUsersSetupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 	db := pg.LocalPgWithName("users_test")
 	pgfilestore.NewFilestoreSchema(db).Create()
 	NewUserSchema(db).Create()
@@ -20,7 +20,7 @@ func setupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 }
 
 func TestPgUsers_Add(t *testing.T) {
-	teardownSuite, db := setupTest(t)
+	teardownSuite, db := pgUsersSetupTest(t)
 	defer teardownSuite(t)
 
 	users := PgUsers{Db: db}
@@ -39,7 +39,7 @@ func TestPgUsers_Add(t *testing.T) {
 }
 
 func TestPgUsers_ById(t *testing.T) {
-	teardownSuite, db := setupTest(t)
+	teardownSuite, db := pgUsersSetupTest(t)
 	defer teardownSuite(t)
 
 	users := PgUsers{Db: db}
