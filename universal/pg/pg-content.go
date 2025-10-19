@@ -19,7 +19,7 @@ func NewPgContentFromTable(db *pg.PgDb, id int64) *PgContent {
 
 func (p *PgContent) Update(model *universal.ContentModel) error {
 	// Update name and content value on the owning table
-	query := "update content set name_value = $1, name_slug = $2, content_value = $3 where id = $4"
+	query := "update content set name_value = $1, name_slug = $2, value = $3 where id = $4"
 	_, err := p.Db.Pool.Exec(context.Background(), query, model.Name.Value, model.Name.Slug, model.Value, p.Id)
 	if err != nil {
 		return err
