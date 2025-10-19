@@ -58,8 +58,8 @@ func NewPgWithUrl(databaseUrl string) *PgDb {
 	return &PgDb{Pool: dbpool}
 }
 
-func LocalPgWithName(dbName string) *PgDb {
-	return NewPgWithUrl(fmt.Sprintf("postgresql://naborly:naborly@localhost:5432/%s", dbName))
+func LocalPgWithName(user string, dbName string) *PgDb {
+	return NewPgWithUrl(fmt.Sprintf("postgresql://%s:%s@localhost:5432/%s", user, user, dbName))
 }
 
 func NewPg() *PgDb {

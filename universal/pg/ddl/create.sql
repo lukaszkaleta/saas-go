@@ -1,16 +1,13 @@
-
-CREATE TABLE if not exists category (
+CREATE TABLE if not exists content (
   id serial primary key,
-  parent_category_id bigint references category,
   name_value text not null default '',
   name_slug text not null default '',
-  description_value text not null default '',
-  description_image_url text not null default ''
+  value text not null default '{}'
 );
 
-CREATE TABLE if not exists category_localization (
+CREATE TABLE if not exists content_localization (
   id serial primary key,
-  category_id bigint references category,
+  content_id bigint references content,
   country text not null default 'NO',
   language text not null default 'nb',
   translation_value text not null default '',
