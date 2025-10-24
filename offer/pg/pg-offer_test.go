@@ -1,7 +1,6 @@
 package pgoffer
 
 import (
-	"log"
 	"testing"
 
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -10,15 +9,8 @@ import (
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
-func setupSuite(tb testing.TB) func(tb testing.TB) {
-	log.Println("setup test suite")
-	return func(tb testing.TB) {
-		log.Println("teardown test suite")
-	}
-}
-
 func setupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
-	db := pg.LocalPgWithName("offer_test")
+	db := pg.LocalPgWithName("saas", "job-test")
 	fsSchema := pgfilestore.NewFilestoreSchema(db)
 	fsSchema.Create()
 	schema := NewOfferSchema(db)
@@ -35,9 +27,13 @@ func TestPgOffer_Status(t *testing.T) {
 	defer teardownSuite(t)
 
 	offers := PgOffers{Db: db}
-	newOffer, err := offers.AddWithPlace(
-		&universal.PositionModel{Lon: 1, Lat: 1},
-		universal.EmptyAddressModel(),
+	newOffer, err := offers.Add(
+		&offer.OfferModel{
+			Description: &universal.DescriptionModel{Value: "description", ImageUrl: "imageUrl"},
+			Position:    &universal.PositionModel{Lon: 1, Lat: 1},
+			Address:     universal.EmptyAddressModel(),
+			Price:       &universal.PriceModel{},
+		},
 	)
 	if err != nil {
 		t.Error(err)

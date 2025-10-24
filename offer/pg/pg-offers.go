@@ -15,19 +15,24 @@ type PgOffers struct {
 	Ids []int
 }
 
-func (pgOffers *PgOffers) AddWithPlace(positionModel *universal.PositionModel, addressModel *universal.AddressModel) (offer.Offer, error) {
+func (pgOffers *PgOffers) Add(model *offer.OfferModel) (offer.Offer, error) {
 	offerId := int64(0)
-	query := "INSERT INTO job (position_latitude, position_longitude, address_line_1, address_line_2, address_city, address_postal_code, address_district) VALUES( $1, $2, $3, $4, $5, $6, $7 ) returning id"
+	query := "INSERT INTO job (description_value, description_image_url, position_latitude, position_longitude, address_line_1, address_line_2, address_city, address_postal_code, address_district, price_value, price_currency) VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 ) returning id"
 	row := pgOffers.Db.Pool.QueryRow(
 		context.Background(),
 		query,
-		positionModel.Lat,
-		positionModel.Lon,
-		addressModel.Line1,
-		addressModel.Line2,
-		addressModel.City,
-		addressModel.PostalCode,
-		addressModel.District)
+		model.Description.Value,
+		model.Description.ImageUrl,
+		model.Position.Lat,
+		model.Position.Lon,
+		model.Address.Line1,
+		model.Address.Line2,
+		model.Address.City,
+		model.Address.PostalCode,
+		model.Address.District,
+		model.Price.Value,
+		model.Price.Currency,
+	)
 	err := row.Scan(&offerId)
 	if err != nil {
 		return nil, err
@@ -40,8 +45,8 @@ func (pgOffers *PgOffers) AddWithPlace(positionModel *universal.PositionModel, a
 		&offer.OfferModel{
 			Id:          offerId,
 			Description: &universal.DescriptionModel{},
-			Position:    positionModel,
-			Address:     addressModel,
+			Position:    model.Position,
+			Address:     model.Address,
 			Price:       &universal.PriceModel{},
 			State:       offer.OfferStatus{Draft: time.Now()},
 		},
@@ -52,22 +57,22 @@ func (pgOffers *PgOffers) AddWithPlace(positionModel *universal.PositionModel, a
 
 // Relation
 
-type PgRelationOffers struct {
+type PgRelationJobs struct {
 	Db       *pg.PgDb
 	Offers   *PgOffers
 	Relation pg.RelationEntity
 }
 
-func NewPgRelationOffers(pfOffers *PgOffers, relation pg.RelationEntity) PgRelationOffers {
-	return PgRelationOffers{
+func NewPgRelationJobs(pfOffers *PgOffers, relation pg.RelationEntity) PgRelationJobs {
+	return PgRelationJobs{
 		Db:       pfOffers.Db,
 		Offers:   pfOffers,
 		Relation: relation,
 	}
 }
 
-func (p PgRelationOffers) AddWithPlace(positionModel *universal.PositionModel, addressModel *universal.AddressModel) (offer.Offer, error) {
-	newOffer, err := p.Offers.AddWithPlace(positionModel, addressModel)
+func (p PgRelationJobs) Add(offerModel *offer.OfferModel) (offer.Offer, error) {
+	newOffer, err := p.Offers.Add(offerModel)
 	if err != nil {
 		return newOffer, err
 	}
