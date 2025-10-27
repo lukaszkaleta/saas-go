@@ -4,6 +4,7 @@ type Categories interface {
 	AddWithName(name string) (Category, error)
 	AllLocalized(country string, language string) ([]*CategoryModel, error)
 	ById(id int64) (Category, error)
+	ByIds(id []int64) ([]Category, error)
 }
 
 func CategoryModels(Categories []Category) []*CategoryModel {

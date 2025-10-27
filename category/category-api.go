@@ -35,6 +35,10 @@ func (model *CategoryModel) Change(newModel *CategoryModel) {
 	model.Name.Change(newModel.Name.Value)
 }
 
+func (model *CategoryModel) GetId() int64 {
+	return model.Id
+}
+
 // Solid
 
 type SolidCategory struct {
