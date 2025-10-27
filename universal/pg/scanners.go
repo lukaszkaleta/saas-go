@@ -11,7 +11,7 @@ func ScanMany2many(db *pg.PgDb, query string, ids []int64) (map[int64]int64, err
 	if err != nil {
 		return nil, err
 	}
-	var idsMap map[int64]int64
+	idsMap := make(map[int64]int64)
 	for rows.Next() {
 		var idKey int64
 		var idValue int64
