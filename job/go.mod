@@ -1,4 +1,4 @@
-module github.com/lukaszkaleta/saas-go/offer
+module github.com/lukaszkaleta/saas-go/job
 
 go 1.24.6
 

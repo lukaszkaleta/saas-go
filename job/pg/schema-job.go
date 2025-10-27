@@ -1,4 +1,4 @@
-package pgoffer
+package pgjob
 
 import (
 	"embed"
@@ -9,6 +9,6 @@ import (
 //go:embed ddl
 var ddlFs embed.FS
 
-func NewOfferSchema(db *pg.PgDb) pg.Schema {
+func NewJobSchema(db *pg.PgDb) pg.Schema {
 	return pg.NewDefaultSchema(db, ddlFs)
 }

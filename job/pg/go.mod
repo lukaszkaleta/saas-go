@@ -1,4 +1,4 @@
-module github.com/lukaszkaleta/saas-go/offer/pg
+module github.com/lukaszkaleta/saas-go/job/pg
 
 go 1.24.6
 
@@ -7,7 +7,7 @@ require (
 	github.com/lukaszkaleta/saas-go/database/pg v0.1.59
 	github.com/lukaszkaleta/saas-go/filestore v0.1.59
 	github.com/lukaszkaleta/saas-go/filestore/pg v0.1.59
-	github.com/lukaszkaleta/saas-go/offer v0.1.59
+	github.com/lukaszkaleta/saas-go/job v0.1.59
 	github.com/lukaszkaleta/saas-go/universal v0.1.59
 	github.com/lukaszkaleta/saas-go/universal/pg v0.1.59
 )
@@ -23,7 +23,7 @@ require (
 
 replace github.com/lukaszkaleta/saas-go/filestore => ../../filestore
 
-replace github.com/lukaszkaleta/saas-go/offer => ../../offer
+replace github.com/lukaszkaleta/saas-go/job => ../../job
 
 replace github.com/lukaszkaleta/saas-go/universal => ../../universal
 

@@ -16,7 +16,7 @@ func TestBucket_UploadFile(t *testing.T) {
 	}
 
 	s3Client := s3.NewFromConfig(cfg)
-	bucket := NewS3Bucket(s3Client, "naborly-dev-offer")
+	bucket := NewS3Bucket(s3Client, "naborly-dev-job")
 	url, err := bucket.UploadFile(context.Background(), "bucket.go", "bucket.go")
 	if err != nil {
 		log.Fatal(err)

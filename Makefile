@@ -1,4 +1,4 @@
-VERSION := v0.1.84
+VERSION := v0.2.1
 tags:
 	git add .
 	git commit -m 'incremental version ...'
@@ -11,8 +11,8 @@ tags:
 	git tag "filestore/integration/aws-s3/${VERSION}"
 	git tag "category/${VERSION}"
 	git tag "category/pg/${VERSION}"
-	git tag "offer/${VERSION}"
-	git tag "offer/pg/${VERSION}"
+	git tag "job/${VERSION}"
+	git tag "job/pg/${VERSION}"
 	git tag "user/${VERSION}"
 	git tag "user/pg/${VERSION}"
 	git push --tags
@@ -25,8 +25,8 @@ build:
 	cd filestore/pg && go build && cd ../..
 	cd category && go build && cd ..
 	cd category/pg && go build && cd ../..
-	cd offer && go build && cd ..
-	cd offer/pg && go build && cd ../..
+	cd job && go build && cd ..
+	cd job/pg && go build && cd ../..
 	cd user && go build && cd ..
 	cd user/pg && go build && cd ../..
 
