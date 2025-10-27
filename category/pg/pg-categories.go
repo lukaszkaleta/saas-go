@@ -98,10 +98,10 @@ func (pgCategories *PgCategories) ById(id int64) (category.Category, error) {
 	if err != nil {
 		return nil, err
 	}
-	return category.NewSolidCategory(categoryModel, pgCategory), nil
+	return category.NewSolidCategory(&categoryModel, pgCategory), nil
 }
 
-func (pgCategories *PgCategories) ByIds(ids []int64) ([]*category.CategoryModel, error) {
+func (pgCategories *PgCategories) ByIds(ids []int64) ([]category.CategoryModel, error) {
 	query := "select * from category where id = any($1)"
 	rows, err := pgCategories.Db.Pool.Query(context.Background(), query, ids)
 	if err != nil {
