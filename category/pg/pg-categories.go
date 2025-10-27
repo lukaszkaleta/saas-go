@@ -113,19 +113,3 @@ func (pgCategories *PgCategories) ByIds(ids []int64) ([]category.CategoryModel, 
 	}
 	return categories, nil
 }
-
-// Relation
-
-type PgRelationCategories struct {
-	Db         *pg.PgDb
-	Categories *PgCategories
-	relation   pg.RelationEntity
-}
-
-func NewPgRelationCategories(pfCategories *PgCategories, relation pg.RelationEntity) PgRelationCategories {
-	return PgRelationCategories{
-		Db:         pfCategories.Db,
-		relation:   relation,
-		Categories: pfCategories,
-	}
-}

@@ -27,6 +27,14 @@ func (pgCategory PgCategory) Localizations() universal.Localizations {
 	return &universalPg.PgLocalizations{pgCategory.Db, &pg.RelationEntity{RelationId: pgCategory.Id, ColumnName: "category_id", TableName: "category_localization"}}
 }
 
+func MapCategory(row pgx.CollectableRow, db *pg.PgDb) (category.Category, error) {
+	model, err := MapCategoryModel(row)
+	if err != nil {
+		return nil, err
+	}
+	return category.NewSolidCategory(&model, PgCategory{Db: db, Id: model.Id}), nil
+}
+
 func MapCategoryModel(row pgx.CollectableRow) (category.CategoryModel, error) {
 	categoryModel := category.EmptyCategoryModel()
 	err := row.Scan(
