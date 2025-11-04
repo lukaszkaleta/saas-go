@@ -19,7 +19,7 @@ func NewPgGlobalJobs(Db *pg.PgDb) job.GlobalJobs {
 
 func (globalJobs *PgGlobalJobs) NearBy(radar *universal.RadarModel) ([]job.Job, error) {
 	id := int64(0)
-	query := "select * from job"
+	query := "select * from job where status_published is not null and status_closed is null and status_occupied is null"
 	jobs := []job.Job{}
 	rows, err := globalJobs.Db.Pool.Query(context.Background(), query)
 	if err != nil {
@@ -42,7 +42,7 @@ func (globalJobs *PgGlobalJobs) NearBy(radar *universal.RadarModel) ([]job.Job, 
 }
 
 func (globalJobs *PgGlobalJobs) ById(id int64) (job.Job, error) {
-	query := "select * from job where id = @id"
+	query := "select * from job where id = @id and status_published is not null and status_closed is null and status_occupied is null"
 	rows, err := globalJobs.Db.Pool.Query(context.Background(), query, pgx.NamedArgs{"id": id})
 	if err != nil {
 		return nil, err

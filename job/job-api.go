@@ -47,6 +47,10 @@ func JobStatuses() []string {
 	return []string{JobDraft, JobPublished, JobOccupied, JobClosed}
 }
 
+func PublicStatuses() []string {
+	return []string{JobPublished}
+}
+
 // Model
 
 type JobModel struct {
