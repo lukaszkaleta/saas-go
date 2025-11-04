@@ -22,6 +22,7 @@ type Job interface {
 type JobStatus struct {
 	Draft     time.Time `json:"draft"`
 	Published time.Time `json:"published"`
+	Occupied  time.Time `json:"occupied"`
 	Closed    time.Time `json:"closed"`
 }
 

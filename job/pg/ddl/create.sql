@@ -13,6 +13,7 @@ CREATE TABLE if not exists job (
   price_currency text not null default 'NOK',
   status_draft timestamp not null default now(),
   status_published timestamp,
+  status_occupied timestamp,
   status_closed timestamp
 );
 

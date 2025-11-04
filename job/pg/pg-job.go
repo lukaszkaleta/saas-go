@@ -68,6 +68,7 @@ func MapJob(row pgx.CollectableRow) (*job.JobModel, error) {
 	jobModel := job.EmptyJobModel()
 
 	nullTimePublished := sql.NullTime{}
+	nullTimeOccupied := sql.NullTime{}
 	nullTimeClosed := sql.NullTime{}
 	err := row.Scan(
 		&jobModel.Id,
@@ -84,9 +85,11 @@ func MapJob(row pgx.CollectableRow) (*job.JobModel, error) {
 		&jobModel.Price.Currency,
 		&jobModel.State.Draft,
 		&nullTimePublished,
+		&nullTimeOccupied,
 		&nullTimeClosed,
 	)
 	jobModel.State.Published = nullTimePublished.Time
+	jobModel.State.Occupied = nullTimeOccupied.Time
 	jobModel.State.Closed = nullTimeClosed.Time
 	if err != nil {
 		return nil, err
