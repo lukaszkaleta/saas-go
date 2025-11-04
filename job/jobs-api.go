@@ -8,6 +8,7 @@ import (
 
 type Jobs interface {
 	Add(model *JobModel) (Job, error)
+	List() ([]Job, error)
 }
 
 func JobModels(jobs []Job) []*JobModel {

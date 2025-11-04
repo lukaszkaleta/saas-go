@@ -2,9 +2,11 @@ package pgjob
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/job"
 	"github.com/lukaszkaleta/saas-go/universal"
@@ -55,6 +57,28 @@ func (pgJobs *PgJobs) Add(model *job.JobModel) (job.Job, error) {
 	), nil
 }
 
+func (pgJobs *PgJobs) List() ([]job.Job, error) {
+	return nil, errors.New("All jobs can not be listed")
+}
+
+func MapJobs(rows pgx.Rows, db *pg.PgDb) ([]job.Job, error) {
+	jobs := []job.Job{}
+	id := int64(0)
+	for rows.Next() {
+		pgJob := &PgJob{Db: db, Id: id}
+		jobModel, err := MapJob(rows)
+		if err != nil {
+			return nil, err
+		}
+		solidJob := job.NewSolidJob(
+			jobModel,
+			pgJob,
+			id)
+		jobs = append(jobs, solidJob)
+	}
+	return jobs, nil
+}
+
 // Relation
 
 type PgRelationJobs struct {
@@ -91,4 +115,13 @@ func (p PgRelationJobs) Join(jobId int64) error {
 		return err
 	}
 	return nil
+}
+
+func (p PgRelationJobs) List() ([]job.Job, error) {
+	query := fmt.Sprintf("select * from job where id in (select job_id from %s where %s = $1)", p.Relation.TableName, p.Relation.ColumnName)
+	rows, err := p.Db.Pool.Query(context.Background(), query, p.Relation.RelationId)
+	if err != nil {
+		return nil, err
+	}
+	return MapJobs(rows, p.Db)
 }
