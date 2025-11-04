@@ -39,11 +39,12 @@ func (o *JobStatus) Current() string {
 const (
 	JobDraft     string = "draft"
 	JobPublished string = "published"
+	JobOccupied  string = "occupied"
 	JobClosed    string = "closed"
 )
 
 func JobStatuses() []string {
-	return []string{JobDraft, JobPublished, JobClosed}
+	return []string{JobDraft, JobPublished, JobOccupied, JobClosed}
 }
 
 // Model
