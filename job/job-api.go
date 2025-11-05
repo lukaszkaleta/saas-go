@@ -30,8 +30,11 @@ func (o *JobStatus) Current() string {
 	if !o.Closed.IsZero() {
 		return JobClosed
 	}
+	if !o.Occupied.IsZero() {
+		return JobOccupied
+	}
 	if !o.Published.IsZero() {
-		return JobClosed
+		return JobPublished
 	}
 	return JobDraft
 }
