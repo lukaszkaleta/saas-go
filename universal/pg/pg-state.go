@@ -102,8 +102,8 @@ func (p *PgTimestampState) Name() string {
 	}
 	// Derive state name from column name, e.g., "state_active" -> "active"
 	colName := p.StateColumns[lastIdx]
-	if strings.HasPrefix(colName, "state_") {
-		return strings.TrimPrefix(colName, "state_")
+	if strings.HasPrefix(colName, "status_") {
+		return strings.TrimPrefix(colName, "status_")
 	}
 	return colName
 }
@@ -111,7 +111,7 @@ func (p *PgTimestampState) Name() string {
 // Change updates the state column in the backing table.
 func (p *PgTimestampState) Change(newState string) error {
 
-	col := "state_" + newState
+	col := "status_" + newState
 	query := fmt.Sprintf("update %s set %s = $1 where id = $2", p.TableEntity.Name, col)
 	_, err := p.Db.Pool.Exec(context.Background(), query, newState, p.TableEntity.Id)
 	if err != nil {
