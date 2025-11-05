@@ -112,8 +112,8 @@ func (p *PgTimestampState) Name() string {
 func (p *PgTimestampState) Change(newState string) error {
 
 	col := "status_" + newState
-	query := fmt.Sprintf("update %s set %s = $1 where id = $2", p.TableEntity.Name, col)
-	_, err := p.Db.Pool.Exec(context.Background(), query, newState, p.TableEntity.Id)
+	query := fmt.Sprintf("update %s set %s = now() where id = $2", p.TableEntity.Name, col)
+	_, err := p.Db.Pool.Exec(context.Background(), query, p.TableEntity.Id)
 	if err != nil {
 		return err
 	}
