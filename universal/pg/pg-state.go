@@ -27,7 +27,7 @@ func (p *PgState) Name() string {
 	}
 	col := p.StateColumn
 	if col == "" {
-		col = "state"
+		col = "status"
 	}
 	query := fmt.Sprintf("select %s from %s where id = $1", col, p.TableEntity.Name)
 	var val string
@@ -41,7 +41,7 @@ func (p *PgState) Name() string {
 func (p *PgState) Change(newState string) error {
 	col := p.StateColumn
 	if col == "" {
-		col = "state"
+		col = "status"
 	}
 	query := fmt.Sprintf("update %s set %s = $1 where id = $2", p.TableEntity.Name, col)
 	_, err := p.Db.Pool.Exec(context.Background(), query, newState, p.TableEntity.Id)
