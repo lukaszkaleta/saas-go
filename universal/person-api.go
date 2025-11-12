@@ -39,6 +39,12 @@ func EmptyPersonModel() *PersonModel {
 	}
 }
 
+func IdEmptyPersonModel(id int64) *PersonModel {
+	model := EmptyPersonModel()
+	model.Id = id
+	return model
+}
+
 // Solid
 
 type SolidPerson struct {

@@ -1,12 +1,14 @@
 -- this table should be created by module users.
 CREATE TABLE if not exists users (
-  id serial primary key
+  id bigint primary key
 );
 
 -- module structure.
 
+create sequence if not exists job_sequence;
+
 CREATE TABLE if not exists job (
-  id serial primary key,
+  id bigint not null primary key default nextval('job_sequence'),
   description_value text not null default '',
   description_image_url text not null default '',
   address_line_1 text not null default '',
@@ -18,22 +20,23 @@ CREATE TABLE if not exists job (
   position_longitude numeric not null default 0,
   price_value int not null default 0,
   price_currency text not null default 'NOK',
+  rating int not null default 10,
   status_draft timestamp not null default now(),
   status_published timestamp,
   status_occupied timestamp,
   status_closed timestamp,
   action_created_by_id bigint not null references users,
   action_created_at timestamp not null default now()
-  );
+ );
 
 CREATE TABLE if not exists job_filesystem (
-  job_id int not null references job,
-  filesystem_id int not null references filestore_filesystem
+  job_id bigint not null references job,
+  filesystem_id bigint not null references filestore_filesystem
 );
 
 CREATE TABLE if not exists job_offer (
-  id serial primary key,
-  job_id int not null references job,
+  id bigint not null primary key default nextval('job_sequence'),
+  job_id bigint not null references job,
   price_value int not null default 0,
   price_currency text not null default 'NOK',
   description_value text not null default '',

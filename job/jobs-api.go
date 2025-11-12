@@ -7,7 +7,7 @@ import (
 )
 
 type Jobs interface {
-	Add(model *JobModel) (Job, error)
+	Add(model *JobModel, personModel universal.Person) (Job, error)
 	List() ([]Job, error)
 }
 

@@ -17,6 +17,7 @@ type Job interface {
 	Description() universal.Description
 	FileSystem() filestore.FileSystem
 	State() universal.State
+	Actions() universal.Actions
 
 	// Access all offers for this job
 	Offers() Offers
@@ -63,9 +64,11 @@ type JobModel struct {
 	Id          int64                       `json:"id"`
 	Position    *universal.PositionModel    `json:"position"`
 	Price       *universal.PriceModel       `json:"price"`
+	Rating      int                         `json:"rating"`
 	Address     *universal.AddressModel     `json:"address"`
 	Description *universal.DescriptionModel `json:"description"`
 	State       JobStatus                   `json:"state"`
+	Actions     universal.ActionsModel      `json:"actions"`
 }
 
 func (m *JobModel) Hint() *JobHint {
@@ -164,6 +167,11 @@ func (solidJob *SolidJob) State() universal.State {
 	}
 	return universal.NewSolidState(current, available, nil)
 }
+
+func (solidJob *SolidJob) Actions() universal.Actions {
+	return solidJob.Job.Actions()
+}
+
 func (solidJob *SolidJob) Offers() Offers {
 	if solidJob.Job == nil {
 		return NoOffers{}

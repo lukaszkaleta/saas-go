@@ -9,12 +9,18 @@ import (
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
+var TestUser = universal.IdEmptyPersonModel(1)
+
 func setupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 	db := pg.LocalPgWithName("saas", "job-test")
 	fsSchema := pgfilestore.NewFilestoreSchema(db)
 	fsSchema.Create()
 	schema := NewJobSchema(db)
 	schema.Create()
+
+	err := db.ExecuteSql("insert into users (id) values (1)")
+	if err != nil {
+	}
 
 	return func(tb testing.TB) {
 		schema.Drop()
@@ -34,6 +40,7 @@ func TestPgJob_Status(t *testing.T) {
 			Address:     universal.EmptyAddressModel(),
 			Price:       &universal.PriceModel{},
 		},
+		universal.NewSolidPerson(TestUser, nil),
 	)
 	if err != nil {
 		t.Error(err)
@@ -45,6 +52,9 @@ func TestPgJob_Status(t *testing.T) {
 	jobById, err := globalJobs.ById(newJob.Model().Id)
 	if err != nil {
 		t.Error(err)
+	}
+	if jobById == nil {
+		t.Error("job by id should not be nil")
 	}
 	if job.JobDraft != jobById.State().Name() {
 		t.Error("job status is not draft")

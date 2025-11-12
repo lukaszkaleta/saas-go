@@ -17,9 +17,9 @@ type PgJobs struct {
 	Ids []int
 }
 
-func (pgJobs *PgJobs) Add(model *job.JobModel) (job.Job, error) {
+func (pgJobs *PgJobs) Add(model *job.JobModel, person universal.Person) (job.Job, error) {
 	jobId := int64(0)
-	query := "INSERT INTO job (description_value, description_image_url, position_latitude, position_longitude, address_line_1, address_line_2, address_city, address_postal_code, address_district, price_value, price_currency) VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 ) returning id"
+	query := "INSERT INTO job (description_value, description_image_url, position_latitude, position_longitude, address_line_1, address_line_2, address_city, address_postal_code, address_district, price_value, price_currency, rating, action_created_by_id) VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) returning id"
 	row := pgJobs.Db.Pool.QueryRow(
 		context.Background(),
 		query,
@@ -34,6 +34,8 @@ func (pgJobs *PgJobs) Add(model *job.JobModel) (job.Job, error) {
 		model.Address.District,
 		model.Price.Value,
 		model.Price.Currency,
+		model.Rating,
+		person.ID(),
 	)
 	err := row.Scan(&jobId)
 	if err != nil {
@@ -50,6 +52,7 @@ func (pgJobs *PgJobs) Add(model *job.JobModel) (job.Job, error) {
 			Position:    model.Position,
 			Address:     model.Address,
 			Price:       &universal.PriceModel{},
+			Rating:      model.Rating,
 			State:       job.JobStatus{Draft: time.Now()},
 		},
 		&pgJob,
@@ -95,8 +98,8 @@ func NewPgRelationJobs(pfJobs *PgJobs, relation pg.RelationEntity) PgRelationJob
 	}
 }
 
-func (p PgRelationJobs) Add(jobModel *job.JobModel) (job.Job, error) {
-	newJob, err := p.Jobs.Add(jobModel)
+func (p PgRelationJobs) Add(jobModel *job.JobModel, person universal.Person) (job.Job, error) {
+	newJob, err := p.Jobs.Add(jobModel, person)
 	if err != nil {
 		return newJob, err
 	}

@@ -56,6 +56,10 @@ func (pgJob *PgJob) State() universal.State {
 		job.JobStatuses())
 }
 
+func (pgJob *PgJob) Actions() universal.Actions {
+	return pgUniversal.NewPgActions(pgJob.Db, pgJob.tableEntity())
+}
+
 func (pgJob *PgJob) Offers() job.Offers {
 	return PgOffers{Db: pgJob.Db, JobId: pgJob.Id}
 }
@@ -74,6 +78,11 @@ func MapJob(row pgx.CollectableRow) (*job.JobModel, error) {
 	nullTimePublished := sql.NullTime{}
 	nullTimeOccupied := sql.NullTime{}
 	nullTimeClosed := sql.NullTime{}
+
+	actionCreated := universal.ActionModel{Name: "created"}
+	actions := make(map[string]*universal.ActionModel)
+	actions["created"] = &actionCreated
+
 	err := row.Scan(
 		&jobModel.Id,
 		&jobModel.Description.Value,
@@ -87,14 +96,18 @@ func MapJob(row pgx.CollectableRow) (*job.JobModel, error) {
 		&jobModel.Position.Lon,
 		&jobModel.Price.Value,
 		&jobModel.Price.Currency,
+		&jobModel.Rating,
 		&jobModel.State.Draft,
 		&nullTimePublished,
 		&nullTimeOccupied,
 		&nullTimeClosed,
+		&actionCreated.ById,
+		&actionCreated.MadeAt,
 	)
 	jobModel.State.Published = nullTimePublished.Time
 	jobModel.State.Occupied = nullTimeOccupied.Time
 	jobModel.State.Closed = nullTimeClosed.Time
+	jobModel.Actions = universal.ActionsModel{List: actions}
 	if err != nil {
 		return nil, err
 	}
