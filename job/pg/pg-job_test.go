@@ -7,40 +7,52 @@ import (
 	pgfilestore "github.com/lukaszkaleta/saas-go/filestore/pg"
 	"github.com/lukaszkaleta/saas-go/job"
 	"github.com/lukaszkaleta/saas-go/universal"
+	"github.com/lukaszkaleta/saas-go/user"
 )
 
-var TestUser = universal.IdEmptyPersonModel(1)
+var JobUser = user.WithId(1)
+var WorkUser = user.WithId(2)
 
-func setupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
+func setupJobTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 	db := pg.LocalPgWithName("saas", "job-test")
 	fsSchema := pgfilestore.NewFilestoreSchema(db)
 	fsSchema.Create()
 	schema := NewJobSchema(db)
 	schema.Create()
 
-	err := db.ExecuteSql("insert into users (id) values (1)")
-	if err != nil {
+	for i := 1; i < 3; i++ {
+		_, err := db.Pool.Exec(tb.Context(), "insert into users (id) values ($1)", i)
+		if err != nil {
+			tb.Error(err)
+		}
 	}
 
 	return func(tb testing.TB) {
-		schema.Drop()
-		fsSchema.Drop()
+		err := schema.Drop()
+		if err != nil {
+			panic(err)
+		}
+		err = fsSchema.Drop()
+		if err != nil {
+			panic(err)
+		}
 	}, db
 }
 
 func TestPgJob_Status(t *testing.T) {
-	teardownSuite, db := setupTest(t)
+	ctx := user.WithUser(t.Context(), JobUser)
+	teardownSuite, db := setupJobTest(t)
 	defer teardownSuite(t)
 
 	jobs := PgJobs{Db: db}
 	newJob, err := jobs.Add(
+		ctx,
 		&job.JobModel{
 			Description: &universal.DescriptionModel{Value: "description", ImageUrl: "imageUrl"},
 			Position:    &universal.PositionModel{Lon: 1, Lat: 1},
 			Address:     universal.EmptyAddressModel(),
-			Price:       &universal.PriceModel{},
+			Price:       universal.EmptyPriceModel(),
 		},
-		universal.NewSolidPerson(TestUser, nil),
 	)
 	if err != nil {
 		t.Error(err)

@@ -24,8 +24,14 @@ func WithUser(ctx context.Context, usr User) context.Context {
 	return context.WithValue(ctx, "user-context", usr.Model())
 }
 
-func FetchUser(ctx context.Context) UserModel {
-	return ctx.Value("user-context").(UserModel)
+func FetchUser(ctx context.Context) *UserModel {
+	return ctx.Value("user-context").(*UserModel)
+}
+
+func WithId(id int64) User {
+	model := NewUserModel()
+	model.Id = id
+	return NewSolidUser(model, nil)
 }
 
 type UserFs string
@@ -72,9 +78,9 @@ type SolidUser struct {
 	user  User
 }
 
-func NewSolidUser(model *UserModel, user User, id int64) User {
+func NewSolidUser(model *UserModel, user User) User {
 	return &SolidUser{
-		id,
+		model.Id,
 		model,
 		user,
 	}

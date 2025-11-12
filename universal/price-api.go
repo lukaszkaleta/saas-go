@@ -24,6 +24,13 @@ type PriceModel struct {
 	Currency string `json:"currency"`
 }
 
+func EmptyPriceModel() *PriceModel {
+	return &PriceModel{
+		Value:    0,
+		Currency: "",
+	}
+}
+
 func (model *PriceModel) Change(newModel *PriceModel) {
 	model.Value = newModel.Value
 	model.Currency = newModel.Currency

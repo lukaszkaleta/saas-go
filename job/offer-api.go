@@ -8,20 +8,19 @@ type Offer interface {
 }
 
 type OfferModel struct {
-	Id          int64                      `json:"id"`
-	Price       universal.PriceModel       `json:"price"`
-	Description universal.DescriptionModel `json:"description"`
-	Rating      int                        `json:"rating"`
+	Id          int64                       `json:"id"`
+	Price       *universal.PriceModel       `json:"price"`
+	Description *universal.DescriptionModel `json:"description"`
+	Rating      int                         `json:"rating"`
 }
 
-func OfferModelFromPerson(person universal.Person) (*OfferModel, error) {
-	average, err := person.Ratings().Average()
-	if err != nil {
-		return nil, err
-	}
+func EmptyOfferModel() *OfferModel {
 	return &OfferModel{
-		Rating: average,
-	}, nil
+		Id:          0,
+		Price:       universal.EmptyPriceModel(),
+		Description: universal.EmptyDescriptionModel(),
+		Rating:      0,
+	}
 }
 
 //

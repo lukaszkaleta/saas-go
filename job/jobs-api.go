@@ -1,13 +1,14 @@
 package job
 
 import (
+	"context"
 	"strconv"
 
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type Jobs interface {
-	Add(model *JobModel, personModel universal.Person) (Job, error)
+	Add(ctx context.Context, model *JobModel) (Job, error)
 	List() ([]Job, error)
 }
 

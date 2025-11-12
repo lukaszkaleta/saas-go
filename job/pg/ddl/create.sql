@@ -44,8 +44,8 @@ CREATE TABLE if not exists job_offer (
   rating int not null default 0,
   action_created_by_id bigint not null references users,
   action_created_at timestamp not null default now(),
-  action_accepted_by_id bigint not null references users,
-  action_accepted_at timestamp not null default now(),
-  action_rejected_by_id bigint not null references users,
-  action_rejected_at timestamp not null default now()
+  action_accepted_by_id bigint references users,
+  action_accepted_at timestamp,
+  action_rejected_by_id bigint references users,
+  action_rejected_at timestamp
 );

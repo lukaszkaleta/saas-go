@@ -10,6 +10,7 @@ import (
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/job"
 	"github.com/lukaszkaleta/saas-go/universal"
+	"github.com/lukaszkaleta/saas-go/user"
 )
 
 type PgJobs struct {
@@ -17,11 +18,12 @@ type PgJobs struct {
 	Ids []int
 }
 
-func (pgJobs *PgJobs) Add(model *job.JobModel, person universal.Person) (job.Job, error) {
+func (pgJobs *PgJobs) Add(ctx context.Context, model *job.JobModel) (job.Job, error) {
 	jobId := int64(0)
 	query := "INSERT INTO job (description_value, description_image_url, position_latitude, position_longitude, address_line_1, address_line_2, address_city, address_postal_code, address_district, price_value, price_currency, rating, action_created_by_id) VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) returning id"
+	currentUser := user.FetchUser(ctx)
 	row := pgJobs.Db.Pool.QueryRow(
-		context.Background(),
+		ctx,
 		query,
 		model.Description.Value,
 		model.Description.ImageUrl,
@@ -35,7 +37,7 @@ func (pgJobs *PgJobs) Add(model *job.JobModel, person universal.Person) (job.Job
 		model.Price.Value,
 		model.Price.Currency,
 		model.Rating,
-		person.ID(),
+		currentUser.Id,
 	)
 	err := row.Scan(&jobId)
 	if err != nil {
@@ -98,8 +100,8 @@ func NewPgRelationJobs(pfJobs *PgJobs, relation pg.RelationEntity) PgRelationJob
 	}
 }
 
-func (p PgRelationJobs) Add(jobModel *job.JobModel, person universal.Person) (job.Job, error) {
-	newJob, err := p.Jobs.Add(jobModel, person)
+func (p PgRelationJobs) Add(ctx context.Context, jobModel *job.JobModel) (job.Job, error) {
+	newJob, err := p.Jobs.Add(ctx, jobModel)
 	if err != nil {
 		return newJob, err
 	}

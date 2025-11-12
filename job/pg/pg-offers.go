@@ -18,7 +18,7 @@ func (p *PgOffers) Waiting() []job.Offer {
 	panic("implement me")
 }
 
-func (pgOffers *PgOffers) Make(ctx context.Context, model job.OfferModel) (job.Offer, error) {
+func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.Offer, error) {
 	offerId := int64(0)
 	user := user.FetchUser(ctx)
 
