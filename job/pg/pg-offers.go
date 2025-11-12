@@ -2,9 +2,12 @@ package pgjob
 
 import (
 	"context"
+	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/job"
+	"github.com/lukaszkaleta/saas-go/universal"
 	"github.com/lukaszkaleta/saas-go/user"
 )
 
@@ -13,14 +16,18 @@ type PgOffers struct {
 	JobId int64
 }
 
-func (p *PgOffers) Waiting() []job.Offer {
-	//TODO implement me
-	panic("implement me")
+func (p *PgOffers) Waiting() ([]job.Offer, error) {
+	query := "select * from job_offer where job_id = $1 and action_accepted_at is null and action_rejected_at is null"
+	rows, err := p.Db.Pool.Query(context.Background(), query, p.JobId)
+	if err != nil {
+		return nil, err
+	}
+	return MapOffers(rows, p.Db)
 }
 
 func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.Offer, error) {
 	offerId := int64(0)
-	user := user.FetchUser(ctx)
+	user := user.CurrentUser(ctx)
 
 	query := "INSERT INTO job_offer (job_id, price_value, price_currency, description_value, action_created_by_id) VALUES( $1, $2, $3, $4, $5 ) returning id"
 	row := pgOffers.Db.Pool.QueryRow(
@@ -40,12 +47,34 @@ func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.
 		Db: pgOffers.Db,
 		Id: offerId,
 	}
+	actionsList := make(map[string]*universal.ActionModel)
+	actionsList[job.Created] = &universal.ActionModel{
+		ById:   &user.Id,
+		MadeAt: time.Now(),
+		Name:   job.Created,
+	}
 	return job.NewSolidOffer(
 		&job.OfferModel{
 			Id:          offerId,
 			Description: model.Description,
 			Price:       model.Price,
+			Actions:     universal.ActionsModel{List: actionsList},
 		},
 		&pgOffer,
 	), nil
+}
+
+func MapOffers(rows pgx.Rows, db *pg.PgDb) ([]job.Offer, error) {
+	offers := []job.Offer{}
+	id := int64(0)
+	for rows.Next() {
+		pgOffer := &PgOffer{Db: db, Id: id}
+		offerModel, err := MapOffer(rows)
+		if err != nil {
+			return nil, err
+		}
+		solidOffer := job.NewSolidOffer(offerModel, pgOffer)
+		offers = append(offers, solidOffer)
+	}
+	return offers, nil
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/lukaszkaleta/saas-go/user"
 )
 
-func TestPgOffers_Make(t *testing.T) {
+func TestPgOffers_TestFlow(t *testing.T) {
 	teardownSuite, db := setupJobTest(t)
 	defer teardownSuite(t)
 	ctx := user.WithUser(t.Context(), JobUser)
@@ -28,6 +28,7 @@ func TestPgOffers_Make(t *testing.T) {
 		t.Error(err)
 	}
 
+	ctx = user.WithUser(ctx, WorkUser)
 	offerModel := &job.OfferModel{
 		Description: &universal.DescriptionModel{Value: "I will do it"},
 		Price:       &universal.PriceModel{Value: price.Value - 1, Currency: price.Currency},
@@ -40,4 +41,36 @@ func TestPgOffers_Make(t *testing.T) {
 	if offer == nil {
 		t.Error("offer was nil")
 	}
+
+	waiting, err := newJob.Offers().Waiting()
+	if err != nil {
+		t.Error(err)
+	}
+	onlyOffer := waiting[0]
+	accepted, err := onlyOffer.Accepted()
+	if err != nil {
+		t.Error(err)
+	}
+	if accepted {
+		t.Error("accepted")
+	}
+	rejected, err := onlyOffer.Rejected()
+	if err != nil {
+		t.Error(err)
+	}
+	if rejected {
+		t.Error("rejected")
+	}
+
+	ctx = user.WithUser(ctx, WorkUser)
+	err = offer.Reject(ctx)
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = offer.Accept(ctx)
+	if err != nil {
+		t.Error(err)
+	}
+
 }

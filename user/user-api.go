@@ -21,11 +21,13 @@ type User interface {
 }
 
 func WithUser(ctx context.Context, usr User) context.Context {
-	return context.WithValue(ctx, "user-context", usr.Model())
+	ctx = context.WithValue(ctx, "current-user", usr.Model())
+	id := usr.ID()
+	return context.WithValue(ctx, "current-user-id", &id)
 }
 
-func FetchUser(ctx context.Context) *UserModel {
-	return ctx.Value("user-context").(*UserModel)
+func CurrentUser(ctx context.Context) *UserModel {
+	return ctx.Value("current-user").(*UserModel)
 }
 
 func WithId(id int64) User {
