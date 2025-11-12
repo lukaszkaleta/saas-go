@@ -1,6 +1,8 @@
 package user
 
 import (
+	"context"
+
 	"github.com/lukaszkaleta/saas-go/filestore"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
@@ -16,6 +18,14 @@ type User interface {
 	Settings() UserSettings
 	FileSystem(name string) (filestore.FileSystem, error)
 	Archive() error
+}
+
+func WithUser(ctx context.Context, usr User) context.Context {
+	return context.WithValue(ctx, "user-context", usr.Model())
+}
+
+func FetchUser(ctx context.Context) UserModel {
+	return ctx.Value("user-context").(UserModel)
 }
 
 type UserFs string

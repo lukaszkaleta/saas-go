@@ -21,3 +21,7 @@ func (s *PgRatings) Add(r *universal.RatingModel) (universal.Rating, error) {
 func (s *PgRatings) ById(id int64) (universal.Rating, error) {
 	return &universal.SolidRating{}, nil
 }
+
+func (s *PgRatings) Average() (int, error) {
+	return 0, nil
+}

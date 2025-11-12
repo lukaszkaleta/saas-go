@@ -41,6 +41,7 @@ CREATE TABLE if not exists job_offer (
   price_currency text not null default 'NOK',
   description_value text not null default '',
   description_image_url text not null default '',
+  rating int not null default 0,
   action_created_by_id bigint not null references users,
   action_created_at timestamp not null default now(),
   action_accepted_by_id bigint not null references users,

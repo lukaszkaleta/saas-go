@@ -61,7 +61,7 @@ func (pgJob *PgJob) Actions() universal.Actions {
 }
 
 func (pgJob *PgJob) Offers() job.Offers {
-	return PgOffers{Db: pgJob.Db, JobId: pgJob.Id}
+	return &PgOffers{Db: pgJob.Db, JobId: pgJob.Id}
 }
 
 func (pgJob *PgJob) tableEntity() pg.TableEntity {

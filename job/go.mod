@@ -2,9 +2,9 @@ module github.com/lukaszkaleta/saas-go/job
 
 go 1.24.6
 
-require github.com/lukaszkaleta/saas-go/universal v0.1.43
+require github.com/lukaszkaleta/saas-go/universal v0.2.67
 
-require github.com/lukaszkaleta/saas-go/filestore v0.1.43
+require github.com/lukaszkaleta/saas-go/filestore v0.2.67
 
 replace github.com/lukaszkaleta/saas-go => ../
 

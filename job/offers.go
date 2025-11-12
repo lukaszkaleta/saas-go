@@ -1,19 +1,21 @@
 package job
 
-import "github.com/lukaszkaleta/saas-go/universal"
+import (
+	"context"
+)
 
 type Offers interface {
-	Waiting() []*Offer
-
-	Make(person universal.Person, model OfferModel)
+	Waiting() []Offer
+	Make(context context.Context, model OfferModel) (Offer, error)
 }
 
 type NoOffers struct {
 }
 
-func (n NoOffers) Waiting() []*Offer {
+func (n NoOffers) Waiting() []Offer {
 	return nil
 }
 
-func (n NoOffers) Make(person universal.Person, model OfferModel) {
+func (n NoOffers) Make(context context.Context, model OfferModel) (Offer, error) {
+	return nil, nil
 }

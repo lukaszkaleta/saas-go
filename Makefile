@@ -1,4 +1,4 @@
-VERSION := v0.2.67
+VERSION := v0.2.68
 tags:
 	git add .
 	git commit -m 'incremental version ...'
@@ -18,15 +18,15 @@ tags:
 	git push --tags
 
 build:
-	cd universal && go build && cd ..
-	cd database/pg && go build && cd ../..
-	cd universal/pg && go build && cd ../..
-	cd filestore && go build && cd ..
-	cd filestore/pg && go build && cd ../..
-	cd category && go build && cd ..
-	cd category/pg && go build && cd ../..
-	cd job && go build && cd ..
-	cd job/pg && go build && cd ../..
-	cd user && go build && cd ..
-	cd user/pg && go build && cd ../..
+	cd universal && go mod tidy && go build && cd ..
+	cd database/pg && go mod tidy && go build && cd ../..
+	cd universal/pg && go mod tidy && go build && cd ../..
+	cd filestore && go mod tidy && go build && cd ..
+	cd filestore/pg && go mod tidy && go mod tidy && go build && cd ../..
+	cd category && go mod tidy && go build && cd ..
+	cd category/pg && go mod tidy && go build && cd ../..
+	cd job && go mod tidy && go build && cd ..
+	cd job/pg && go mod tidy && go build && cd ../..
+	cd user && go mod tidy && go build && cd ..
+	cd user/pg && go mod tidy && go build && cd ../..
 
