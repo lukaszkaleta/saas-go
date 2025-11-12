@@ -26,3 +26,16 @@ func (s SolidRatings) Add(r RatingModel) (*Rating, error) {
 func (s SolidRatings) ById(id int64) (Rating, error) {
 	return s.ratings.ById(id)
 }
+
+// Dummy
+
+type DummyRatings struct {
+}
+
+func (dummy DummyRatings) Add(r *RatingModel) (Rating, error) {
+	return nil, nil
+}
+
+func (dummy DummyRatings) ById(id int64) (Rating, error) {
+	return DummyRating{}, nil
+}

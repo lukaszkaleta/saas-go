@@ -9,13 +9,20 @@ type Rating interface {
 // Model
 
 type RatingModel struct {
-	Description string
-	Score       int
+	Description *DescriptionModel `json:"description"`
+	Score       int               `json:"score"`
 }
 
 func (m *RatingModel) Change(newModel *RatingModel) {
 	m.Score = newModel.Score
 	m.Description = newModel.Description
+}
+
+func EmptyRatingModel() *RatingModel {
+	return &RatingModel{
+		Description: EmptyDescriptionModel(),
+		Score:       0,
+	}
 }
 
 // Solid
@@ -40,5 +47,18 @@ func (s *SolidRating) Model() *RatingModel {
 
 func (s *SolidRating) Update(newModel *RatingModel) error {
 	s.model.Change(newModel)
+	return nil
+}
+
+// Dummy
+
+type DummyRating struct {
+}
+
+func (d DummyRating) Model() *RatingModel {
+	return EmptyRatingModel()
+}
+
+func (d DummyRating) Update(rating *RatingModel) error {
 	return nil
 }

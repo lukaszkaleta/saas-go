@@ -6,12 +6,12 @@ import (
 )
 
 type PgRatings struct {
-	db         *pg.PgDb
+	Db         *pg.PgDb
 	ownerTable pg.TableEntity
 }
 
 func NewPgRatings(db *pg.PgDb, ownerTable pg.TableEntity) universal.Ratings {
-	return &PgRatings{db: db, ownerTable: ownerTable}
+	return &PgRatings{Db: db, ownerTable: ownerTable}
 }
 
 func (s *PgRatings) Add(r *universal.RatingModel) (universal.Rating, error) {

@@ -8,6 +8,7 @@ import (
 // API
 
 type User interface {
+	universal.Idable
 	Model() *UserModel
 	Account() Account
 	Person() universal.Person
@@ -107,6 +108,10 @@ func (u SolidUser) FileSystem(name string) (filestore.FileSystem, error) {
 
 func (u SolidUser) Archive() error {
 	return nil
+}
+
+func (u SolidUser) ID() int64 {
+	return u.Id
 }
 
 // Relations

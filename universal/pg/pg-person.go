@@ -13,6 +13,10 @@ type PgPerson struct {
 	TableEntity pg.TableEntity
 }
 
+func (pg *PgPerson) Ratings() universal.Ratings {
+	return NewPgRatings(pg.Db, pg.TableEntity)
+}
+
 func (pg *PgPerson) Update(model *universal.PersonModel) error {
 	query := fmt.Sprintf("update %s set person_first_name = $1, person_last_name = $2, person_email = $3, person_phone = $4 where id = $5", pg.TableEntity.Name)
 	_, err := pg.Db.Pool.Exec(context.Background(), query, model.FirstName, model.LastName, model.Email, model.Phone, pg.TableEntity.Id)
@@ -24,4 +28,8 @@ func (pg *PgPerson) Update(model *universal.PersonModel) error {
 
 func (pg *PgPerson) Model() *universal.PersonModel {
 	return &universal.PersonModel{}
+}
+
+func (pg *PgPerson) ID() int64 {
+	return pg.TableEntity.Id
 }

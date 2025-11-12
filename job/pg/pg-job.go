@@ -56,6 +56,10 @@ func (pgJob *PgJob) State() universal.State {
 		job.JobStatuses())
 }
 
+func (pgJob *PgJob) Offers() job.Offers {
+	return PgOffers{Db: pgJob.Db, JobId: pgJob.Id}
+}
+
 func (pgJob *PgJob) tableEntity() pg.TableEntity {
 	return pgJob.Db.TableEntity("job", pgJob.Id)
 }

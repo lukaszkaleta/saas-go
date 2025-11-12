@@ -2,8 +2,11 @@ package universal
 
 // API
 type Person interface {
+	ID() int64
 	Model() *PersonModel
 	Update(person *PersonModel) error
+
+	Ratings() Ratings
 }
 
 // Builders
@@ -11,10 +14,12 @@ type Person interface {
 // Model
 
 type PersonModel struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Email     string `json:"email"`
-	Phone     string `json:"phone"`
+	Id            int64  `json:"id"`
+	FirstName     string `json:"firstName"`
+	LastName      string `json:"lastName"`
+	Email         string `json:"email"`
+	Phone         string `json:"phone"`
+	AverageRating int    `json:"rating"`
 }
 
 func (model *PersonModel) Change(newModel *PersonModel) {
@@ -26,10 +31,11 @@ func (model *PersonModel) Change(newModel *PersonModel) {
 
 func EmptyPersonModel() *PersonModel {
 	return &PersonModel{
-		FirstName: "",
-		LastName:  "",
-		Email:     "",
-		Phone:     "",
+		FirstName:     "",
+		LastName:      "",
+		Email:         "",
+		Phone:         "",
+		AverageRating: 10,
 	}
 }
 
@@ -54,4 +60,15 @@ func (p SolidPerson) Update(newModel *PersonModel) error {
 
 func (p SolidPerson) Model() *PersonModel {
 	return p.model
+}
+
+func (p SolidPerson) ID() int64 {
+	return p.model.Id
+}
+
+func (p SolidPerson) Ratings() Ratings {
+	if p.person == nil {
+		return DummyRatings{}
+	}
+	return p.person.Ratings()
 }

@@ -14,6 +14,10 @@ type PgUser struct {
 	Id int64
 }
 
+func (pgUser PgUser) ID() int64 {
+	return pgUser.Id
+}
+
 func (pgUser PgUser) Address() universal.Address {
 	return &unversalPg.PgAddress{pgUser.Db, pgUser.TableEntity()}
 }
@@ -24,10 +28,6 @@ func (pgUser PgUser) Model() *user.UserModel {
 
 func (pgUser PgUser) Person() universal.Person {
 	return &unversalPg.PgPerson{pgUser.Db, pgUser.TableEntity()}
-}
-
-func (pgUser PgUser) Ratings() universal.Ratings {
-	return unversalPg.NewPgRatings(pgUser.Db, pgUser.TableEntity())
 }
 
 func (pgUser PgUser) Settings() user.UserSettings {

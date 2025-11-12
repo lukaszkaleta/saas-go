@@ -17,6 +17,9 @@ type Job interface {
 	Description() universal.Description
 	FileSystem() filestore.FileSystem
 	State() universal.State
+
+	// Access all offers for this job
+	Offers() Offers
 }
 
 type JobStatus struct {
@@ -160,4 +163,10 @@ func (solidJob *SolidJob) State() universal.State {
 			solidJob.Job.State())
 	}
 	return universal.NewSolidState(current, available, nil)
+}
+func (solidJob *SolidJob) Offers() Offers {
+	if solidJob.Job == nil {
+		return NoOffers{}
+	}
+	return solidJob.Job.Offers()
 }
