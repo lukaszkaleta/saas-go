@@ -1,6 +1,3 @@
--- other module tables
-CREATE TABLE if not exists users ();
-
 -- module tables
 CREATE TABLE if not exists content (
   id serial primary key,

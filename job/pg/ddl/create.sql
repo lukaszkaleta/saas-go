@@ -1,10 +1,3 @@
--- this table should be created by module users.
-CREATE TABLE if not exists users (
-  id bigint primary key
-);
-
--- module structure.
-
 create sequence if not exists job_sequence;
 
 CREATE TABLE if not exists job (

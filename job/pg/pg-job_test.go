@@ -16,9 +16,15 @@ var WorkUser = user.WithId(2)
 func setupJobTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 	db := pg.LocalPgWithName("saas", "job-test")
 	fsSchema := pgfilestore.NewFilestoreSchema(db)
-	fsSchema.Create()
+	err := fsSchema.CreateTest()
+	if err != nil {
+		tb.Fatal(err)
+	}
 	schema := NewJobSchema(db)
-	schema.Create()
+	err = schema.CreateTest()
+	if err != nil {
+		tb.Fatal(err)
+	}
 
 	for i := 1; i < 3; i++ {
 		_, err := db.Pool.Exec(tb.Context(), "insert into users (id) values ($1)", i)
@@ -28,11 +34,11 @@ func setupJobTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 	}
 
 	return func(tb testing.TB) {
-		err := schema.Drop()
+		err := schema.DropTest()
 		if err != nil {
 			panic(err)
 		}
-		err = fsSchema.Drop()
+		err = fsSchema.DropTest()
 		if err != nil {
 			panic(err)
 		}
