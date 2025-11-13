@@ -1,6 +1,7 @@
 package job
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -11,7 +12,7 @@ type GlobalJobsLogger struct {
 	next GlobalJobs
 }
 
-func (g *GlobalJobsLogger) ById(id int64) (Job, error) {
+func (g *GlobalJobsLogger) ById(ctx context.Context, id int64) (Job, error) {
 	//TODO implement me
 	panic("implement me")
 }
