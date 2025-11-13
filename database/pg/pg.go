@@ -92,7 +92,7 @@ func ExecuteFromFile(path string) error {
 }
 
 func Config(url string) *pgxpool.Config {
-	const defaultMaxConns = int32(4)
+	const defaultMaxConns = int32(40)
 	const defaultMinConns = int32(0)
 	const defaultMaxConnLifetime = time.Hour
 	const defaultMaxConnIdleTime = time.Minute * 30
