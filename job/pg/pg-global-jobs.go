@@ -45,9 +45,9 @@ func (globalJobs *PgGlobalJobs) ActiveById(id int64) (job.Job, error) {
 	return job.NewSolidJob(jobModel, pgJob, jobModel.Id), nil
 }
 
-func (globalJobs *PgGlobalJobs) ById(id int64) (job.Job, error) {
+func (globalJobs *PgGlobalJobs) ById(ctx context.Context, id int64) (job.Job, error) {
 	query := "select * from job where id = @id"
-	rows, err := globalJobs.Db.Pool.Query(context.Background(), query, pgx.NamedArgs{"id": id})
+	rows, err := globalJobs.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": id})
 	if err != nil {
 		return nil, err
 	}

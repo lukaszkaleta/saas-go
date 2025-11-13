@@ -1,4 +1,4 @@
-VERSION := v0.2.77
+VERSION := v0.2.78
 tags:
 	git add .
 	git commit -m 'incremental version ...'
