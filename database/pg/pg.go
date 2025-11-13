@@ -18,7 +18,9 @@ type PgDb struct {
 func (db *PgDb) ExecuteSqls(sqls []string) error {
 	for _, sql := range sqls {
 		err := db.ExecuteSql(sql)
-		ifPanic(err)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -76,15 +78,11 @@ func (db *PgDb) TableEntity(name string, id int64) TableEntity {
 	return TableEntity{Name: name, Id: id}
 }
 
-func ExecuteFromFile(path string) {
+func ExecuteFromFile(path string) error {
 	sqlStatements, err := os.ReadFile(path)
-	ifPanic(err)
-	sqlArray := strings.Split(string(sqlStatements), ";")
-	ifPanic(NewPg().ExecuteSqls(sqlArray))
-}
-
-func ifPanic(e error) {
-	if e != nil {
-		panic(e)
+	if err != nil {
+		return err
 	}
+	sqlArray := strings.Split(string(sqlStatements), ";")
+	return NewPg().ExecuteSqls(sqlArray)
 }
