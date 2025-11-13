@@ -44,7 +44,6 @@ func (pgUsers *PgUsers) Add(model *universal.PersonModel) (user.User, error) {
 	return user.NewSolidUser(
 		userModel,
 		pgUser,
-		userId,
 	), nil
 }
 
@@ -59,7 +58,7 @@ func (pgUsers *PgUsers) ById(id int64) (user.User, error) {
 		Id: id,
 	}
 	userModel, err := pgx.CollectOneRow(rows, MapUser)
-	return user.NewSolidUser(userModel, pgUser, id), err
+	return user.NewSolidUser(userModel, pgUser), err
 }
 
 func (pgUsers *PgUsers) ListAll() ([]user.User, error) {
@@ -78,7 +77,7 @@ func (pgUsers *PgUsers) ListAll() ([]user.User, error) {
 			return nil, err
 		}
 		pgUser := PgUser{Db: pgUsers.Db, Id: id}
-		solidUser := user.NewSolidUser(userModel, &pgUser, id)
+		solidUser := user.NewSolidUser(userModel, &pgUser)
 		users = append(users, solidUser)
 	}
 	return users, nil
@@ -106,7 +105,7 @@ func (pgUsers *PgUsers) EstablishAccount(model *user.UserModel) (user.User, erro
 }
 
 func UserRowScan(row pgx.Rows, userRow *user.UserModel, id *int64) error {
-	return row.Scan(
+	err := row.Scan(
 		&id,
 		&userRow.Account.Token,
 		&userRow.Person.FirstName,
@@ -122,4 +121,6 @@ func UserRowScan(row pgx.Rows, userRow *user.UserModel, id *int64) error {
 		&userRow.Settings.Radar.Position.Lon,
 		&userRow.Settings.Radar.Position.Lat,
 	)
+	userRow.Id = *id
+	return err
 }

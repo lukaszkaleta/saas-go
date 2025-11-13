@@ -31,5 +31,5 @@ func (s *PgUserSearch) ByPhone(phone string) (user.User, error) {
 	}
 	userModel := userModels[0]
 	pgUser := PgUser{Db: s.Db, Id: userModel.Id}
-	return user.NewSolidUser(userModel, pgUser, userModel.Id), nil
+	return user.NewSolidUser(userModel, pgUser), nil
 }
