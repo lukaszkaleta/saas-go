@@ -17,6 +17,5 @@ CREATE TABLE if not exists content_localization (
 
 CREATE TABLE if not exists user_rating (
   id serial primary key,
-  user_id bigint references users,
-
+  user_id bigint references users
 );

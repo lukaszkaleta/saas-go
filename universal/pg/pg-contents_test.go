@@ -9,9 +9,15 @@ import (
 
 func pgContentSetupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 	db := pg.LocalPgWithName("saas-go", "universal-test")
-	NewUniversalSchema(db).Create()
+	err := NewUniversalSchema(db).CreateTest()
+	if err != nil {
+		//tb.Fatal(err)
+	}
 	return func(tb testing.TB) {
-		NewUniversalSchema(db).Drop()
+		dropErr := NewUniversalSchema(db).DropTest()
+		if dropErr != nil {
+			tb.Fatal(dropErr)
+		}
 	}, db
 }
 

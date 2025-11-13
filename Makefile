@@ -30,3 +30,16 @@ build:
 	cd user && go mod tidy && go build && cd ..
 	cd user/pg && go mod tidy && go build && cd ../..
 
+test:
+	cd universal && go test && cd ..
+	cd database/pg && go test && cd ../..
+	cd universal/pg && go test && cd ../..
+	cd filestore && go test && cd ..
+	cd filestore/pg && go test && cd ../..
+	cd category && go test && cd ..
+	cd category/pg && go test && cd ../..
+	cd job && go test && cd ..
+	cd job/pg && go test && cd ../..
+	cd user && go test && cd ..
+	cd user/pg && go test && cd ../..
+
