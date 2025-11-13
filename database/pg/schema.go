@@ -3,6 +3,7 @@ package pg
 import "embed"
 
 type Schema interface {
+	Name() string
 	Create() error
 	CreateTest() error
 	Drop() error
@@ -12,17 +13,22 @@ type Schema interface {
 type DefaultSchema struct {
 	db    *PgDb
 	ddlFs embed.FS
+	name  string
 }
 
-func NewDefaultSchema(db *PgDb, ddlFs embed.FS) Schema {
-	return &DefaultSchema{db: db, ddlFs: ddlFs}
+func NewDefaultSchema(db *PgDb, ddlFs embed.FS, name string) Schema {
+	return &DefaultSchema{db: db, ddlFs: ddlFs, name: name}
 }
 
-func (schema DefaultSchema) Create() error {
+func (s *DefaultSchema) Name() string {
+	return s.name
+}
+
+func (schema *DefaultSchema) Create() error {
 	return schema.db.ExecuteFileFromFs(schema.ddlFs, "ddl/create.sql")
 }
 
-func (schema DefaultSchema) CreateTest() error {
+func (schema *DefaultSchema) CreateTest() error {
 	err := schema.db.ExecuteFileFromFs(schema.ddlFs, "ddl/create-test.sql")
 	if err != nil {
 		return err
@@ -30,11 +36,11 @@ func (schema DefaultSchema) CreateTest() error {
 	return schema.Create()
 }
 
-func (schema DefaultSchema) Drop() error {
+func (schema *DefaultSchema) Drop() error {
 	return schema.db.ExecuteFileFromFs(schema.ddlFs, "ddl/drop.sql")
 }
 
-func (schema DefaultSchema) DropTest() error {
+func (schema *DefaultSchema) DropTest() error {
 	err := schema.Drop()
 	if err != nil {
 		return err

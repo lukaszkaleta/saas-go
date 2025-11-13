@@ -10,5 +10,5 @@ import (
 var ddlFs embed.FS
 
 func NewFilestoreSchema(db *pg.PgDb) pg.Schema {
-	return pg.NewDefaultSchema(db, ddlFs)
+	return pg.NewDefaultSchema(db, ddlFs, "filestore")
 }
