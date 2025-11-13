@@ -24,3 +24,8 @@ create table if not exists user_filesystem (
     filesystem_id bigint not null references filestore_filesystem
 )
 
+CREATE TABLE if not exists user_rating (
+  id serial primary key,
+  user_id bigint references users
+);
+
