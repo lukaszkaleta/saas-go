@@ -25,7 +25,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.34.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.38.2 // indirect
 	github.com/aws/smithy-go v1.23.0 // indirect
-	github.com/lukaszkaleta/saas-go/universal v0.1.43 // indirect
+	github.com/lukaszkaleta/saas-go/universal v0.2.67 // indirect
 )
 
 replace github.com/lukaszkaleta/saas-go/filestore => ../../../filestore
