@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/lukaszkaleta/saas-go/database/pg"
-	"github.com/lukaszkaleta/saas-go/messages"
 	"github.com/lukaszkaleta/saas-go/user"
 )
 
@@ -44,11 +43,18 @@ func TestPgMessages_Add(t *testing.T) {
 	defer drop(t)
 
 	pgMessages := NewPgMessages(db, USER_ID)
-	newMessage, err := pgMessages.Add(ctx, messages.EmptyOwnerModel(USER_ID))
+	value := "test-message"
+	newMessage, err := pgMessages.Add(ctx, value)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if newMessage == nil {
 		t.Fatal("newMessage is nil")
+	}
+	if newMessage.Model(ctx).OwnerId != USER_ID {
+		t.Fatal("Wrong owner id")
+	}
+	if newMessage.Model(ctx).Value != value {
+		t.Fatal("Wrong value")
 	}
 }

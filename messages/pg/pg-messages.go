@@ -19,7 +19,11 @@ func NewPgMessages(db *pg.PgDb, ownerId int64) messages.Messages {
 	return &PgMessages{Db: db, OwnerId: ownerId}
 }
 
-func (pg *PgMessages) Add(ctx context.Context, model *messages.Model) (messages.Message, error) {
+func (pg *PgMessages) Add(ctx context.Context, value string) (messages.Message, error) {
+	return pg.AddFromModel(ctx, &messages.Model{Value: value, OwnerId: pg.OwnerId})
+}
+
+func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.Model) (messages.Message, error) {
 	if model.OwnerId != pg.OwnerId {
 		return nil, errors.New("owner inside model and messages does not match")
 	}

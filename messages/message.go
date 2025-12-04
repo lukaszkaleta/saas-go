@@ -11,10 +11,10 @@ type Message interface {
 }
 
 type Model struct {
-	Id      int64                  `json:"id"`
-	OwnerId int64                  `json:"owner_id"`
-	Value   string                 `json:"value"`
-	Actions universal.ActionsModel `json:"actions"`
+	Id      int64                   `json:"id"`
+	OwnerId int64                   `json:"owner_id"`
+	Value   string                  `json:"value"`
+	Actions *universal.ActionsModel `json:"actions"`
 }
 
 func EmptyModel() *Model {
@@ -26,5 +26,6 @@ func EmptyOwnerModel(ownerId int64) *Model {
 		Id:      0,
 		OwnerId: ownerId,
 		Value:   "",
+		Actions: universal.EmptyActionsModel(),
 	}
 }

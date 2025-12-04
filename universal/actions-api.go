@@ -10,6 +10,10 @@ type ActionsModel struct {
 	List map[string]*ActionModel
 }
 
+func EmptyActionsModel() *ActionsModel {
+	return &ActionsModel{List: make(map[string]*ActionModel)}
+}
+
 type SolidActions struct {
 	actions Actions
 	model   *ActionsModel
