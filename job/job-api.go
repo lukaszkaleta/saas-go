@@ -20,7 +20,7 @@ type Job interface {
 	State() universal.State
 	Actions() universal.Actions
 	Offers() Offers
-	Messages() messages.Message
+	Messages() messages.Messages
 }
 
 type JobStatus struct {
@@ -177,4 +177,11 @@ func (solidJob *SolidJob) Offers() Offers {
 		return NoOffers{}
 	}
 	return solidJob.Job.Offers()
+}
+
+func (solidJob *SolidJob) Messages() messages.Messages {
+	if solidJob.Job == nil {
+		return nil
+	}
+	return solidJob.Job.Messages()
 }

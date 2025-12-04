@@ -9,7 +9,7 @@ import (
 )
 
 func pgUserSetupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
-	db := pg.LocalPgWithName("users_test")
+	db := pg.LocalPgWithName("saas-go", "user-test")
 	pgfilestore.NewFilestoreSchema(db).Create()
 	NewUserSchema(db).Create()
 

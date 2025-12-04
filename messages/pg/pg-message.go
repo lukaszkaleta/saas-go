@@ -35,7 +35,10 @@ func MapMessage(row pgx.CollectableRow) (*messages.Model, error) {
 		&model.Id,
 		&model.OwnerId,
 		&model.Value,
+		&createdActionModel.ById,
+		&createdActionModel.MadeAt,
 	)
+	model.Actions.List[createdActionModel.Name] = createdActionModel
 	if err != nil {
 		return nil, err
 	}

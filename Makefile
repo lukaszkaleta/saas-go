@@ -20,19 +20,19 @@ tags:
 	git push --tags
 
 build:
-	cd universal && go mod tidy && go build && cd ..
-	cd database/pg && go mod tidy && go build && cd ../..
-	cd universal/pg && go mod tidy && go build && cd ../..
-	cd filestore && go mod tidy && go build && cd ..
-	cd filestore/pg && go mod tidy && go mod tidy && go build && cd ../..
-	cd messages && go mod tidy && go build && cd ..
-	cd messages/pg && go mod tidy && go mod tidy && go build && cd ../..
-	cd category && go mod tidy && go build && cd ..
-	cd category/pg && go mod tidy && go build && cd ../..
-	cd job && go mod tidy && go build && cd ..
-	cd job/pg && go mod tidy && go build && cd ../..
-	cd user && go mod tidy && go build && cd ..
-	cd user/pg && go mod tidy && go build && cd ../..
+	cd universal && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd database/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd universal/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd filestore && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd filestore/pg && rm -r go.sum || true && go mod tidy && go mod tidy && go build && cd ../..
+	cd messages && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd messages/pg && rm -r go.sum || true && go mod tidy && go mod tidy && go build && cd ../..
+	cd category && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd category/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd job && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd job/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd user && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd user/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
 
 test:
 	cd universal && go test && cd ..

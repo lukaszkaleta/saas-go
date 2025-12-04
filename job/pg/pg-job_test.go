@@ -14,7 +14,7 @@ var JobUser = user.WithId(1)
 var WorkUser = user.WithId(2)
 
 func setupJobTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
-	db := pg.LocalPgWithName("saas", "job-test")
+	db := pg.LocalPgWithName("saas-go", "job-test")
 	fsSchema := pgfilestore.NewFilestoreSchema(db)
 	err := fsSchema.CreateTest()
 	if err != nil {

@@ -1,9 +1,13 @@
 package messages
 
-import "github.com/lukaszkaleta/saas-go/universal"
+import (
+	"context"
+
+	"github.com/lukaszkaleta/saas-go/universal"
+)
 
 type Message interface {
-	Model() *Model
+	Model(ctx context.Context) *Model
 }
 
 type Model struct {
@@ -14,9 +18,13 @@ type Model struct {
 }
 
 func EmptyModel() *Model {
+	return EmptyOwnerModel(0)
+}
+
+func EmptyOwnerModel(ownerId int64) *Model {
 	return &Model{
 		Id:      0,
-		OwnerId: 0,
+		OwnerId: ownerId,
 		Value:   "",
 	}
 }
