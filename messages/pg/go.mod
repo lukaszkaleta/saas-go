@@ -16,6 +16,8 @@ replace github.com/lukaszkaleta/saas-go/messages => ../../messages
 
 replace github.com/lukaszkaleta/saas-go/user => ../../user
 
+replace github.com/lukaszkaleta/saas-go/filestore => ../../filestore
+
 require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
