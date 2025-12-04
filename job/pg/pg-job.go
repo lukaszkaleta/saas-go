@@ -8,6 +8,8 @@ import (
 	"github.com/lukaszkaleta/saas-go/filestore"
 	pgFilestore "github.com/lukaszkaleta/saas-go/filestore/pg"
 	"github.com/lukaszkaleta/saas-go/job"
+	"github.com/lukaszkaleta/saas-go/messages"
+	pgMessages "github.com/lukaszkaleta/saas-go/messages/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
 	pgUniversal "github.com/lukaszkaleta/saas-go/universal/pg"
 )
@@ -62,6 +64,10 @@ func (pgJob *PgJob) Actions() universal.Actions {
 
 func (pgJob *PgJob) Offers() job.Offers {
 	return &PgOffers{Db: pgJob.Db, JobId: pgJob.Id}
+}
+
+func (pgJob *PgJob) Messages() messages.Messages {
+	return nil
 }
 
 func (pgJob *PgJob) tableEntity() pg.TableEntity {

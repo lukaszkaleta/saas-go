@@ -42,3 +42,11 @@ CREATE TABLE if not exists job_offer (
   action_rejected_by_id bigint references users,
   action_rejected_at timestamp
 );
+
+CREATE TABLE messages (
+  id bigint not null primary key default nextval('job_sequence'),
+  job_id bigint not null references job,
+  body        TEXT NOT NULL,
+  action_created_by_id bigint not null references users(id),
+  action_created_at timestamp not null default now(),
+);

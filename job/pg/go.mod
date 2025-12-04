@@ -1,16 +1,18 @@
 module github.com/lukaszkaleta/saas-go/job/pg
 
-go 1.24.6
+go 1.25.0
 
 require (
 	github.com/jackc/pgx/v5 v5.7.6
-	github.com/lukaszkaleta/saas-go/database/pg v0.2.67
-	github.com/lukaszkaleta/saas-go/filestore v0.2.67
+	github.com/lukaszkaleta/saas-go/database/pg v0.2.81
+	github.com/lukaszkaleta/saas-go/filestore v0.2.81
 	github.com/lukaszkaleta/saas-go/filestore/pg v0.2.63
 	github.com/lukaszkaleta/saas-go/job v0.2.63
-	github.com/lukaszkaleta/saas-go/universal v0.2.67
-	github.com/lukaszkaleta/saas-go/universal/pg v0.2.67
-	github.com/lukaszkaleta/saas-go/user v0.2.67
+	github.com/lukaszkaleta/saas-go/messages v0.2.81
+	github.com/lukaszkaleta/saas-go/messages/pg v0.2.81
+	github.com/lukaszkaleta/saas-go/universal v0.2.80
+	github.com/lukaszkaleta/saas-go/universal/pg v0.2.81
+	github.com/lukaszkaleta/saas-go/user v0.2.81
 )
 
 require (
@@ -33,5 +35,7 @@ replace github.com/lukaszkaleta/saas-go/universal => ../../universal
 replace github.com/lukaszkaleta/saas-go/database/pg => ../../database/pg
 
 replace github.com/lukaszkaleta/saas-go/universal/pg => ../../universal/pg
+
+replace github.com/lukaszkaleta/saas-go/messages/pg => ../../universal/pg
 
 replace github.com/lukaszkaleta/saas-go/filestore/pg => ../../filestore/pg

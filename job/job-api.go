@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/lukaszkaleta/saas-go/filestore"
+	"github.com/lukaszkaleta/saas-go/messages"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
@@ -18,9 +19,8 @@ type Job interface {
 	FileSystem() filestore.FileSystem
 	State() universal.State
 	Actions() universal.Actions
-
-	// Access all offers for this job
 	Offers() Offers
+	Messages() messages.Message
 }
 
 type JobStatus struct {

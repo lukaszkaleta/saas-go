@@ -1,4 +1,4 @@
-VERSION := v0.2.80
+VERSION := v0.2.81
 tags:
 	git add .
 	git commit -m 'incremental version ...'
@@ -9,6 +9,8 @@ tags:
 	git tag "filestore/${VERSION}"
 	git tag "filestore/pg/${VERSION}"
 	git tag "filestore/integration/aws-s3/${VERSION}"
+	git tag "messages/${VERSION}"
+	git tag "messages/pg/${VERSION}"
 	git tag "category/${VERSION}"
 	git tag "category/pg/${VERSION}"
 	git tag "job/${VERSION}"
@@ -23,6 +25,8 @@ build:
 	cd universal/pg && go mod tidy && go build && cd ../..
 	cd filestore && go mod tidy && go build && cd ..
 	cd filestore/pg && go mod tidy && go mod tidy && go build && cd ../..
+	cd messages && go mod tidy && go build && cd ..
+	cd messages/pg && go mod tidy && go mod tidy && go build && cd ../..
 	cd category && go mod tidy && go build && cd ..
 	cd category/pg && go mod tidy && go build && cd ../..
 	cd job && go mod tidy && go build && cd ..
@@ -36,6 +40,8 @@ test:
 	cd universal/pg && go test && cd ../..
 	cd filestore && go test && cd ..
 	cd filestore/pg && go test && cd ../..
+	cd messages && go test && cd ..
+	cd messages/pg && go test && cd ../..
 	cd category && go test && cd ..
 	cd category/pg && go test && cd ../..
 	cd job && go test && cd ..

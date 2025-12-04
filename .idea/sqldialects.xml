@@ -3,6 +3,10 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/job/pg/ddl/create-test.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/job/pg/ddl/drop-test.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/messages/pg/ddl/create-test.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/messages/pg/ddl/create.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/messages/pg/ddl/drop-test.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/messages/pg/ddl/drop.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/universal/pg/ddl/create.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/universal/pg/ddl/drop.sql" dialect="GenericSQL" />
   </component>
