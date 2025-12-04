@@ -48,5 +48,5 @@ CREATE TABLE message (
   owner_id bigint not null references job,
   value TEXT NOT NULL,
   action_created_by_id bigint not null references users(id),
-  action_created_at timestamp not null default now(),
+  action_created_at timestamp not null default now()
 );

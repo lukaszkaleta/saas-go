@@ -14,7 +14,7 @@ var JobUser = user.WithId(1)
 var WorkUser = user.WithId(2)
 
 func setupJobTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
-	db := pg.LocalPgWithName("saas-go", "job-test")
+	db := pg.LocalPgWithName("saas-go", "job_test")
 	fsSchema := pgfilestore.NewFilestoreSchema(db)
 	err := fsSchema.CreateTest()
 	if err != nil {
@@ -26,6 +26,10 @@ func setupJobTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 		tb.Fatal(err)
 	}
 
+	_, err = db.Pool.Exec(tb.Context(), "delete from users")
+	if err != nil {
+		tb.Error(err)
+	}
 	for i := 1; i < 3; i++ {
 		_, err := db.Pool.Exec(tb.Context(), "insert into users (id) values ($1)", i)
 		if err != nil {
@@ -67,7 +71,7 @@ func TestPgJob_Status(t *testing.T) {
 		t.Error("job status is not draft")
 	}
 	globalJobs := PgGlobalJobs{Db: db}
-	jobById, err := globalJobs.ById(newJob.Model().Id)
+	jobById, err := globalJobs.ById(t.Context(), newJob.Model().Id)
 	if err != nil {
 		t.Error(err)
 	}

@@ -17,7 +17,7 @@ func setupSuite(tb testing.TB) func(tb testing.TB) {
 }
 
 func setupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
-	db := pg.NewPg()
+	db := pg.LocalPgWithName("saas-go", "filestore_test")
 	schema := NewFilestoreSchema(db)
 	schema.Create()
 
