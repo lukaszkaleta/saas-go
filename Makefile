@@ -1,5 +1,6 @@
-VERSION := v0.2.83
+VERSION := v0.2.84
 tags:
+	sh bump_version.sh
 	git add .
 	git commit -m 'incremental version ...'
 	git push
