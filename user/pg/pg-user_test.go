@@ -25,7 +25,7 @@ func TestPgUser_UpdateSettings(t *testing.T) {
 
 	users := PgUsers{Db: db}
 	personModel := &universal.PersonModel{Phone: "01234"}
-	user, err := users.Add(personModel)
+	user, err := users.Add(t.Context(), personModel)
 	if err != nil {
 		t.Fatal(err)
 	}

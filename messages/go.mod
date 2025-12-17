@@ -2,6 +2,6 @@ module github.com/lukaszkaleta/saas-go/messages
 
 go 1.25.0
 
-require github.com/lukaszkaleta/saas-go/universal v0.2.86
+require github.com/lukaszkaleta/saas-go/universal v0.2.87
 
 replace github.com/lukaszkaleta/saas-go/universal => ../universal

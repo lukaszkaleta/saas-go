@@ -25,11 +25,11 @@ func TestPgUsers_Add(t *testing.T) {
 
 	users := PgUsers{Db: db}
 	personModel := &universal.PersonModel{Phone: "01234"}
-	user1, err := users.Add(personModel)
+	user1, err := users.Add(t.Context(), personModel)
 	if err != nil {
 		t.Fatal(err)
 	}
-	user2, err := users.Add(personModel)
+	user2, err := users.Add(t.Context(), personModel)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -44,8 +44,8 @@ func TestPgUsers_ById(t *testing.T) {
 
 	users := PgUsers{Db: db}
 	personModel := &universal.PersonModel{Phone: "01234"}
-	user, _ := users.Add(personModel)
-	user, err := users.ById(user.Model().Id)
+	user, _ := users.Add(t.Context(), personModel)
+	user, err := users.ById(t.Context(), user.Model().Id)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -21,7 +21,7 @@ func (pgUsers *PgUsers) Search() user.UserSearch {
 	return NewPgUserSearch(pgUsers.Db)
 }
 
-func (pgUsers *PgUsers) Add(model *universal.PersonModel) (user.User, error) {
+func (pgUsers *PgUsers) Add(ctx context.Context, model *universal.PersonModel) (user.User, error) {
 	userWithPhone, err := pgUsers.Search().ByPhone(model.Phone)
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func (pgUsers *PgUsers) Add(model *universal.PersonModel) (user.User, error) {
 
 	userId := int64(0)
 	query := "INSERT INTO users(person_first_name, person_last_name, person_email, person_phone) VALUES( $1, $2, $3, $4 ) returning id"
-	row := pgUsers.Db.Pool.QueryRow(context.Background(), query, model.FirstName, model.LastName, model.Email, model.Phone)
+	row := pgUsers.Db.Pool.QueryRow(ctx, query, model.FirstName, model.LastName, model.Email, model.Phone)
 	row.Scan(&userId)
 	pgUser := &PgUser{
 		Db: pgUsers.Db,
@@ -47,9 +47,9 @@ func (pgUsers *PgUsers) Add(model *universal.PersonModel) (user.User, error) {
 	), nil
 }
 
-func (pgUsers *PgUsers) ById(id int64) (user.User, error) {
+func (pgUsers *PgUsers) ById(ctx context.Context, id int64) (user.User, error) {
 	sql := "select * from users where id = @id"
-	rows, err := pgUsers.Db.Pool.Query(context.Background(), sql, pgx.NamedArgs{"id": id})
+	rows, err := pgUsers.Db.Pool.Query(ctx, sql, pgx.NamedArgs{"id": id})
 	if err != nil {
 		return nil, err
 	}
@@ -61,9 +61,9 @@ func (pgUsers *PgUsers) ById(id int64) (user.User, error) {
 	return user.NewSolidUser(userModel, pgUser), err
 }
 
-func (pgUsers *PgUsers) ListAll() ([]user.User, error) {
+func (pgUsers *PgUsers) ListAll(ctx context.Context) ([]user.User, error) {
 	query := "select * from users"
-	rows, err := pgUsers.Db.Pool.Query(context.Background(), query)
+	rows, err := pgUsers.Db.Pool.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (pgUsers *PgUsers) ListAll() ([]user.User, error) {
 	return users, nil
 }
 
-func (pgUsers *PgUsers) EstablishAccount(model *user.UserModel) (user.User, error) {
+func (pgUsers *PgUsers) EstablishAccount(ctx context.Context, model *user.UserModel) (user.User, error) {
 	user, err := pgUsers.Search().ByPhone(model.Person.Phone)
 	if err != nil {
 		return user, err
@@ -92,7 +92,7 @@ func (pgUsers *PgUsers) EstablishAccount(model *user.UserModel) (user.User, erro
 	if user != nil {
 		user.Person().Update(model.Person)
 	} else {
-		user, err = pgUsers.Add(model.Person)
+		user, err = pgUsers.Add(ctx, model.Person)
 		if err != nil {
 			return user, err
 		}
