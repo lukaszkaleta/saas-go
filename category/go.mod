@@ -1,6 +1,6 @@
 module github.com/lukaszkaleta/saas-go/category
 
-go 1.24.6
+go 1.25.0
 
 require github.com/lukaszkaleta/saas-go/universal v0.2.89
 

@@ -19,7 +19,7 @@ tags:
 	git tag "user/pg/${VERSION}"
 	git push --tags
 
-reset-build:
+reset_build:
 	cd universal && rm -r go.sum || true && go mod tidy && go build && cd ..
 	cd database/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd universal/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
