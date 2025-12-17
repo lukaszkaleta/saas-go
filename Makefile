@@ -19,7 +19,7 @@ tags:
 	git tag "user/pg/${VERSION}"
 	git push --tags
 
-build:
+reset-build:
 	cd universal && rm -r go.sum || true && go mod tidy && go build && cd ..
 	cd database/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd universal/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
@@ -33,6 +33,21 @@ build:
 	cd job/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd user && rm -r go.sum || true && go mod tidy && go build && cd ..
 	cd user/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
+
+build:
+	cd universal && go build && cd ..
+	cd database/pg && go build && cd ../..
+	cd universal/pg && go build && cd ../..
+	cd filestore && go build && cd ..
+	cd filestore/pg && go mod tidy && go build && cd ../..
+	cd messages && go build && cd ..
+	cd messages/pg && go mod tidy && go build && cd ../..
+	cd category && go build && cd ..
+	cd category/pg && go build && cd ../..
+	cd job && go build && cd ..
+	cd job/pg && go build && cd ../..
+	cd user && go build && cd ..
+	cd user/pg && go build && cd ../..
 
 test:
 	cd universal && go test && cd ..
