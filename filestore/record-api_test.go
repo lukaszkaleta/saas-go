@@ -1,7 +1,7 @@
 package filestore
 
 import (
-	"log"
+	"log/slog"
 	"os"
 	"testing"
 )
@@ -12,5 +12,5 @@ func TestFileRecordModel(t *testing.T) {
 		t.Error(err)
 	}
 	model := FileRecordModel(*file)
-	log.Println(model)
+	slog.Info(model.Url)
 }

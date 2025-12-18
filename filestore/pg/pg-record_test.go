@@ -1,20 +1,12 @@
 package pgfilestore
 
 import (
-	"log"
 	"testing"
 
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/filestore"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
-
-func setupSuite(tb testing.TB) func(tb testing.TB) {
-	log.Println("setup test suite")
-	return func(tb testing.TB) {
-		log.Println("teardown test suite")
-	}
-}
 
 func setupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 	db := pg.LocalPgWithName("saas-go", "filestore_test")

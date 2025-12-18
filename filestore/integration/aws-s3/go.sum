@@ -1,9 +1,7 @@
-github.com/aws/aws-sdk-go-v2 v1.38.1/go.mod h1:9Q0OoGQoboYIAJyslFyF1f5K1Ryddop8gqMhWx/n4Wg=
 github.com/aws/aws-sdk-go-v2 v1.38.3 h1:B6cV4oxnMs45fql4yRH+/Po/YU+597zgWqvDpYMturk=
 github.com/aws/aws-sdk-go-v2 v1.38.3/go.mod h1:sDioUELIUO9Znk23YVmIk86/9DOpkbyyVb1i/gUNFXY=
 github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.1 h1:i8p8P4diljCr60PpJp6qZXNlgX4m2yQFpYk+9ZT+J4E=
 github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.1/go.mod h1:ddqbooRZYNoJ2dsTwOty16rM+/Aqmk/GOXrK8cg7V00=
-github.com/aws/aws-sdk-go-v2/config v1.31.3/go.mod h1:jjgx1n7x0FAKl6TnakqrpkHWWKcX3xfWtdnIJs5K9CE=
 github.com/aws/aws-sdk-go-v2/config v1.31.6 h1:a1t8fXY4GT4xjyJExz4knbuoxSCacB5hT/WgtfPyLjo=
 github.com/aws/aws-sdk-go-v2/config v1.31.6/go.mod h1:5ByscNi7R+ztvOGzeUaIu49vkMk2soq5NaH5PYe33MQ=
 github.com/aws/aws-sdk-go-v2/credentials v1.18.10 h1:xdJnXCouCx8Y0NncgoptztUocIYLKeQxrCgN6x9sdhg=
@@ -26,7 +24,6 @@ github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.6 h1:LHS1YAIJX
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.6/go.mod h1:c9PCiTEuh0wQID5/KqA32J+HAgZxN9tOGXKCiYJjTZI=
 github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.6 h1:nEXUSAwyUfLTgnc9cxlDWy637qsq4UWwp3sNAfl0Z3Y=
 github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.6/go.mod h1:HGzIULx4Ge3Do2V0FaiYKcyKzOqwrhUZgCI77NisswQ=
-github.com/aws/aws-sdk-go-v2/service/s3 v1.87.1/go.mod h1:w5PC+6GHLkvMJKasYGVloB3TduOtROEMqm15HSuIbw4=
 github.com/aws/aws-sdk-go-v2/service/s3 v1.87.3 h1:ETkfWcXP2KNPLecaDa++5bsQhCRa5M5sLUJa5DWYIIg=
 github.com/aws/aws-sdk-go-v2/service/s3 v1.87.3/go.mod h1:+/3ZTqoYb3Ur7DObD00tarKMLMuKg8iqz5CHEanqTnw=
 github.com/aws/aws-sdk-go-v2/service/sso v1.29.1 h1:8OLZnVJPvjnrxEwHFg9hVUof/P4sibH+Ea4KKuqAGSg=
@@ -37,8 +34,5 @@ github.com/aws/aws-sdk-go-v2/service/sts v1.38.2 h1:YZPjhyaGzhDQEvsffDEcpycq49nl
 github.com/aws/aws-sdk-go-v2/service/sts v1.38.2/go.mod h1:2dIN8qhQfv37BdUYGgEC8Q3tteM3zFxTI1MLO2O3J3c=
 github.com/aws/smithy-go v1.23.0 h1:8n6I3gXzWJB2DxBDnfxgBaSX6oe0d/t10qGz7OKqMCE=
 github.com/aws/smithy-go v1.23.0/go.mod h1:t1ufH5HMublsJYulve2RKmHDC15xu1f26kHCp/HgceI=
-github.com/lukaszkaleta/saas-go/universal v0.1.42 h1:/cszLDtioUp4wSJuG3hI07COVEsq29i7ll01evy7/90=
-github.com/lukaszkaleta/saas-go/universal v0.1.42/go.mod h1:9+/pNz8F6COqJC5gygwUVO7Y0zO2SRNT+oFC3liRY38=
-github.com/lukaszkaleta/saas-go/universal v0.1.43 h1:vOubrcoPaJRO4xVaOTynqqdF76uFBzcYEusc0hO8cqE=
-github.com/lukaszkaleta/saas-go/universal v0.1.43/go.mod h1:9+/pNz8F6COqJC5gygwUVO7Y0zO2SRNT+oFC3liRY38=
-github.com/lukaszkaleta/saas-go/universal v0.2.90/go.mod h1:9+/pNz8F6COqJC5gygwUVO7Y0zO2SRNT+oFC3liRY38=
+github.com/lukaszkaleta/saas-go/universal v0.2.90 h1:56vzB4l0MP7zaJkM598vRJ9hZWHJyG46zNbW0kirHdE=
+github.com/lukaszkaleta/saas-go/universal v0.2.90/go.mod h1:q05edpDLcZXSHhuZ3j17Ya6FjsFXr4dqEZ1JZUZGXpk=
