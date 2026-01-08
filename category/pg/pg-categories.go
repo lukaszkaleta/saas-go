@@ -38,12 +38,12 @@ func (pgCategories *PgCategories) AddWithName(ctx context.Context, nameValue str
 	), nil
 }
 
-func (pgCategories *PgCategories) AddWithParent(parent category.Category, nameValue string) (category.Category, error) {
+func (pgCategories *PgCategories) AddWithParent(ctx context.Context, parent category.Category, nameValue string) (category.Category, error) {
 	nameSlug := universal.CreateSlug(nameValue)
 
 	categoryId := int64(0)
 	query := "INSERT INTO category(parent_category_id, name_value, name_slug) VALUES( $1, $2, $3 ) returning id"
-	row := pgCategories.Db.Pool.QueryRow(context.Background(), query, parent.Model().Id, nameValue, nameSlug)
+	row := pgCategories.Db.Pool.QueryRow(ctx, query, parent.Model().Id, nameValue, nameSlug)
 	row.Scan(&categoryId)
 	pgCategory := PgCategory{
 		Db: pgCategories.Db,
@@ -84,9 +84,9 @@ func (pgCategories *PgCategories) AllLocalized(ctx context.Context, country stri
 	return categories, nil
 }
 
-func (pgCategories *PgCategories) ById(id int64) (category.Category, error) {
+func (pgCategories *PgCategories) ById(ctx context.Context, id int64) (category.Category, error) {
 	query := "select * from category where id = @id"
-	rows, err := pgCategories.Db.Pool.Query(context.Background(), query, pgx.NamedArgs{"id": id})
+	rows, err := pgCategories.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": id})
 	if err != nil {
 		return nil, err
 	}
