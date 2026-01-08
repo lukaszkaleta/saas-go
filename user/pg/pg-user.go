@@ -1,6 +1,8 @@
 package pguser
 
 import (
+	"context"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/filestore"
@@ -22,7 +24,7 @@ func (pgUser PgUser) Address() universal.Address {
 	return &unversalPg.PgAddress{pgUser.Db, pgUser.TableEntity()}
 }
 
-func (pgUser PgUser) Model() *user.UserModel {
+func (pgUser PgUser) Model(ctx context.Context) *user.UserModel {
 	return &user.UserModel{}
 }
 

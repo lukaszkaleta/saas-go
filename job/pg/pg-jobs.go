@@ -123,16 +123,16 @@ func (p PgRelationJobs) Add(ctx context.Context, jobModel *job.JobModel) (job.Jo
 		return newJob, err
 	}
 	query := fmt.Sprintf("INSERT INTO %s(job_id, %s) VALUES( $1, $2 )", p.Relation.TableName, p.Relation.ColumnName)
-	_, err = p.Db.Pool.Exec(context.Background(), query, newJob.Model().Id, p.Relation.RelationId)
+	_, err = p.Db.Pool.Exec(ctx, query, newJob.Model().Id, p.Relation.RelationId)
 	if err != nil {
 		return newJob, err
 	}
 	return newJob, nil
 }
 
-func (p PgRelationJobs) Join(jobId int64) error {
+func (p PgRelationJobs) Join(ctx context.Context, jobId int64) error {
 	query := fmt.Sprintf("INSERT INTO %s(job_id, %s) VALUES( $1, $2 )", p.Relation.TableName, p.Relation.ColumnName)
-	_, err := p.Db.Pool.Exec(context.Background(), query, jobId, p.Relation.RelationId)
+	_, err := p.Db.Pool.Exec(ctx, query, jobId, p.Relation.RelationId)
 	if err != nil {
 		return err
 	}

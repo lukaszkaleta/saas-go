@@ -1,12 +1,15 @@
 package universal
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 // API
 
 type Price interface {
-	Model() *PriceModel
-	Update(newModel *PriceModel) error
+	Model(ctx context.Context) *PriceModel
+	Update(ctx context.Context, newModel *PriceModel) error
 }
 
 // Builder
@@ -55,14 +58,14 @@ func NewSolidPrice(model *PriceModel, Price Price) Price {
 	return &SolidPrice{model, Price}
 }
 
-func (addr SolidPrice) Update(newModel *PriceModel) error {
+func (addr SolidPrice) Update(ctx context.Context, newModel *PriceModel) error {
 	addr.model.Change(newModel)
 	if addr.price == nil {
 		return nil
 	}
-	return addr.price.Update(newModel)
+	return addr.price.Update(ctx, newModel)
 }
 
-func (addr SolidPrice) Model() *PriceModel {
+func (addr SolidPrice) Model(ctx context.Context) *PriceModel {
 	return addr.model
 }

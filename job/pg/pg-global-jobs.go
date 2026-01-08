@@ -17,18 +17,18 @@ func NewPgGlobalJobs(Db *pg.PgDb) job.GlobalJobs {
 	return &PgGlobalJobs{Db}
 }
 
-func (globalJobs *PgGlobalJobs) NearBy(radar *universal.RadarModel) ([]job.Job, error) {
+func (globalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.RadarModel) ([]job.Job, error) {
 	query := "select * from job where status_published is not null and status_closed is null and status_occupied is null"
-	rows, err := globalJobs.Db.Pool.Query(context.Background(), query)
+	rows, err := globalJobs.Db.Pool.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
 	return MapJobs(rows, globalJobs.Db)
 }
 
-func (globalJobs *PgGlobalJobs) ActiveById(id int64) (job.Job, error) {
+func (globalJobs *PgGlobalJobs) ActiveById(ctx context.Context, id int64) (job.Job, error) {
 	query := "select * from job where id = @id and status_published is not null and status_closed is null and status_occupied is null"
-	rows, err := globalJobs.Db.Pool.Query(context.Background(), query, pgx.NamedArgs{"id": id})
+	rows, err := globalJobs.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": id})
 	if err != nil {
 		return nil, err
 	}

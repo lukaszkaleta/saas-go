@@ -1,10 +1,12 @@
 package universal
 
+import "context"
+
 // API
 
 type Localization interface {
-	Model() *LocalizationModel
-	Update(newModel *LocalizationModel) error
+	Model(ctx context.Context) *LocalizationModel
+	Update(ctx context.Context, newModel *LocalizationModel) error
 }
 
 // Builder
@@ -43,14 +45,14 @@ func NewSolidLocalization(model *LocalizationModel, Localization Localization) L
 	return &SolidLocalization{model, Localization}
 }
 
-func (addr SolidLocalization) Update(newModel *LocalizationModel) error {
+func (addr SolidLocalization) Update(ctx context.Context, newModel *LocalizationModel) error {
 	addr.model.Change(newModel)
 	if addr.Localization == nil {
 		return nil
 	}
-	return addr.Localization.Update(newModel)
+	return addr.Localization.Update(ctx, newModel)
 }
 
-func (addr SolidLocalization) Model() *LocalizationModel {
+func (addr SolidLocalization) Model(ctx context.Context) *LocalizationModel {
 	return addr.model
 }

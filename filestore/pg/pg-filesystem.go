@@ -14,9 +14,9 @@ type PgFileSystem struct {
 	Owner pg.RelationEntity
 }
 
-func (p PgFileSystem) Model() *filestore.FileSystemModel {
+func (p PgFileSystem) Model(ctx context.Context) *filestore.FileSystemModel {
 	query := "select * from filestore_filesystem where id=&id"
-	rows, err := p.Db.Pool.Query(context.Background(), query, pgx.NamedArgs{"id": p.Id})
+	rows, err := p.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": p.Id})
 	if err != nil {
 		return nil
 	}
@@ -27,10 +27,10 @@ func (p PgFileSystem) Model() *filestore.FileSystemModel {
 	return fileSystemModel
 }
 
-func (p PgFileSystem) Update(newModel *filestore.FileSystemModel) error {
+func (p PgFileSystem) Update(ctx context.Context, newModel *filestore.FileSystemModel) error {
 	newModel.Id = p.Id
 	query := "update filestore_filesystem set name_value = @nameValue, name_slug = @nameSlug where id = @id"
-	cmd, err := p.Db.Pool.Exec(context.Background(), query, FileSystemNamedArgs(newModel))
+	cmd, err := p.Db.Pool.Exec(ctx, query, FileSystemNamedArgs(newModel))
 	if err != nil {
 		return err
 	}

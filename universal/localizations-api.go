@@ -1,7 +1,9 @@
 package universal
 
+import "context"
+
 // API
 
 type Localizations interface {
-	Add(country string, language string, translation string) (Localization, error)
+	Add(ctx context.Context, country string, language string, translation string) (Localization, error)
 }

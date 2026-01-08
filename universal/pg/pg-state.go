@@ -21,7 +21,7 @@ func NewPgState(db *pgdb.PgDb, te pgdb.TableEntity, stateColumn string) universa
 
 // Name queries the current state value from the database.
 // If the DB is unavailable or the query fails, it returns an empty string.
-func (p *PgState) Name() string {
+func (p *PgState) Name(ctx context.Context) string {
 	if p == nil || p.Db == nil || p.Db.Pool == nil {
 		return ""
 	}
@@ -31,20 +31,20 @@ func (p *PgState) Name() string {
 	}
 	query := fmt.Sprintf("select %s from %s where id = $1", col, p.TableEntity.Name)
 	var val string
-	if err := p.Db.Pool.QueryRow(context.Background(), query, p.TableEntity.Id).Scan(&val); err != nil {
+	if err := p.Db.Pool.QueryRow(ctx, query, p.TableEntity.Id).Scan(&val); err != nil {
 		return ""
 	}
 	return val
 }
 
 // Change updates the state column in the backing table.
-func (p *PgState) Change(newState string) error {
+func (p *PgState) Change(ctx context.Context, newState string) error {
 	col := p.StateColumn
 	if col == "" {
 		col = "status"
 	}
 	query := fmt.Sprintf("update %s set %s = $1 where id = $2", p.TableEntity.Name, col)
-	_, err := p.Db.Pool.Exec(context.Background(), query, newState, p.TableEntity.Id)
+	_, err := p.Db.Pool.Exec(ctx, query, newState, p.TableEntity.Id)
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func NewPgTimestampState(db *pgdb.PgDb, te pgdb.TableEntity, stateColumns []stri
 
 // Name queries the current state value from the database.
 // If the DB is unavailable or the query fails, it returns an empty string.
-func (p *PgTimestampState) Name() string {
+func (p *PgTimestampState) Name(ctx context.Context) string {
 	if p == nil || p.Db == nil || p.Db.Pool == nil {
 		return ""
 	}
@@ -80,7 +80,7 @@ func (p *PgTimestampState) Name() string {
 
 	query := fmt.Sprintf("select %s from %s where id = $1", queryColumn, p.TableEntity.Name)
 
-	row := p.Db.Pool.QueryRow(context.Background(), query, p.TableEntity.Id)
+	row := p.Db.Pool.QueryRow(ctx, query, p.TableEntity.Id)
 
 	timestamps := make([]interface{}, len(p.StateColumns))
 	for ts := range timestamps {
@@ -109,11 +109,11 @@ func (p *PgTimestampState) Name() string {
 }
 
 // Change updates the state column in the backing table.
-func (p *PgTimestampState) Change(newState string) error {
+func (p *PgTimestampState) Change(ctx context.Context, newState string) error {
 
 	col := "status_" + newState
 	query := fmt.Sprintf("update %s set %s = now() where id = $1", p.TableEntity.Name, col)
-	_, err := p.Db.Pool.Exec(context.Background(), query, p.TableEntity.Id)
+	_, err := p.Db.Pool.Exec(ctx, query, p.TableEntity.Id)
 	if err != nil {
 		return err
 	}

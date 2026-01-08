@@ -1,10 +1,12 @@
 package universal
 
+import "context"
+
 // API
 
 type Position interface {
-	Model() *PositionModel
-	Update(newModel *PositionModel) error
+	Model(ctx context.Context) *PositionModel
+	Update(ctx context.Context, newModel *PositionModel) error
 }
 
 // Builder
@@ -46,14 +48,14 @@ func NewSolidPosition(model *PositionModel, Position Position) Position {
 	return &SolidPosition{model, Position}
 }
 
-func (addr SolidPosition) Update(newModel *PositionModel) error {
+func (addr SolidPosition) Update(ctx context.Context, newModel *PositionModel) error {
 	addr.model.Change(newModel)
 	if addr.position == nil {
 		return nil
 	}
-	return addr.position.Update(newModel)
+	return addr.position.Update(ctx, newModel)
 }
 
-func (addr SolidPosition) Model() *PositionModel {
+func (addr SolidPosition) Model(ctx context.Context) *PositionModel {
 	return addr.model
 }

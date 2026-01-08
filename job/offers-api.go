@@ -5,14 +5,14 @@ import (
 )
 
 type Offers interface {
-	Waiting() ([]Offer, error)
+	Waiting(ctx context.Context) ([]Offer, error)
 	Make(ctx context.Context, model *OfferModel) (Offer, error)
 }
 
 type NoOffers struct {
 }
 
-func (n NoOffers) Waiting() ([]Offer, error) {
+func (n NoOffers) Waiting(ctx context.Context) ([]Offer, error) {
 	return nil, nil
 }
 

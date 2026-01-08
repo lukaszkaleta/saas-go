@@ -22,7 +22,7 @@ func (pgUsers *PgUsers) Search() user.UserSearch {
 }
 
 func (pgUsers *PgUsers) Add(ctx context.Context, model *universal.PersonModel) (user.User, error) {
-	userWithPhone, err := pgUsers.Search().ByPhone(model.Phone)
+	userWithPhone, err := pgUsers.Search().ByPhone(ctx, model.Phone)
 	if err != nil {
 		return nil, err
 	}
@@ -84,13 +84,13 @@ func (pgUsers *PgUsers) ListAll(ctx context.Context) ([]user.User, error) {
 }
 
 func (pgUsers *PgUsers) EstablishAccount(ctx context.Context, model *user.UserModel) (user.User, error) {
-	user, err := pgUsers.Search().ByPhone(model.Person.Phone)
+	user, err := pgUsers.Search().ByPhone(ctx, model.Person.Phone)
 	if err != nil {
 		return user, err
 	}
 
 	if user != nil {
-		user.Person().Update(model.Person)
+		user.Person().Update(ctx, model.Person)
 	} else {
 		user, err = pgUsers.Add(ctx, model.Person)
 		if err != nil {
@@ -98,8 +98,8 @@ func (pgUsers *PgUsers) EstablishAccount(ctx context.Context, model *user.UserMo
 		}
 	}
 
-	user.Account().Update(model.Account)
-	user.Address().Update(model.Address)
+	user.Account().Update(ctx, model.Account)
+	user.Address().Update(ctx, model.Address)
 
 	return user, nil
 }

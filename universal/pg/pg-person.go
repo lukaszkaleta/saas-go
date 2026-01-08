@@ -17,16 +17,16 @@ func (pg *PgPerson) Ratings() universal.Ratings {
 	return NewPgRatings(pg.Db, pg.TableEntity)
 }
 
-func (pg *PgPerson) Update(model *universal.PersonModel) error {
+func (pg *PgPerson) Update(ctx context.Context, model *universal.PersonModel) error {
 	query := fmt.Sprintf("update %s set person_first_name = $1, person_last_name = $2, person_email = $3, person_phone = $4 where id = $5", pg.TableEntity.Name)
-	_, err := pg.Db.Pool.Exec(context.Background(), query, model.FirstName, model.LastName, model.Email, model.Phone, pg.TableEntity.Id)
+	_, err := pg.Db.Pool.Exec(ctx, query, model.FirstName, model.LastName, model.Email, model.Phone, pg.TableEntity.Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (pg *PgPerson) Model() *universal.PersonModel {
+func (pg *PgPerson) Model(ctx context.Context) *universal.PersonModel {
 	return &universal.PersonModel{}
 }
 

@@ -1,10 +1,12 @@
 package universal
 
+import "context"
+
 // API
 
 type Content interface {
-	Model() *ContentModel
-	Update(newModel *ContentModel) error
+	Model(ctx context.Context) *ContentModel
+	Update(ctx context.Context, newModel *ContentModel) error
 	Localizations() Localizations
 }
 
@@ -42,15 +44,15 @@ func NewSolidContent(model *ContentModel, category Content) Content {
 	return &SolidContent{model, category}
 }
 
-func (category SolidContent) Update(newModel *ContentModel) error {
+func (category SolidContent) Update(ctx context.Context, newModel *ContentModel) error {
 	category.model.Change(newModel)
 	if category.Content == nil {
 		return nil
 	}
-	return category.Content.Update(newModel)
+	return category.Content.Update(ctx, newModel)
 }
 
-func (category SolidContent) Model() *ContentModel {
+func (category SolidContent) Model(ctx context.Context) *ContentModel {
 	return category.model
 }
 

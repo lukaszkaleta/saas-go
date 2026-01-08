@@ -7,6 +7,6 @@ import (
 )
 
 type GlobalJobs interface {
-	NearBy(position *universal.RadarModel) ([]Job, error)
+	NearBy(ctx context.Context, position *universal.RadarModel) ([]Job, error)
 	ById(ctx context.Context, id int64) (Job, error)
 }

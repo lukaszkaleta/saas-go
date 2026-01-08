@@ -13,15 +13,15 @@ type PgPosition struct {
 	TableEntity pg.TableEntity
 }
 
-func (pos *PgPosition) Update(model *universal.PositionModel) error {
+func (pos *PgPosition) Update(ctx context.Context, model *universal.PositionModel) error {
 	query := fmt.Sprintf("update %s set position_latitude = $1, position_longitude = $2 where id = $3", pos.TableEntity.Name)
-	_, err := pos.Db.Pool.Exec(context.Background(), query, model.Lat, model.Lon, pos.TableEntity.Id)
+	_, err := pos.Db.Pool.Exec(ctx, query, model.Lat, model.Lon, pos.TableEntity.Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (pos *PgPosition) Model() *universal.PositionModel {
+func (pos *PgPosition) Model(ctx context.Context) *universal.PositionModel {
 	return &universal.PositionModel{}
 }

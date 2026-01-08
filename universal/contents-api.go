@@ -1,11 +1,13 @@
 package universal
 
+import "context"
+
 // API
 
 type Contents interface {
-	ById(id int64) (Content, error)
-	ByName(id string) (Content, error)
-	Add(model *ContentModel) (Content, error)
+	ById(ctx context.Context, id int64) (Content, error)
+	ByName(ctx context.Context, id string) (Content, error)
+	Add(ctx context.Context, model *ContentModel) (Content, error)
 }
 
 // Builders
@@ -20,13 +22,13 @@ type SolidContents struct {
 	ratings Contents
 }
 
-func (s SolidContents) Add(r ContentModel) (*Content, error) {
+func (s SolidContents) Add(ctx context.Context, r ContentModel) (*Content, error) {
 	return nil, nil
 }
 
-func (s SolidContents) ById(id int64) (Content, error) {
-	return s.ratings.ById(id)
+func (s SolidContents) ById(ctx context.Context, id int64) (Content, error) {
+	return s.ratings.ById(ctx, id)
 }
-func (s SolidContents) ByName(name string) (Content, error) {
-	return s.ratings.ByName(name)
+func (s SolidContents) ByName(ctx context.Context, name string) (Content, error) {
+	return s.ratings.ByName(ctx, name)
 }

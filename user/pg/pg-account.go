@@ -16,15 +16,15 @@ func NewPgAccount(Db *pg.PgDb, id int64) user.Account {
 	return &PgAccount{Db: Db, Id: id}
 }
 
-func (pg *PgAccount) Update(model *user.AccountModel) error {
+func (pg *PgAccount) Update(ctx context.Context, model *user.AccountModel) error {
 	query := "update users set account_token = $1 where id = $1"
-	_, err := pg.Db.Pool.Exec(context.Background(), query, model.Token, pg.Id)
+	_, err := pg.Db.Pool.Exec(ctx, query, model.Token, pg.Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (pg *PgAccount) Model() *user.AccountModel {
+func (pg *PgAccount) Model(ctx context.Context) *user.AccountModel {
 	return &user.AccountModel{}
 }

@@ -1,10 +1,12 @@
 package universal
 
+import "context"
+
 // API
 
 type Address interface {
 	Model() *AddressModel
-	Update(newModel *AddressModel) error
+	Update(ctx context.Context, newModel *AddressModel) error
 }
 
 // Builder
@@ -48,12 +50,12 @@ func NewSolidAddress(model *AddressModel, address Address) Address {
 	return &SolidAddress{model, address}
 }
 
-func (addr SolidAddress) Update(newModel *AddressModel) error {
+func (addr SolidAddress) Update(ctx context.Context, newModel *AddressModel) error {
 	addr.model.Change(newModel)
 	if addr.address == nil {
 		return nil
 	}
-	return addr.address.Update(newModel)
+	return addr.address.Update(ctx, newModel)
 }
 
 func (addr SolidAddress) Model() *AddressModel {

@@ -1,6 +1,7 @@
 package filestore
 
 import (
+	"context"
 	"os"
 
 	"github.com/lukaszkaleta/saas-go/universal"
@@ -9,8 +10,8 @@ import (
 // API
 
 type Record interface {
-	Model() *RecordModel
-	Update(newModel *RecordModel) error
+	Model(ctx context.Context) *RecordModel
+	Update(ctx context.Context, newModel *RecordModel) error
 }
 
 // Builder
@@ -59,14 +60,14 @@ func NewSolidRecord(model *RecordModel, record Record) Record {
 	return &SolidRecord{model, record}
 }
 
-func (addr SolidRecord) Update(newModel *RecordModel) error {
+func (addr SolidRecord) Update(ctx context.Context, newModel *RecordModel) error {
 	addr.model.Change(newModel)
 	if addr.Record == nil {
 		return nil
 	}
-	return addr.Record.Update(newModel)
+	return addr.Record.Update(ctx, newModel)
 }
 
-func (addr SolidRecord) Model() *RecordModel {
+func (addr SolidRecord) Model(ctx context.Context) *RecordModel {
 	return addr.model
 }

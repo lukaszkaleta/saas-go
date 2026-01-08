@@ -1,5 +1,7 @@
 package user
 
+import "context"
+
 type UserSearch interface {
-	ByPhone(phone string) (User, error)
+	ByPhone(ctx context.Context, phone string) (User, error)
 }

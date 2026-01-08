@@ -1,6 +1,7 @@
 package universal
 
 import (
+	"context"
 	"regexp"
 	"strings"
 )
@@ -9,7 +10,7 @@ import (
 
 type Name interface {
 	Model() *NameModel
-	Update(newModel *NameModel) error
+	Update(ctx context.Context, newModel *NameModel) error
 }
 
 // Builder
@@ -58,12 +59,12 @@ func NewSolidName(model *NameModel, Name Name) Name {
 	return &SolidName{model, Name}
 }
 
-func (addr SolidName) Update(newModel *NameModel) error {
+func (addr SolidName) Update(ctx context.Context, newModel *NameModel) error {
 	addr.model.Change(newModel.Value)
 	if addr.Name == nil {
 		return nil
 	}
-	return addr.Name.Update(addr.model)
+	return addr.Name.Update(ctx, addr.model)
 }
 
 func (addr SolidName) Model() *NameModel {

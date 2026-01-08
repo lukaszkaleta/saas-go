@@ -28,9 +28,9 @@ func (pg *PgRecords) Add(ctx context.Context, model *filestore.RecordModel) (fil
 	return filestore.NewSolidRecord(model, newRecord), nil
 }
 
-func (pg *PgRecords) ById(recordId int64) (filestore.Record, error) {
+func (pg *PgRecords) ById(ctx context.Context, recordId int64) (filestore.Record, error) {
 	sql := "select * from filestore_record where id = @id"
-	rows, err := pg.Db.Pool.Query(context.Background(), sql, pgx.NamedArgs{"id": recordId})
+	rows, err := pg.Db.Pool.Query(ctx, sql, pgx.NamedArgs{"id": recordId})
 	if err != nil {
 		return nil, err
 	}

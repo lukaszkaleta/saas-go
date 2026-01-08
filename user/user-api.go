@@ -11,7 +11,7 @@ import (
 
 type User interface {
 	universal.Idable
-	Model() *UserModel
+	Model(ctx context.Context) *UserModel
 	Account() Account
 	Person() universal.Person
 	Address() universal.Address
@@ -21,7 +21,7 @@ type User interface {
 }
 
 func WithUser(ctx context.Context, usr User) context.Context {
-	ctx = context.WithValue(ctx, "current-user", usr.Model())
+	ctx = context.WithValue(ctx, "current-user", usr.Model(ctx))
 	id := usr.ID()
 	return context.WithValue(ctx, "current-user-id", &id)
 }
@@ -88,28 +88,28 @@ func NewSolidUser(model *UserModel, user User) User {
 	}
 }
 
-func (u SolidUser) Model() *UserModel {
+func (u SolidUser) Model(ctx context.Context) *UserModel {
 	return u.model
 }
 
 func (u SolidUser) Person() universal.Person {
 	if u.user != nil {
 		return universal.NewSolidPerson(
-			u.Model().Person,
+			u.Model(context.Background()).Person,
 			u.user.Person(),
 		)
 	}
-	return universal.NewSolidPerson(u.Model().Person, nil)
+	return universal.NewSolidPerson(u.Model(context.Background()).Person, nil)
 }
 
 func (u SolidUser) Address() universal.Address {
 	if u.user != nil {
 		return universal.NewSolidAddress(
-			u.Model().Address,
+			u.Model(context.Background()).Address,
 			u.user.Address(),
 		)
 	}
-	return universal.NewSolidAddress(u.Model().Address, nil)
+	return universal.NewSolidAddress(u.Model(context.Background()).Address, nil)
 }
 
 func (u SolidUser) Settings() UserSettings {

@@ -1,15 +1,16 @@
 package universal
 
 import (
+	"context"
 	"os"
 )
 
 // API
 
 type Description interface {
-	Model() *DescriptionModel
-	Update(newModel *DescriptionModel) error
-	UpdateImageUrl(imageUrl *string) error
+	Model(ctx context.Context) *DescriptionModel
+	Update(ctx context.Context, newModel *DescriptionModel) error
+	UpdateImageUrl(ctx context.Context, imageUrl *string) error
 }
 
 // Builder
@@ -51,23 +52,23 @@ func NewSolidDescription(model *DescriptionModel, Description Description) Descr
 	return &SolidDescription{model, Description}
 }
 
-func (sd SolidDescription) Update(newModel *DescriptionModel) error {
+func (sd SolidDescription) Update(ctx context.Context, newModel *DescriptionModel) error {
 	sd.model.Change(newModel)
 	if sd.Description == nil {
 		return nil
 	}
-	return sd.Description.Update(newModel)
+	return sd.Description.Update(ctx, newModel)
 }
 
-func (sd SolidDescription) UpdateImageUrl(imageUrl *string) error {
+func (sd SolidDescription) UpdateImageUrl(ctx context.Context, imageUrl *string) error {
 	sd.model.ImageUrl = *imageUrl
 	if sd.Description == nil {
 		return nil
 	}
-	return sd.Description.UpdateImageUrl(imageUrl)
+	return sd.Description.UpdateImageUrl(ctx, imageUrl)
 }
 
-func (sd SolidDescription) Model() *DescriptionModel {
+func (sd SolidDescription) Model(ctx context.Context) *DescriptionModel {
 	return sd.model
 }
 

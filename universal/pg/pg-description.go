@@ -28,25 +28,25 @@ func NewPgDescription(db *pg.PgDb, entity pg.TableEntity, valueColumn string, ur
 	return &PgDescription{db: db, tableEntity: entity, valueColumn: valueColumn, urlColumn: urlColumn}
 }
 
-func (p *PgDescription) Update(model *universal.DescriptionModel) error {
+func (p *PgDescription) Update(ctx context.Context, model *universal.DescriptionModel) error {
 	query := fmt.Sprintf("update %s set %s = $1, %s = $2 where id = $3", p.tableEntity.Name, p.valueColumn, p.urlColumn)
-	_, err := p.db.Pool.Exec(context.Background(), query, model.Value, model.ImageUrl, p.tableEntity.Id)
+	_, err := p.db.Pool.Exec(ctx, query, model.Value, model.ImageUrl, p.tableEntity.Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *PgDescription) UpdateImageUrl(imageUrl *string) error {
+func (p *PgDescription) UpdateImageUrl(ctx context.Context, imageUrl *string) error {
 	query := fmt.Sprintf("update %s set %s = $1 where id = $2", p.tableEntity.Name, p.urlColumn)
-	_, err := p.db.Pool.Exec(context.Background(), query, imageUrl, p.tableEntity.Id)
+	_, err := p.db.Pool.Exec(ctx, query, imageUrl, p.tableEntity.Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *PgDescription) Model() *universal.DescriptionModel {
+func (p *PgDescription) Model(ctx context.Context) *universal.DescriptionModel {
 	return &universal.DescriptionModel{}
 }
 

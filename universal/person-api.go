@@ -1,10 +1,12 @@
 package universal
 
+import "context"
+
 // API
 type Person interface {
-	ID() int64
-	Model() *PersonModel
-	Update(person *PersonModel) error
+	Idable
+	Model(ctx context.Context) *PersonModel
+	Update(ctx context.Context, person *PersonModel) error
 
 	Ratings() Ratings
 }
@@ -56,15 +58,15 @@ func NewSolidPerson(model *PersonModel, person Person) Person {
 	return &SolidPerson{model, person}
 }
 
-func (p SolidPerson) Update(newModel *PersonModel) error {
+func (p SolidPerson) Update(ctx context.Context, newModel *PersonModel) error {
 	p.model.Change(newModel)
 	if p.person == nil {
 		return nil
 	}
-	return p.person.Update(newModel)
+	return p.person.Update(ctx, newModel)
 }
 
-func (p SolidPerson) Model() *PersonModel {
+func (p SolidPerson) Model(ctx context.Context) *PersonModel {
 	return p.model
 }
 

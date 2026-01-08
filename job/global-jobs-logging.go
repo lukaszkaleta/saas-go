@@ -23,9 +23,9 @@ func NewGlobalJobsLogger(next GlobalJobs) GlobalJobs {
 	}
 }
 
-func (g *GlobalJobsLogger) NearBy(position *universal.RadarModel) ([]Job, error) {
+func (g *GlobalJobsLogger) NearBy(ctx context.Context, position *universal.RadarModel) ([]Job, error) {
 	defer func(start time.Time) {
 		fmt.Printf("Searching for jobs took %v\n", time.Since(start))
 	}(time.Now())
-	return g.next.NearBy(position)
+	return g.next.NearBy(ctx, position)
 }

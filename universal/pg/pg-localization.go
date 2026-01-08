@@ -14,16 +14,16 @@ type PgLocalization struct {
 	Owner *pg.RelationEntity
 }
 
-func (p *PgLocalization) Update(model *universal.LocalizationModel) error {
+func (p *PgLocalization) Update(ctx context.Context, model *universal.LocalizationModel) error {
 	translation := model.Translation
 	query := fmt.Sprintf("update %s set translation_value = $1, translation_slug = $2 where %s = $3 and language = $4 and country = $5", p.Owner.TableName, p.Owner.ColumnName)
-	_, err := p.Db.Pool.Exec(context.Background(), query, translation.Value, translation.Slug, p.Owner.RelationId, model.Language, model.Country)
+	_, err := p.Db.Pool.Exec(ctx, query, translation.Value, translation.Slug, p.Owner.RelationId, model.Language, model.Country)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *PgLocalization) Model() *universal.LocalizationModel {
+func (p *PgLocalization) Model(ctx context.Context) *universal.LocalizationModel {
 	return &universal.LocalizationModel{}
 }

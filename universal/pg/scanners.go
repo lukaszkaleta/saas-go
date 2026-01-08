@@ -6,8 +6,8 @@ import (
 	"github.com/lukaszkaleta/saas-go/database/pg"
 )
 
-func ScanMany2many(db *pg.PgDb, query string, ids []int64) (map[int64]int64, error) {
-	rows, err := db.Pool.Query(context.Background(), query, ids)
+func ScanMany2many(db *pg.PgDb, ctx context.Context, query string, ids []int64) (map[int64]int64, error) {
+	rows, err := db.Pool.Query(ctx, query, ids)
 	if err != nil {
 		return nil, err
 	}

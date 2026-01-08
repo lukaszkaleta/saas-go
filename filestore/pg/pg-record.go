@@ -13,9 +13,9 @@ type PgRecord struct {
 	Id int64
 }
 
-func (p PgRecord) Model() *filestore.RecordModel {
+func (p PgRecord) Model(ctx context.Context) *filestore.RecordModel {
 	query := "select * from filestore_record where id=@id"
-	rows, err := p.Db.Pool.Query(context.Background(), query, pgx.NamedArgs{"id": p.Id})
+	rows, err := p.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": p.Id})
 	if err != nil {
 		return nil
 	}
@@ -26,10 +26,10 @@ func (p PgRecord) Model() *filestore.RecordModel {
 	return recordModel
 }
 
-func (p PgRecord) Update(newModel *filestore.RecordModel) error {
+func (p PgRecord) Update(ctx context.Context, newModel *filestore.RecordModel) error {
 	newModel.Id = p.Id
 	query := "update filestore_record set name_value = @nameValue, name_slug = @nameSlug where id = @id"
-	cmd, err := p.Db.Pool.Exec(context.Background(), query, RecordNamedArgs(newModel))
+	cmd, err := p.Db.Pool.Exec(ctx, query, RecordNamedArgs(newModel))
 	if err != nil {
 		return err
 	}

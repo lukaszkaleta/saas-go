@@ -19,8 +19,8 @@ func NewPgContents(db *pg.PgDb) universal.Contents {
 }
 
 // ById loads a content row by id and returns a SolidContent wrapping PgContent
-func (p *PgContents) ById(id int64) (universal.Content, error) {
-	row := p.Db.Pool.QueryRow(context.Background(), "select id, name_value, name_slug, value from content where id = $1", id)
+func (p *PgContents) ById(ctx context.Context, id int64) (universal.Content, error) {
+	row := p.Db.Pool.QueryRow(ctx, "select id, name_value, name_slug, value from content where id = $1", id)
 	model := universal.EmptyContentModel()
 	if err := row.Scan(&model.Id, &model.Name.Value, &model.Name.Slug, &model.Value); err != nil {
 		return nil, err
@@ -30,14 +30,14 @@ func (p *PgContents) ById(id int64) (universal.Content, error) {
 }
 
 // ByName finds the content by name slug or value (tries slug first, then value)
-func (p *PgContents) ByName(name string) (universal.Content, error) {
+func (p *PgContents) ByName(ctx context.Context, name string) (universal.Content, error) {
 	slug := universal.CreateSlug(name)
 	// Try by slug
-	row := p.Db.Pool.QueryRow(context.Background(), "select id, name_value, name_slug, value from content where name_slug = $1", slug)
+	row := p.Db.Pool.QueryRow(ctx, "select id, name_value, name_slug, value from content where name_slug = $1", slug)
 	model := universal.EmptyContentModel()
 	if err := row.Scan(&model.Id, &model.Name.Value, &model.Name.Slug, &model.Value); err != nil {
 		// try by value as a fallback
-		row2 := p.Db.Pool.QueryRow(context.Background(), "select id, name_value, name_slug, value from content where name_value = $1", name)
+		row2 := p.Db.Pool.QueryRow(ctx, "select id, name_value, name_slug, value from content where name_value = $1", name)
 		if err2 := row2.Scan(&model.Id, &model.Name.Value, &model.Name.Slug, &model.Value); err2 != nil {
 			return nil, err2
 		}
@@ -47,7 +47,7 @@ func (p *PgContents) ByName(name string) (universal.Content, error) {
 }
 
 // Add inserts a new content row and returns Content
-func (p *PgContents) Add(model *universal.ContentModel) (universal.Content, error) {
+func (p *PgContents) Add(ctx context.Context, model *universal.ContentModel) (universal.Content, error) {
 	if model == nil {
 		return nil, errors.New("content model is nil")
 	}
@@ -57,7 +57,7 @@ func (p *PgContents) Add(model *universal.ContentModel) (universal.Content, erro
 	}
 	model.Name.Change(model.Name.Value)
 	var id int64
-	row, err := p.Db.Pool.Query(context.Background(), "insert into content (name_value, name_slug, value) values ($1, $2, $3) returning id", model.Name.Value, model.Name.Slug, model.Value)
+	row, err := p.Db.Pool.Query(ctx, "insert into content (name_value, name_slug, value) values ($1, $2, $3) returning id", model.Name.Value, model.Name.Slug, model.Value)
 	if err != nil {
 		return nil, err
 	}

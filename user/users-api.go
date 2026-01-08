@@ -17,7 +17,7 @@ type Users interface {
 func UserModels(users []User) []*UserModel {
 	var models []*UserModel
 	for _, u := range users {
-		models = append(models, u.Model()) // note the = instead of :=
+		models = append(models, u.Model(context.Background())) // note the = instead of :=
 	}
 	return models
 }

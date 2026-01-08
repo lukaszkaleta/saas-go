@@ -16,9 +16,9 @@ type PgOffers struct {
 	JobId int64
 }
 
-func (p *PgOffers) Waiting() ([]job.Offer, error) {
+func (p *PgOffers) Waiting(ctx context.Context) ([]job.Offer, error) {
 	query := "select * from job_offer where job_id = $1 and action_accepted_at is null and action_rejected_at is null"
-	rows, err := p.Db.Pool.Query(context.Background(), query, p.JobId)
+	rows, err := p.Db.Pool.Query(ctx, query, p.JobId)
 	if err != nil {
 		return nil, err
 	}

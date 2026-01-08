@@ -1,10 +1,12 @@
 package universal
 
+import "context"
+
 // API
 
 type Radar interface {
-	Model() *RadarModel
-	Update(newModel *RadarModel) error
+	Model(ctx context.Context) *RadarModel
+	Update(ctx context.Context, newModel *RadarModel) error
 }
 
 // Builder
@@ -51,14 +53,14 @@ func NewSolidRadar(model *RadarModel, Radar Radar) Radar {
 	return &SolidRadar{model, Radar}
 }
 
-func (radar SolidRadar) Update(newModel *RadarModel) error {
+func (radar SolidRadar) Update(ctx context.Context, newModel *RadarModel) error {
 	radar.model.Change(newModel)
 	if radar.radar == nil {
 		return nil
 	}
-	return radar.radar.Update(newModel)
+	return radar.radar.Update(ctx, newModel)
 }
 
-func (radar SolidRadar) Model() *RadarModel {
+func (radar SolidRadar) Model(ctx context.Context) *RadarModel {
 	return radar.model
 }

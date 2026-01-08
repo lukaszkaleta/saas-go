@@ -1,12 +1,16 @@
 package filestore
 
-import "github.com/lukaszkaleta/saas-go/universal"
+import (
+	"context"
+
+	"github.com/lukaszkaleta/saas-go/universal"
+)
 
 // API
 
 type FileSystem interface {
-	Model() *FileSystemModel
-	Update(newModel *FileSystemModel) error
+	Model(ctx context.Context) *FileSystemModel
+	Update(ctx context.Context, newModel *FileSystemModel) error
 	Records() Records
 }
 
@@ -41,15 +45,15 @@ func NewSolidFileSystem(model *FileSystemModel, FileSystem FileSystem) FileSyste
 	return &SolidFileSystem{model, FileSystem}
 }
 
-func (addr SolidFileSystem) Update(newModel *FileSystemModel) error {
+func (addr SolidFileSystem) Update(ctx context.Context, newModel *FileSystemModel) error {
 	addr.model.Change(newModel)
 	if addr.FileSystem == nil {
 		return nil
 	}
-	return addr.FileSystem.Update(newModel)
+	return addr.FileSystem.Update(ctx, newModel)
 }
 
-func (addr SolidFileSystem) Model() *FileSystemModel {
+func (addr SolidFileSystem) Model(ctx context.Context) *FileSystemModel {
 	return addr.model
 }
 

@@ -17,12 +17,12 @@ func NewPgCategories(db *pg.PgDb) *PgCategories {
 	return &PgCategories{Db: db}
 }
 
-func (pgCategories *PgCategories) AddWithName(nameValue string) (category.Category, error) {
+func (pgCategories *PgCategories) AddWithName(ctx context.Context, nameValue string) (category.Category, error) {
 	nameSlug := universal.CreateSlug(nameValue)
 
 	categoryId := int64(0)
 	query := "INSERT INTO category(name_value, name_slug) VALUES( $1, $2 ) returning id"
-	row := pgCategories.Db.Pool.QueryRow(context.Background(), query, nameValue, nameSlug)
+	row := pgCategories.Db.Pool.QueryRow(ctx, query, nameValue, nameSlug)
 	row.Scan(&categoryId)
 	pgCategory := PgCategory{
 		Db: pgCategories.Db,
@@ -60,9 +60,9 @@ func (pgCategories *PgCategories) AddWithParent(parent category.Category, nameVa
 	), nil
 }
 
-func (pgCategories *PgCategories) AllLocalized(country string, language string) ([]*category.CategoryModel, error) {
+func (pgCategories *PgCategories) AllLocalized(ctx context.Context, country string, language string) ([]*category.CategoryModel, error) {
 	query := "select category_id, (select c.parent_category_id from category c where category_id = id) as parent_category_id, translation_value, translation_slug from category_localization where country = $1 and language = $2"
-	rows, err := pgCategories.Db.Pool.Query(context.Background(), query, country, language)
+	rows, err := pgCategories.Db.Pool.Query(ctx, query, country, language)
 	if err != nil {
 		return nil, err
 	}
@@ -101,9 +101,9 @@ func (pgCategories *PgCategories) ById(id int64) (category.Category, error) {
 	return category.NewSolidCategory(&categoryModel, pgCategory), nil
 }
 
-func (pgCategories *PgCategories) ByIds(ids []int64) ([]category.CategoryModel, error) {
+func (pgCategories *PgCategories) ByIds(ctx context.Context, ids []int64) ([]category.CategoryModel, error) {
 	query := "select * from category where id = any($1)"
-	rows, err := pgCategories.Db.Pool.Query(context.Background(), query, ids)
+	rows, err := pgCategories.Db.Pool.Query(ctx, query, ids)
 	if err != nil {
 		return nil, err
 	}

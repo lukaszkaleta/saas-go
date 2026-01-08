@@ -16,9 +16,9 @@ func NewPgUserSearch(db *pg.PgDb) user.UserSearch {
 	return &PgUserSearch{Db: db}
 }
 
-func (s *PgUserSearch) ByPhone(phone string) (user.User, error) {
+func (s *PgUserSearch) ByPhone(ctx context.Context, phone string) (user.User, error) {
 	query := "select * from users where person_phone = @phone"
-	rows, err := s.Db.Pool.Query(context.Background(), query, pgx.NamedArgs{"phone": phone})
+	rows, err := s.Db.Pool.Query(ctx, query, pgx.NamedArgs{"phone": phone})
 	if err != nil {
 		return nil, err
 	}

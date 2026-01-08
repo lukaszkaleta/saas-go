@@ -13,7 +13,7 @@ type PgLocalizations struct {
 	Owner *pg.RelationEntity
 }
 
-func (pgLocalizations *PgLocalizations) Add(country string, language string, translation string) (universal.Localization, error) {
+func (pgLocalizations *PgLocalizations) Add(ctx context.Context, country string, language string, translation string) (universal.Localization, error) {
 	slugedName := universal.SluggedName(translation)
 	localizationId := int64(0)
 
@@ -22,7 +22,7 @@ func (pgLocalizations *PgLocalizations) Add(country string, language string, tra
 		pgLocalizations.Owner.ColumnName,
 	)
 	rows, err := pgLocalizations.Db.Pool.Query(
-		context.Background(),
+		ctx,
 		query,
 		pgLocalizations.Owner.RelationId,
 		country,
