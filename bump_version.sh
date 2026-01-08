@@ -2,11 +2,11 @@
 set -e
 
 # --- CONFIGURATION ---
-VERSION_FILE="VERSION"   # file storing the version string (e.g., v0.2.99)
+VERSION_FILE="VERSION"   # file storing the version string (e.g., v0.2.100)
 
 # --- READ CURRENT VERSION ---
 if [[ ! -f "$VERSION_FILE" ]]; then
-  echo "VERSION file not found. Create one with initial version like: v0.2.99"
+  echo "VERSION file not found. Create one with initial version like: v0.2.100"
   exit 1
 fi
 
@@ -15,7 +15,7 @@ echo "Current version: $CURRENT_VERSION"
 
 # --- PARSE VERSION vMAJOR.MINOR.PATCH ---
 if [[ ! $CURRENT_VERSION =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-  echo "Invalid version format in VERSION file. Expected: v0.2.99"
+  echo "Invalid version format in VERSION file. Expected: v0.2.100"
   exit 1
 fi
 

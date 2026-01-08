@@ -33,7 +33,7 @@ func TestPgUsers_Add(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if user1.Model().Id != user2.Model().Id {
+	if user1.Model(t.Context()).Id != user2.Model(t.Context()).Id {
 		t.Fatal("Expected same users")
 	}
 }
@@ -45,11 +45,11 @@ func TestPgUsers_ById(t *testing.T) {
 	users := PgUsers{Db: db}
 	personModel := &universal.PersonModel{Phone: "01234"}
 	user, _ := users.Add(t.Context(), personModel)
-	user, err := users.ById(t.Context(), user.Model().Id)
+	user, err := users.ById(t.Context(), user.Model(t.Context()).Id)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if (user.Model().Person.Phone) != personModel.Phone {
+	if (user.Model(t.Context()).Person.Phone) != personModel.Phone {
 		t.Fatal("Expected user with phone")
 	}
 }

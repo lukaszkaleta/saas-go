@@ -36,5 +36,5 @@ func TestPgUser_UpdateSettings(t *testing.T) {
 		},
 		Perimeter: 10,
 	}
-	user.Settings().Radar().Update(radarModel)
+	user.Settings().Radar().Update(t.Context(), radarModel)
 }

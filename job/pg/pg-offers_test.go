@@ -42,7 +42,7 @@ func TestPgOffers_TestFlow(t *testing.T) {
 		t.Error("offer was nil")
 	}
 
-	waiting, err := newJob.Offers().Waiting()
+	waiting, err := newJob.Offers().Waiting(t.Context())
 	if err != nil {
 		t.Error(err)
 	}

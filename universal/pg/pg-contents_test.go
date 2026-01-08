@@ -27,11 +27,11 @@ func TestPgContents_Add(t *testing.T) {
 
 	contents := PgContents{Db: db}
 	value := "{json}"
-	content, err := contents.Add(&universal.ContentModel{Value: value, Name: universal.SluggedName("content")})
+	content, err := contents.Add(t.Context(), &universal.ContentModel{Value: value, Name: universal.SluggedName("content")})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if value != content.Model().Value {
+	if value != content.Model(t.Context()).Value {
 		t.Fatal("Cantent does not match")
 	}
 }

@@ -27,11 +27,11 @@ func TestPgRecord_Update(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = record.Update(&filestore.RecordModel{Name: &universal.NameModel{Value: "koza"}, Description: &universal.DescriptionModel{}})
+	err = record.Update(t.Context(), &filestore.RecordModel{Name: &universal.NameModel{Value: "koza"}, Description: &universal.DescriptionModel{}})
 	if err != nil {
 		t.Fatal(err)
 	}
-	record, err = records.ById(record.Model().Id)
+	record, err = records.ById(t.Context(), record.Model(t.Context()).Id)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,11 +50,11 @@ func TestPgRecord_Model(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	record, err = records.ById(record.Model().Id)
+	record, err = records.ById(t.Context(), record.Model(t.Context()).Id)
 	if err != nil {
 		t.Fatal(err)
 	}
-	model := record.Model()
+	model := record.Model(t.Context())
 	Equal[string](t, model.Name.Value, recordModel.Name.Value)
 	Equal[string](t, model.Name.Slug, recordModel.Name.Slug)
 	Equal[string](t, model.Description.Value, recordModel.Description.Value)
