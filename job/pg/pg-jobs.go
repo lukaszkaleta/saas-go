@@ -117,6 +117,10 @@ func NewPgRelationJobs(pfJobs *PgJobs, relation pg.RelationEntity) PgRelationJob
 	}
 }
 
+func (p PgRelationJobs) ById(ctx context.Context, id int64) (job.Job, error) {
+	return p.Jobs.ById(ctx, id)
+}
+
 func (p PgRelationJobs) Add(ctx context.Context, jobModel *job.JobModel) (job.Job, error) {
 	newJob, err := p.Jobs.Add(ctx, jobModel)
 	if err != nil {
@@ -139,9 +143,9 @@ func (p PgRelationJobs) Join(ctx context.Context, jobId int64) error {
 	return nil
 }
 
-func (p PgRelationJobs) List() ([]job.Job, error) {
+func (p PgRelationJobs) List(ctx context.Context) ([]job.Job, error) {
 	query := fmt.Sprintf("select * from job where id in (select job_id from %s where %s = $1)", p.Relation.TableName, p.Relation.ColumnName)
-	rows, err := p.Db.Pool.Query(context.Background(), query, p.Relation.RelationId)
+	rows, err := p.Db.Pool.Query(ctx, query, p.Relation.RelationId)
 	if err != nil {
 		return nil, err
 	}

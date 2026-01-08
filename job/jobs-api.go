@@ -10,7 +10,7 @@ import (
 type Jobs interface {
 	universal.Idables[Job]
 	Add(ctx context.Context, model *JobModel) (Job, error)
-	List() ([]Job, error)
+	List(ctx context.Context) ([]Job, error)
 }
 
 func JobModels(jobs []Job) []*JobModel {
