@@ -1,9 +1,11 @@
-VERSION := v0.2.96
+VERSION := v0.2.97
 tags:
 	git add .
 	git commit -m 'incremental version ...'
 	git push
+	git tag "universal/${VERSION}"
 	git tag "database/pg/${VERSION}"
+	git tag "universal/pg/${VERSION}"
 	git tag "filestore/${VERSION}"
 	git tag "filestore/pg/${VERSION}"
 	git tag "filestore/integration/aws-s3/${VERSION}"
@@ -15,8 +17,6 @@ tags:
 	git tag "job/pg/${VERSION}"
 	git tag "user/${VERSION}"
 	git tag "user/pg/${VERSION}"
-	git tag "universal/${VERSION}"
-	git tag "universal/pg/${VERSION}"
 	git push --tags
 
 reset_build:
