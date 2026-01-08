@@ -79,7 +79,7 @@ func (pgJobs *PgJobs) Add(ctx context.Context, model *job.JobModel) (job.Job, er
 	), nil
 }
 
-func (pgJobs *PgJobs) List() ([]job.Job, error) {
+func (pgJobs *PgJobs) List(ctx context.Context) ([]job.Job, error) {
 	return nil, errors.New("All jobs can not be listed")
 }
 
