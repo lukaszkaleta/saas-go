@@ -18,6 +18,23 @@ type PgJobs struct {
 	Ids []int
 }
 
+func (pgJobs *PgJobs) ById(ctx context.Context, id int64) (job.Job, error) {
+	query := fmt.Sprintf("select * from job where id = $1")
+	rows, err := pgJobs.Db.Pool.Query(ctx, query, id)
+	if err != nil {
+		return nil, err
+	}
+	jobModel, err := MapJob(rows)
+	if err != nil {
+		return nil, err
+	}
+	return job.NewSolidJob(
+		jobModel,
+		&PgJob{Db: pgJobs.Db, Id: id},
+		id,
+	), nil
+}
+
 func (pgJobs *PgJobs) Add(ctx context.Context, model *job.JobModel) (job.Job, error) {
 	jobId := int64(0)
 	query := "INSERT INTO job (description_value, description_image_url, position_latitude, position_longitude, address_line_1, address_line_2, address_city, address_postal_code, address_district, price_value, price_currency, rating, action_created_by_id) VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) returning id"

@@ -8,6 +8,7 @@ import (
 )
 
 type Jobs interface {
+	universal.Idables[Job]
 	Add(ctx context.Context, model *JobModel) (Job, error)
 	List() ([]Job, error)
 }

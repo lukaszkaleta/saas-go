@@ -19,6 +19,10 @@ type PgJob struct {
 	Id int64
 }
 
+func (pgJob *PgJob) ID() int64 {
+	return pgJob.Id
+}
+
 func (pgJob *PgJob) Model() *job.JobModel {
 	//TODO implement me
 	panic("implement me")

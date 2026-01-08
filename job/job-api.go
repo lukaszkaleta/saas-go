@@ -11,6 +11,7 @@ import (
 // API
 
 type Job interface {
+	universal.Idable
 	Model() *JobModel
 	Address() universal.Address
 	Position() universal.Position
@@ -109,6 +110,11 @@ func NewSolidJob(model *JobModel, Job Job, id int64) Job {
 		Job,
 	}
 }
+
+func (solidJob *SolidJob) ID() int64 {
+	return solidJob.Id
+}
+
 func (solidJob *SolidJob) Model() *JobModel {
 	return solidJob.model
 }
