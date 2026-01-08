@@ -34,5 +34,5 @@ github.com/aws/aws-sdk-go-v2/service/sts v1.38.2 h1:YZPjhyaGzhDQEvsffDEcpycq49nl
 github.com/aws/aws-sdk-go-v2/service/sts v1.38.2/go.mod h1:2dIN8qhQfv37BdUYGgEC8Q3tteM3zFxTI1MLO2O3J3c=
 github.com/aws/smithy-go v1.23.0 h1:8n6I3gXzWJB2DxBDnfxgBaSX6oe0d/t10qGz7OKqMCE=
 github.com/aws/smithy-go v1.23.0/go.mod h1:t1ufH5HMublsJYulve2RKmHDC15xu1f26kHCp/HgceI=
-github.com/lukaszkaleta/saas-go/universal v0.2.94 h1:56vzB4l0MP7zaJkM598vRJ9hZWHJyG46zNbW0kirHdE=
-github.com/lukaszkaleta/saas-go/universal v0.2.94/go.mod h1:q05edpDLcZXSHhuZ3j17Ya6FjsFXr4dqEZ1JZUZGXpk=
+github.com/lukaszkaleta/saas-go/universal v0.2.95 h1:56vzB4l0MP7zaJkM598vRJ9hZWHJyG46zNbW0kirHdE=
+github.com/lukaszkaleta/saas-go/universal v0.2.95/go.mod h1:q05edpDLcZXSHhuZ3j17Ya6FjsFXr4dqEZ1JZUZGXpk=
