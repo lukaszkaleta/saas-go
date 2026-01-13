@@ -20,10 +20,10 @@ func NewPgMessages(db *pg.PgDb, ownerId int64) messages.Messages {
 }
 
 func (pg *PgMessages) Add(ctx context.Context, value string) (messages.Message, error) {
-	return pg.AddFromModel(ctx, &messages.Model{Value: value, OwnerId: pg.OwnerId})
+	return pg.AddFromModel(ctx, &messages.MessageModel{Value: value, OwnerId: pg.OwnerId})
 }
 
-func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.Model) (messages.Message, error) {
+func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.MessageModel) (messages.Message, error) {
 	if model.OwnerId != pg.OwnerId {
 		return nil, errors.New("owner inside model and messages does not match")
 	}
@@ -42,10 +42,38 @@ func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.Model) (
 	}, nil
 }
 
-func MessageNamedArgs(model *messages.Model, currentUserId *int64) pgx.NamedArgs {
+func (pg *PgMessages) List(ctx context.Context) ([]messages.Message, error) {
+	query := "select id, owner_id, value, action_created_by_id, action_created_at from message where owner_id = @ownerId"
+	rows, err := pg.Db.Pool.Query(ctx, query, pgx.NamedArgs{"ownerId": pg.OwnerId})
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return MapMessages(rows, pg.Db)
+}
+
+func MessageNamedArgs(model *messages.MessageModel, currentUserId *int64) pgx.NamedArgs {
 	return pgx.NamedArgs{
 		"ownerId":       model.OwnerId,
 		"currentUserId": currentUserId,
 		"value":         model.Value,
 	}
+}
+
+func MapMessages(rows pgx.Rows, db *pg.PgDb) ([]messages.Message, error) {
+	msgs := []messages.Message{}
+	id := int64(0)
+	for rows.Next() {
+		pgMessage := &PgMessage{Db: db, Id: id}
+		msgModel, err := MapMessage(rows)
+		if err != nil {
+			return nil, err
+		}
+		solidMessage := messages.NewSolidMessage(
+			msgModel,
+			pgMessage,
+			id)
+		msgs = append(msgs, solidMessage)
+	}
+	return msgs, nil
 }

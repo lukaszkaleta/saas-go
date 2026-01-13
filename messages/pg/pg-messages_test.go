@@ -57,4 +57,12 @@ func TestPgMessages_Add(t *testing.T) {
 	if newMessage.Model(ctx).Value != value {
 		t.Fatal("Wrong value")
 	}
+
+	list, err := pgMessages.List(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(list) != 1 {
+		t.Fatal("Wrong list length")
+	}
 }

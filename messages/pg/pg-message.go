@@ -15,7 +15,7 @@ type PgMessage struct {
 	OwnerId int64
 }
 
-func (m *PgMessage) Model(ctx context.Context) *messages.Model {
+func (m *PgMessage) Model(ctx context.Context) *messages.MessageModel {
 	query := "select * from message where id=@id"
 	rows, err := m.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": m.Id})
 	if err != nil {
@@ -28,7 +28,11 @@ func (m *PgMessage) Model(ctx context.Context) *messages.Model {
 	return model
 }
 
-func MapMessage(row pgx.CollectableRow) (*messages.Model, error) {
+func (m *PgMessage) ID() int64 {
+	return m.Id
+}
+
+func MapMessage(row pgx.CollectableRow) (*messages.MessageModel, error) {
 	model := messages.EmptyModel()
 	createdActionModel := universal.EmptyCreatedActionModel()
 	err := row.Scan(
