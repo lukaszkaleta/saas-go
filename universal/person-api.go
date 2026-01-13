@@ -7,7 +7,7 @@ type Person interface {
 	Idable
 	Model(ctx context.Context) *PersonModel
 	Update(ctx context.Context, person *PersonModel) error
-
+	Avatar(ctx context.Context) Description
 	Ratings() Ratings
 }
 
@@ -16,12 +16,13 @@ type Person interface {
 // Model
 
 type PersonModel struct {
-	Id            int64  `json:"id"`
-	FirstName     string `json:"firstName"`
-	LastName      string `json:"lastName"`
-	Email         string `json:"email"`
-	Phone         string `json:"phone"`
-	AverageRating int    `json:"rating"`
+	Id            int64             `json:"id"`
+	FirstName     string            `json:"firstName"`
+	LastName      string            `json:"lastName"`
+	Email         string            `json:"email"`
+	Phone         string            `json:"phone"`
+	Avatar        *DescriptionModel `json:"avatarUrl"`
+	AverageRating int               `json:"rating"`
 }
 
 func (model *PersonModel) Change(newModel *PersonModel) {
@@ -79,4 +80,12 @@ func (p SolidPerson) Ratings() Ratings {
 		return DummyRatings{}
 	}
 	return p.person.Ratings()
+}
+
+func (p SolidPerson) Avatar(ctx context.Context) Description {
+	if p.person != nil {
+		return NewSolidDescription(p.Model(ctx).Avatar, p.person.Avatar(ctx))
+	}
+	return NewSolidDescription(p.Model(ctx).Avatar, nil)
+
 }

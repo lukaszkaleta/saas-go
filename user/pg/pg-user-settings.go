@@ -23,11 +23,3 @@ func (pgUserSetting *PgUserSettings) Model() *user.UserSettingsModel {
 func (pgUserSetting *PgUserSettings) Radar() universal.Radar {
 	return &universalPg.PgRadar{Db: pgUserSetting.Db, TableEntity: pg.TableEntity{Name: "users", Id: pgUserSetting.Id}}
 }
-
-func (pgUserSetting *PgUserSettings) Avatar() universal.Description {
-	return universalPg.NewPgDescription(
-		pgUserSetting.Db,
-		pg.TableEntity{Name: "users", Id: pgUserSetting.Id},
-		"avatar_value",
-		"avatar_url")
-}

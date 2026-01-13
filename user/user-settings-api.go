@@ -9,14 +9,12 @@ import (
 type UserSettings interface {
 	Model() *UserSettingsModel
 	Radar() universal.Radar
-	Avatar() universal.Description
 }
 
 // Model
 
 type UserSettingsModel struct {
-	Radar  *universal.RadarModel       `json:"radar"`
-	Avatar *universal.DescriptionModel `json:"avatar"`
+	Radar *universal.RadarModel `json:"radar"`
 }
 
 func NewUserSettingsModel() *UserSettingsModel {
@@ -27,8 +25,7 @@ func NewUserSettingsModel() *UserSettingsModel {
 
 func EmptyUserSettingsModel() *UserSettingsModel {
 	return &UserSettingsModel{
-		Avatar: universal.EmptyDescriptionModel(),
-		Radar:  universal.EmptyRadarModel(),
+		Radar: universal.EmptyRadarModel(),
 	}
 }
 
@@ -57,11 +54,4 @@ func (u SolidUserSettings) Radar() universal.Radar {
 		return universal.NewSolidRadar(u.Model().Radar, u.userSettings.Radar())
 	}
 	return universal.NewSolidRadar(u.Model().Radar, nil)
-}
-
-func (u SolidUserSettings) Avatar() universal.Description {
-	if u.userSettings != nil {
-		return universal.NewSolidDescription(u.Model().Avatar, u.userSettings.Avatar())
-	}
-	return universal.NewSolidDescription(u.Model().Avatar, nil)
 }
