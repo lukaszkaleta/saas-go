@@ -1,6 +1,8 @@
 package pgcategory
 
 import (
+	"context"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/category"
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -13,11 +15,11 @@ type PgCategory struct {
 	Id int64
 }
 
-func (pgCategory PgCategory) Update(model *category.CategoryModel) error {
+func (pgCategory PgCategory) Update(ctx context.Context, model *category.CategoryModel) error {
 	return nil
 }
 
-func (pgCategory PgCategory) Model() *category.CategoryModel {
+func (pgCategory PgCategory) Model(ctx context.Context) *category.CategoryModel {
 	return &category.CategoryModel{
 		Id: pgCategory.Id,
 	}
@@ -25,6 +27,22 @@ func (pgCategory PgCategory) Model() *category.CategoryModel {
 
 func (pgCategory PgCategory) Localizations() universal.Localizations {
 	return &universalPg.PgLocalizations{pgCategory.Db, &pg.RelationEntity{RelationId: pgCategory.Id, ColumnName: "category_id", TableName: "category_localization"}}
+}
+
+func (pgCategory PgCategory) Parent(ctx context.Context) (category.Category, error) {
+	sql := "select * from category where id = (select parent_category_id from category where id = @id)"
+	row, err := pgCategory.Db.Pool.Query(ctx, sql, pgx.NamedArgs{"id": pgCategory.Id})
+	if err != nil {
+		return nil, err
+	}
+	if row.Next() {
+		parent, err := MapCategory(pgCategory.Db)(row)
+		if err != nil {
+			return nil, err
+		}
+		return parent, nil
+	}
+	return nil, nil
 }
 
 func MapCategory(db *pg.PgDb) pgx.RowToFunc[category.Category] {

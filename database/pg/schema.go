@@ -2,7 +2,6 @@ package pg
 
 import (
 	"embed"
-	"io/fs"
 )
 
 type Schema interface {
@@ -28,22 +27,19 @@ func (s *DefaultSchema) Name() string {
 }
 
 func (schema *DefaultSchema) Create() error {
-	err := schema.db.ExecuteFileFromFs(schema.ddlFs, "ddl/create.sql")
+	err := NewSqlFile(schema.ddlFs, schema.db, "ddl/create.sql").Execute()
 	if err != nil {
 		return err
 	}
-	err = schema.db.ExecuteFileFromFsWithSeparator(schema.ddlFs, "ddl/create-func.sql", ";;")
+	err = NewSqlFile(schema.ddlFs, schema.db, "ddl/create-func.sql", WithSkipNotExistingFile, WithQuerySeparator(";;")).Execute()
 	if err != nil {
-		_, ok := err.(*fs.PathError)
-		if !ok {
-			return err
-		}
+		return err
 	}
 	return nil
 }
 
 func (schema *DefaultSchema) CreateTest() error {
-	err := schema.db.ExecuteFileFromFs(schema.ddlFs, "ddl/create-test.sql")
+	err := NewSqlFile(schema.ddlFs, schema.db, "ddl/create-test.sql", WithSkipNotExistingFile).Execute()
 	if err != nil {
 		return err
 	}
@@ -51,7 +47,7 @@ func (schema *DefaultSchema) CreateTest() error {
 }
 
 func (schema *DefaultSchema) Drop() error {
-	return schema.db.ExecuteFileFromFs(schema.ddlFs, "ddl/drop.sql")
+	return NewSqlFile(schema.ddlFs, schema.db, "ddl/drop.sql").Execute()
 }
 
 func (schema *DefaultSchema) DropTest() error {
@@ -59,5 +55,5 @@ func (schema *DefaultSchema) DropTest() error {
 	if err != nil {
 		return err
 	}
-	return schema.db.ExecuteFileFromFs(schema.ddlFs, "ddl/drop-test.sql")
+	return NewSqlFile(schema.ddlFs, schema.db, "ddl/drop-test.sql", WithSkipNotExistingFile).Execute()
 }

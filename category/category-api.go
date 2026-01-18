@@ -1,13 +1,18 @@
 package category
 
-import "github.com/lukaszkaleta/saas-go/universal"
+import (
+	"context"
+
+	"github.com/lukaszkaleta/saas-go/universal"
+)
 
 // API
 
 type Category interface {
-	Model() *CategoryModel
-	Update(newModel *CategoryModel) error
+	Model(ctx context.Context) *CategoryModel
+	Update(ctx context.Context, newModel *CategoryModel) error
 	Localizations() universal.Localizations
+	Parent(ctx context.Context) (Category, error)
 }
 
 // Builder
@@ -50,18 +55,22 @@ func NewSolidCategory(model *CategoryModel, category Category) Category {
 	return &SolidCategory{model, category}
 }
 
-func (category SolidCategory) Update(newModel *CategoryModel) error {
+func (category SolidCategory) Update(ctx context.Context, newModel *CategoryModel) error {
 	category.model.Change(newModel)
 	if category.Category == nil {
 		return nil
 	}
-	return category.Category.Update(newModel)
+	return category.Category.Update(ctx, newModel)
 }
 
-func (category SolidCategory) Model() *CategoryModel {
+func (category SolidCategory) Model(ctx context.Context) *CategoryModel {
 	return category.model
 }
 
 func (category SolidCategory) Localizations() universal.Localizations {
 	return category.Category.Localizations()
+}
+
+func (category SolidCategory) Parent(ctx context.Context) (Category, error) {
+	return category.Category.Parent(ctx)
 }

@@ -65,7 +65,7 @@ func MapMessages(rows pgx.Rows, db *pg.PgDb) ([]messages.Message, error) {
 	id := int64(0)
 	for rows.Next() {
 		pgMessage := &PgMessage{Db: db, Id: id}
-		msgModel, err := MapMessage(rows)
+		msgModel, err := MapMessageModel(rows)
 		if err != nil {
 			return nil, err
 		}

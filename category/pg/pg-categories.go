@@ -43,7 +43,7 @@ func (pgCategories *PgCategories) AddWithParent(ctx context.Context, parent cate
 
 	categoryId := int64(0)
 	query := "INSERT INTO category(parent_category_id, name_value, name_slug) VALUES( $1, $2, $3 ) returning id"
-	row := pgCategories.Db.Pool.QueryRow(ctx, query, parent.Model().Id, nameValue, nameSlug)
+	row := pgCategories.Db.Pool.QueryRow(ctx, query, parent.Model(ctx).Id, nameValue, nameSlug)
 	row.Scan(&categoryId)
 	pgCategory := PgCategory{
 		Db: pgCategories.Db,
@@ -52,7 +52,7 @@ func (pgCategories *PgCategories) AddWithParent(ctx context.Context, parent cate
 	return category.NewSolidCategory(
 		&category.CategoryModel{
 			Id:          categoryId,
-			ParentId:    &parent.Model().Id,
+			ParentId:    &parent.Model(ctx).Id,
 			Name:        &universal.NameModel{Value: nameValue, Slug: nameSlug},
 			Description: &universal.DescriptionModel{},
 		},
@@ -66,22 +66,7 @@ func (pgCategories *PgCategories) AllLocalized(ctx context.Context, country stri
 	if err != nil {
 		return nil, err
 	}
-
-	var categories []*category.CategoryModel
-	for rows.Next() {
-		categoryModel := new(category.CategoryModel)
-		categoryModel.Name = new(universal.NameModel)
-		categoryModel.Description = new(universal.DescriptionModel)
-		err := rows.Scan(&categoryModel.Id,
-			&categoryModel.ParentId,
-			&categoryModel.Name.Value,
-			&categoryModel.Name.Slug)
-		if err != nil {
-			return nil, err
-		}
-		categories = append(categories, categoryModel)
-	}
-	return categories, nil
+	return MapCategoryModels(rows)
 }
 
 func (pgCategories *PgCategories) ById(ctx context.Context, id int64) (category.Category, error) {
@@ -110,6 +95,24 @@ func (pgCategories *PgCategories) ByIds(ctx context.Context, ids []int64) ([]cat
 	categories, err := pgx.CollectRows(rows, MapCategoryModel)
 	if err != nil {
 		return nil, err
+	}
+	return categories, nil
+}
+
+func MapCategoryModels(rows pgx.Rows) ([]*category.CategoryModel, error) {
+	var categories []*category.CategoryModel
+	for rows.Next() {
+		categoryModel := new(category.CategoryModel)
+		categoryModel.Name = new(universal.NameModel)
+		categoryModel.Description = new(universal.DescriptionModel)
+		err := rows.Scan(&categoryModel.Id,
+			&categoryModel.ParentId,
+			&categoryModel.Name.Value,
+			&categoryModel.Name.Slug)
+		if err != nil {
+			return nil, err
+		}
+		categories = append(categories, categoryModel)
 	}
 	return categories, nil
 }

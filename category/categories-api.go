@@ -9,10 +9,10 @@ type Categories interface {
 	ByIds(ctx context.Context, id []int64) ([]CategoryModel, error)
 }
 
-func CategoryModels(Categories []Category) []*CategoryModel {
+func CategoryModels(ctx context.Context, Categories []Category) []*CategoryModel {
 	var models []*CategoryModel
 	for _, modelAware := range Categories {
-		models = append(models, modelAware.Model()) // note the = instead of :=
+		models = append(models, modelAware.Model(ctx)) // note the = instead of :=
 	}
 	return models
 }

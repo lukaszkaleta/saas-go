@@ -21,7 +21,7 @@ func (m *PgMessage) Model(ctx context.Context) *messages.MessageModel {
 	if err != nil {
 		return nil
 	}
-	model, err := pgx.CollectOneRow(rows, MapMessage)
+	model, err := pgx.CollectOneRow(rows, MapMessageModel)
 	if err != nil {
 		return nil
 	}
@@ -32,7 +32,7 @@ func (m *PgMessage) ID() int64 {
 	return m.Id
 }
 
-func MapMessage(row pgx.CollectableRow) (*messages.MessageModel, error) {
+func MapMessageModel(row pgx.CollectableRow) (*messages.MessageModel, error) {
 	model := messages.EmptyModel()
 	createdActionModel := universal.EmptyCreatedActionModel()
 	err := row.Scan(
@@ -47,4 +47,13 @@ func MapMessage(row pgx.CollectableRow) (*messages.MessageModel, error) {
 		return nil, err
 	}
 	return model, nil
+}
+
+func MapMessage(db *pg.PgDb, row pgx.CollectableRow) (messages.Message, error) {
+	model, err := MapMessageModel(row)
+	if err != nil {
+		return nil, err
+	}
+	pgMessage := &PgMessage{Db: db, Id: model.Id, OwnerId: model.OwnerId}
+	return messages.NewSolidMessage(model, pgMessage, model.Id), nil
 }

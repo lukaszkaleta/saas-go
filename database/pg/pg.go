@@ -3,11 +3,8 @@ package pg
 import (
 	"context"
 	"fmt"
-	"io"
-	"io/fs"
 	"log/slog"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -35,25 +32,7 @@ func (db *PgDb) ExecuteSql(sql string) error {
 	return err
 }
 
-func (db *PgDb) ExecuteFileFromFs(fs fs.FS, path string) error {
-	return db.ExecuteFileFromFsWithSeparator(fs, path, ";")
-}
-
-func (db *PgDb) ExecuteFileFromFsWithSeparator(fs fs.FS, path string, separator string) error {
-	open, err := fs.Open(path)
-	if err != nil {
-		return err
-	}
-	sqlStatements, err := io.ReadAll(open)
-	if err != nil {
-		return err
-	}
-	sqlArray := strings.Split(string(sqlStatements), separator)
-	return db.ExecuteSqls(sqlArray)
-}
-
 func NewPgWithUrl(databaseUrl string) *PgDb {
-
 	dbpool, err := pgxpool.NewWithConfig(context.Background(), Config(databaseUrl))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to create DATABASE connection pool: %v\n", err)
@@ -86,15 +65,6 @@ func NewPg() *PgDb {
 
 func (db *PgDb) TableEntity(name string, id int64) TableEntity {
 	return TableEntity{Name: name, Id: id}
-}
-
-func ExecuteFromFile(path string) error {
-	sqlStatements, err := os.ReadFile(path)
-	if err != nil {
-		return err
-	}
-	sqlArray := strings.Split(string(sqlStatements), ";")
-	return NewPg().ExecuteSqls(sqlArray)
 }
 
 func Config(url string) *pgxpool.Config {
