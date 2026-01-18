@@ -2,6 +2,7 @@ package pgjob
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -122,4 +123,36 @@ func MapJob(row pgx.CollectableRow) (*job.JobModel, error) {
 		return nil, err
 	}
 	return jobModel, nil
+}
+
+func JobColumns() []string {
+	return []string{
+		"id",
+		"description_value",
+		"description_image_url",
+		"address_line_1",
+		"address_line_2",
+		"address_city",
+		"address_postal_code",
+		"address_district",
+		"position_latitude",
+		"position_longitude",
+		"price_value",
+		"price_currency",
+		"rating",
+		"status_draft",
+		"status_published",
+		"status_occupied",
+		"status_closed",
+		"action_created_by_id",
+		"action_created_at",
+	}
+}
+
+func JobColumnString() string {
+	return strings.Join(JobColumns(), ",")
+}
+
+func JobSelect() string {
+	return "select " + strings.Join(JobColumns(), ",") + " from job "
 }

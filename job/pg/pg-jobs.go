@@ -19,7 +19,7 @@ type PgJobs struct {
 }
 
 func (pgJobs *PgJobs) ById(ctx context.Context, id int64) (job.Job, error) {
-	query := fmt.Sprintf("select * from job where id = $1")
+	query := JobSelect() + "where id = $1"
 	rows, err := pgJobs.Db.Pool.Query(ctx, query, id)
 	if err != nil {
 		return nil, err
@@ -144,7 +144,7 @@ func (p PgRelationJobs) Join(ctx context.Context, jobId int64) error {
 }
 
 func (p PgRelationJobs) List(ctx context.Context) ([]job.Job, error) {
-	query := fmt.Sprintf("select * from job where id in (select job_id from %s where %s = $1)", p.Relation.TableName, p.Relation.ColumnName)
+	query := fmt.Sprintf("%s where id in (select job_id from %s where %s = $1)", JobSelect(), p.Relation.TableName, p.Relation.ColumnName)
 	rows, err := p.Db.Pool.Query(ctx, query, p.Relation.RelationId)
 	if err != nil {
 		return nil, err

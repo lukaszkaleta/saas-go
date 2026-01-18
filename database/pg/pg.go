@@ -20,8 +20,10 @@ type PgDb struct {
 
 func (db *PgDb) ExecuteSqls(sqls []string) error {
 	for _, sql := range sqls {
+		slog.Info("Executing", "SQL", sql)
 		err := db.ExecuteSql(sql)
 		if err != nil {
+			slog.Error("Check", "SQL", sql)
 			return err
 		}
 	}

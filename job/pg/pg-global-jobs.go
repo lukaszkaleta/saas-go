@@ -18,7 +18,7 @@ func NewPgGlobalJobs(Db *pg.PgDb) job.GlobalJobs {
 }
 
 func (globalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.RadarModel) ([]job.Job, error) {
-	query := "select * from job where status_published is not null and status_closed is null and status_occupied is null"
+	query := JobSelect() + " where status_published is not null and status_closed is null and status_occupied is null"
 	rows, err := globalJobs.Db.Pool.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -27,7 +27,7 @@ func (globalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.Rad
 }
 
 func (globalJobs *PgGlobalJobs) ActiveById(ctx context.Context, id int64) (job.Job, error) {
-	query := "select * from job where id = @id and status_published is not null and status_closed is null and status_occupied is null"
+	query := JobSelect() + "where id = @id and status_published is not null and status_closed is null and status_occupied is null"
 	rows, err := globalJobs.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": id})
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (globalJobs *PgGlobalJobs) ActiveById(ctx context.Context, id int64) (job.J
 }
 
 func (globalJobs *PgGlobalJobs) ById(ctx context.Context, id int64) (job.Job, error) {
-	query := "select * from job where id = @id"
+	query := JobSelect() + "where id = @id"
 	rows, err := globalJobs.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": id})
 	if err != nil {
 		return nil, err

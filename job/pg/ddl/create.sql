@@ -20,12 +20,23 @@ CREATE TABLE if not exists job (
   status_closed timestamp,
   action_created_by_id bigint not null references users,
   action_created_at timestamp not null default now()
- );
+);
+
+DROP TRIGGER IF EXISTS tsvectorupdate on job;
+DROP INDEX IF EXISTS idx_job_task;
+ALTER TABLE job DROP COLUMN IF EXISTS search;
+ALTER TABLE job ADD COLUMN search tsvector;
+UPDATE job SET search = to_tsvector('simple', coalesce(description_value, '') || ' ' || coalesce(address_line_1) || ' ' || coalesce(address_line_2) || ' ' || coalesce(address_city) || ' ' || coalesce(address_postal_code) || ' ' || coalesce(address_district));
+CREATE INDEX idx_search_job ON job USING gin(search);
+CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON job FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger(search, 'pg_catalog.simple', description_value, address_line_1, address_line_2, address_city, address_postal_code, address_district);
+
 
 CREATE TABLE if not exists job_filesystem (
   job_id bigint not null references job,
   filesystem_id bigint not null references filestore_filesystem
 );
+CREATE UNIQUE INDEX if not exists job_filesystem_uidx ON job_filesystem USING btree (job_id, filesystem_id);
+CREATE INDEX if not exists job_filesystem_job_idx ON job_filesystem USING btree (job_id);
 
 CREATE TABLE if not exists job_offer (
   id bigint not null primary key default nextval('job_sequence'),
@@ -42,11 +53,14 @@ CREATE TABLE if not exists job_offer (
   action_rejected_by_id bigint references users,
   action_rejected_at timestamp
 );
+CREATE INDEX if not exists job_offer_job_idx ON job_offer USING btree (job_id);
 
-CREATE TABLE message (
+CREATE TABLE if not exists job_message (
   id bigint not null primary key default nextval('job_sequence'),
   owner_id bigint not null references job,
   value TEXT NOT NULL,
   action_created_by_id bigint not null references users(id),
   action_created_at timestamp not null default now()
 );
+CREATE INDEX if not exists message_job_idx ON job_message USING btree (owner_id);
+CREATE INDEX if not exists message_action_created_by_idx ON job_message USING btree (action_created_by_id);
