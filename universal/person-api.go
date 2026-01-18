@@ -39,6 +39,7 @@ func EmptyPersonModel() *PersonModel {
 		Email:         "",
 		Phone:         "",
 		AverageRating: 10,
+		Avatar:        EmptyDescriptionModel(),
 	}
 }
 
