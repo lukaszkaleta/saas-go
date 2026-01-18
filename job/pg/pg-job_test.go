@@ -62,10 +62,12 @@ func TestPgJob_Status(t *testing.T) {
 			Position:    &universal.PositionModel{Lon: 1, Lat: 1},
 			Address:     universal.EmptyAddressModel(),
 			Price:       universal.EmptyPriceModel(),
+			Tags:        []string{"tag1", "tag2"},
 		},
 	)
 	if err != nil {
 		t.Error(err)
+		return
 	}
 	if job.JobDraft != newJob.State().Name(t.Context()) {
 		t.Error("job status is not draft")
@@ -81,5 +83,4 @@ func TestPgJob_Status(t *testing.T) {
 	if job.JobDraft != jobById.State().Name(t.Context()) {
 		t.Error("job status is not draft")
 	}
-
 }

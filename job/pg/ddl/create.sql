@@ -19,17 +19,16 @@ CREATE TABLE if not exists job (
   status_occupied timestamp,
   status_closed timestamp,
   action_created_by_id bigint not null references users,
-  action_created_at timestamp not null default now()
+  action_created_at timestamp not null default now(),
+  tags text[]
 );
 
 DROP TRIGGER IF EXISTS tsvectorupdate on job;
-DROP INDEX IF EXISTS idx_job_task;
-ALTER TABLE job DROP COLUMN IF EXISTS search;
-ALTER TABLE job ADD COLUMN search tsvector;
-UPDATE job SET search = to_tsvector('simple', coalesce(description_value, '') || ' ' || coalesce(address_line_1) || ' ' || coalesce(address_line_2) || ' ' || coalesce(address_city) || ' ' || coalesce(address_postal_code) || ' ' || coalesce(address_district));
-CREATE INDEX idx_search_job ON job USING gin(search);
-CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON job FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger(search, 'pg_catalog.simple', description_value, address_line_1, address_line_2, address_city, address_postal_code, address_district);
-
+DROP INDEX IF EXISTS idx_search_vector_job;
+ALTER TABLE job DROP COLUMN IF EXISTS search_vector;
+ALTER TABLE job ADD COLUMN search_vector tsvector;
+UPDATE job SET search_vector = to_tsvector('norwegian', coalesce(description_value, ''));
+CREATE INDEX idx_search_vector_job ON job USING gin(search_vector);
 
 CREATE TABLE if not exists job_filesystem (
   job_id bigint not null references job,

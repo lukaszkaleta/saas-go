@@ -69,6 +69,7 @@ type JobModel struct {
 	Address     *universal.AddressModel     `json:"address"`
 	Description *universal.DescriptionModel `json:"description"`
 	State       JobStatus                   `json:"state"`
+	Tags        []string                    `json:"tags"`
 	Actions     universal.ActionsModel      `json:"actions"`
 }
 

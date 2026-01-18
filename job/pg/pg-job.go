@@ -112,6 +112,7 @@ func MapJob(row pgx.CollectableRow) (*job.JobModel, error) {
 		&nullTimePublished,
 		&nullTimeOccupied,
 		&nullTimeClosed,
+		&jobModel.Tags,
 		&actionCreated.ById,
 		&actionCreated.MadeAt,
 	)
@@ -144,6 +145,7 @@ func JobColumns() []string {
 		"status_published",
 		"status_occupied",
 		"status_closed",
+		"tags",
 		"action_created_by_id",
 		"action_created_at",
 	}

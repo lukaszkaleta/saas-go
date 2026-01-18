@@ -36,6 +36,10 @@ func (db *PgDb) ExecuteSql(sql string) error {
 }
 
 func (db *PgDb) ExecuteFileFromFs(fs fs.FS, path string) error {
+	return db.ExecuteFileFromFsWithSeparator(fs, path, ";")
+}
+
+func (db *PgDb) ExecuteFileFromFsWithSeparator(fs fs.FS, path string, separator string) error {
 	open, err := fs.Open(path)
 	if err != nil {
 		return err
@@ -44,7 +48,7 @@ func (db *PgDb) ExecuteFileFromFs(fs fs.FS, path string) error {
 	if err != nil {
 		return err
 	}
-	sqlArray := strings.Split(string(sqlStatements), ";")
+	sqlArray := strings.Split(string(sqlStatements), separator)
 	return db.ExecuteSqls(sqlArray)
 }
 

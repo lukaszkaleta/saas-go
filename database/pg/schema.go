@@ -1,6 +1,9 @@
 package pg
 
-import "embed"
+import (
+	"embed"
+	"io/fs"
+)
 
 type Schema interface {
 	Name() string
@@ -25,7 +28,18 @@ func (s *DefaultSchema) Name() string {
 }
 
 func (schema *DefaultSchema) Create() error {
-	return schema.db.ExecuteFileFromFs(schema.ddlFs, "ddl/create.sql")
+	err := schema.db.ExecuteFileFromFs(schema.ddlFs, "ddl/create.sql")
+	if err != nil {
+		return err
+	}
+	err = schema.db.ExecuteFileFromFsWithSeparator(schema.ddlFs, "ddl/create-func.sql", ";;")
+	if err != nil {
+		_, ok := err.(*fs.PathError)
+		if !ok {
+			return err
+		}
+	}
+	return nil
 }
 
 func (schema *DefaultSchema) CreateTest() error {
