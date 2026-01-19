@@ -93,15 +93,15 @@ func MapJobs(db *pg.PgDb, rows pgx.Rows) ([]job.Job, error) {
 // Relation
 
 type PgRelationJobs struct {
-	Db       *pg.PgDb
-	Jobs     *PgJobs
+	db       *pg.PgDb
+	Jobs     job.Jobs
 	Relation pg.RelationEntity
 }
 
-func NewPgRelationJobs(pfJobs *PgJobs, relation pg.RelationEntity) PgRelationJobs {
+func NewPgRelationJobs(db *pg.PgDb, jobs job.Jobs, relation pg.RelationEntity) PgRelationJobs {
 	return PgRelationJobs{
-		Db:       pfJobs.db,
-		Jobs:     pfJobs,
+		db:       db,
+		Jobs:     jobs,
 		Relation: relation,
 	}
 }
@@ -116,7 +116,7 @@ func (p PgRelationJobs) Add(ctx context.Context, jobModel *job.JobModel) (job.Jo
 		return newJob, err
 	}
 	query := fmt.Sprintf("INSERT INTO %s(job_id, %s) VALUES( $1, $2 )", p.Relation.TableName, p.Relation.ColumnName)
-	_, err = p.Db.Pool.Exec(ctx, query, newJob.Model().Id, p.Relation.RelationId)
+	_, err = p.db.Pool.Exec(ctx, query, newJob.Model().Id, p.Relation.RelationId)
 	if err != nil {
 		return newJob, err
 	}
@@ -125,7 +125,7 @@ func (p PgRelationJobs) Add(ctx context.Context, jobModel *job.JobModel) (job.Jo
 
 func (p PgRelationJobs) Join(ctx context.Context, jobId int64) error {
 	query := fmt.Sprintf("INSERT INTO %s(job_id, %s) VALUES( $1, $2 )", p.Relation.TableName, p.Relation.ColumnName)
-	_, err := p.Db.Pool.Exec(ctx, query, jobId, p.Relation.RelationId)
+	_, err := p.db.Pool.Exec(ctx, query, jobId, p.Relation.RelationId)
 	if err != nil {
 		return err
 	}
@@ -134,9 +134,9 @@ func (p PgRelationJobs) Join(ctx context.Context, jobId int64) error {
 
 func (p PgRelationJobs) List(ctx context.Context) ([]job.Job, error) {
 	query := fmt.Sprintf("%s where id in (select job_id from %s where %s = $1)", JobSelect(), p.Relation.TableName, p.Relation.ColumnName)
-	rows, err := p.Db.Pool.Query(ctx, query, p.Relation.RelationId)
+	rows, err := p.db.Pool.Query(ctx, query, p.Relation.RelationId)
 	if err != nil {
 		return nil, err
 	}
-	return MapJobs(p.Db, rows)
+	return MapJobs(p.db, rows)
 }
