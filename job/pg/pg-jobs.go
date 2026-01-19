@@ -18,6 +18,10 @@ type PgJobs struct {
 	Ids []int
 }
 
+func NewPgJobs(db *pg.PgDb, ids ...int) job.Jobs {
+	return &PgJobs{db: db, Ids: ids}
+}
+
 func (pgJobs *PgJobs) ById(ctx context.Context, id int64) (job.Job, error) {
 	query := JobSelect() + "where id = $1"
 	rows, err := pgJobs.db.Pool.Query(ctx, query, id)
