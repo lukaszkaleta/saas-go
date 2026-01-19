@@ -12,17 +12,17 @@ import (
 )
 
 type PgOffers struct {
-	Db    *pg.PgDb
+	db    *pg.PgDb
 	JobId int64
 }
 
 func (p *PgOffers) Waiting(ctx context.Context) ([]job.Offer, error) {
 	query := "select * from job_offer where job_id = $1 and action_accepted_at is null and action_rejected_at is null"
-	rows, err := p.Db.Pool.Query(ctx, query, p.JobId)
+	rows, err := p.db.Pool.Query(ctx, query, p.JobId)
 	if err != nil {
 		return nil, err
 	}
-	return MapOffers(rows, p.Db)
+	return MapOffers(rows, p.db)
 }
 
 func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.Offer, error) {
@@ -30,7 +30,7 @@ func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.
 	user := user.CurrentUser(ctx)
 
 	query := "INSERT INTO job_offer (job_id, price_value, price_currency, description_value, action_created_by_id) VALUES( $1, $2, $3, $4, $5 ) returning id"
-	row := pgOffers.Db.Pool.QueryRow(
+	row := pgOffers.db.Pool.QueryRow(
 		ctx,
 		query,
 		pgOffers.JobId,
@@ -44,7 +44,7 @@ func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.
 		return nil, err
 	}
 	pgOffer := PgOffer{
-		Db: pgOffers.Db,
+		db: pgOffers.db,
 		Id: offerId,
 	}
 	actionsList := make(map[string]*universal.ActionModel)
@@ -68,7 +68,7 @@ func MapOffers(rows pgx.Rows, db *pg.PgDb) ([]job.Offer, error) {
 	offers := []job.Offer{}
 	id := int64(0)
 	for rows.Next() {
-		pgOffer := &PgOffer{Db: db, Id: id}
+		pgOffer := &PgOffer{db: db, Id: id}
 		offerModel, err := MapOffer(rows)
 		if err != nil {
 			return nil, err

@@ -16,7 +16,7 @@ import (
 )
 
 type PgJob struct {
-	Db *pg.PgDb
+	db *pg.PgDb
 	Id int64
 }
 
@@ -30,24 +30,24 @@ func (pgJob *PgJob) Model() *job.JobModel {
 }
 
 func (pgJob *PgJob) Address() universal.Address {
-	return &pgUniversal.PgAddress{pgJob.Db, pgJob.tableEntity()}
+	return &pgUniversal.PgAddress{pgJob.db, pgJob.tableEntity()}
 }
 
 func (pgJob *PgJob) Position() universal.Position {
-	return &pgUniversal.PgPosition{pgJob.Db, pgJob.tableEntity()}
+	return &pgUniversal.PgPosition{pgJob.db, pgJob.tableEntity()}
 }
 
 func (pgJob *PgJob) Price() universal.Price {
-	return &pgUniversal.PgPrice{pgJob.Db, pgJob.tableEntity()}
+	return &pgUniversal.PgPrice{pgJob.db, pgJob.tableEntity()}
 }
 
 func (pgJob *PgJob) Description() universal.Description {
-	return pgUniversal.NewPgDescriptionFromTable(pgJob.Db, pgJob.tableEntity())
+	return pgUniversal.NewPgDescriptionFromTable(pgJob.db, pgJob.tableEntity())
 }
 
 func (pgJob *PgJob) FileSystem() filestore.FileSystem {
 	return &pgFilestore.PgFileSystem{
-		Db: pgJob.Db,
+		Db: pgJob.db,
 		Owner: pg.RelationEntity{
 			RelationId: pgJob.Id,
 			TableName:  "job_filesystem",
@@ -58,32 +58,43 @@ func (pgJob *PgJob) FileSystem() filestore.FileSystem {
 
 func (pgJob *PgJob) State() universal.State {
 	return pgUniversal.NewPgTimestampState(
-		pgJob.Db,
+		pgJob.db,
 		pgJob.tableEntity(),
 		job.JobStatuses())
 }
 
 func (pgJob *PgJob) Actions() universal.Actions {
-	return pgUniversal.NewPgActions(pgJob.Db, pgJob.tableEntity())
+	return pgUniversal.NewPgActions(pgJob.db, pgJob.tableEntity())
 }
 
 func (pgJob *PgJob) Offers() job.Offers {
-	return &PgOffers{Db: pgJob.Db, JobId: pgJob.Id}
+	return &PgOffers{db: pgJob.db, JobId: pgJob.Id}
 }
 
 func (pgJob *PgJob) Messages() messages.Messages {
-	return pgMessages.NewPgMessages(pgJob.Db, pgJob.Id)
+	return pgMessages.NewPgMessages(pgJob.db, pgJob.Id)
 }
 
 func (pgJob *PgJob) tableEntity() pg.TableEntity {
-	return pgJob.Db.TableEntity("job", pgJob.Id)
+	return pgJob.db.TableEntity("job", pgJob.Id)
 }
 
 func (pgJob *PgJob) localizationRelationEntity() pg.TableEntity {
-	return pgJob.Db.TableEntity("job", pgJob.Id)
+	return pgJob.db.TableEntity("job", pgJob.Id)
 }
 
-func MapJob(row pgx.CollectableRow) (*job.JobModel, error) {
+func MapJob(db *pg.PgDb) pgx.RowToFunc[job.Job] {
+	return func(row pgx.CollectableRow) (job.Job, error) {
+		model, err := MapJobModel(row)
+		if err != nil {
+			return nil, err
+		}
+		pgJob := &PgJob{db: db, Id: model.Id}
+		return job.NewSolidJob(model, pgJob), nil
+	}
+}
+
+func MapJobModel(row pgx.CollectableRow) (*job.JobModel, error) {
 	jobModel := job.EmptyJobModel()
 
 	nullTimePublished := sql.NullTime{}

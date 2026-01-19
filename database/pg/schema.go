@@ -47,7 +47,11 @@ func (schema *DefaultSchema) CreateTest() error {
 }
 
 func (schema *DefaultSchema) Drop() error {
-	return NewSqlFile(schema.ddlFs, schema.db, "ddl/drop.sql").Execute()
+	err := NewSqlFile(schema.ddlFs, schema.db, "ddl/drop.sql").Execute()
+	if err != nil {
+		return err
+	}
+	return NewSqlFile(schema.ddlFs, schema.db, "ddl/drop-func.sql", WithSkipNotExistingFile).Execute()
 }
 
 func (schema *DefaultSchema) DropTest() error {

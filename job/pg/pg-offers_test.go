@@ -9,11 +9,11 @@ import (
 )
 
 func TestPgOffers_TestFlow(t *testing.T) {
-	teardownSuite, db := setupJobTest(t)
+	teardownSuite, db := SetupJobTest(t)
 	defer teardownSuite(t)
 	ctx := user.WithUser(t.Context(), JobUser)
 
-	jobs := PgJobs{Db: db}
+	jobs := PgJobs{db: db}
 	price := &universal.PriceModel{Value: 10, Currency: "USD"}
 	newJob, err := jobs.Add(
 		ctx,

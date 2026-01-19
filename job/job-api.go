@@ -104,9 +104,9 @@ type SolidJob struct {
 	Job   Job
 }
 
-func NewSolidJob(model *JobModel, Job Job, id int64) Job {
+func NewSolidJob(model *JobModel, Job Job) Job {
 	return &SolidJob{
-		id,
+		model.Id,
 		model,
 		Job,
 	}

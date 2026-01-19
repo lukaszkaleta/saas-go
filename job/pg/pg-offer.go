@@ -12,14 +12,14 @@ import (
 )
 
 type PgOffer struct {
-	Db *pg.PgDb
+	db *pg.PgDb
 	Id int64
 }
 
 func (o *PgOffer) Accept(ctx context.Context) error {
 	currentUser := user.CurrentUser(ctx)
 	query := "update job_offer set action_accepted_at = now(), action_rejected_at = null, action_rejected_by_id = null, action_accepted_by_id = $1 where id = $2"
-	_, err := o.Db.Pool.Exec(ctx, query, currentUser.Id, o.Id)
+	_, err := o.db.Pool.Exec(ctx, query, currentUser.Id, o.Id)
 	if err != nil {
 		return err
 	}
@@ -29,7 +29,7 @@ func (o *PgOffer) Accept(ctx context.Context) error {
 func (o *PgOffer) Reject(ctx context.Context) error {
 	currentUser := user.CurrentUser(ctx)
 	query := "update job_offer set action_rejected_at = now(), action_accepted_at = null, action_accepted_by_id = null ,action_rejected_by_id = $1 where id = $2"
-	_, err := o.Db.Pool.Exec(ctx, query, currentUser.Id, o.Id)
+	_, err := o.db.Pool.Exec(ctx, query, currentUser.Id, o.Id)
 	if err != nil {
 		return err
 	}

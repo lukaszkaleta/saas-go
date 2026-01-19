@@ -14,32 +14,24 @@ import (
 )
 
 type PgJobs struct {
-	Db  *pg.PgDb
+	db  *pg.PgDb
 	Ids []int
 }
 
 func (pgJobs *PgJobs) ById(ctx context.Context, id int64) (job.Job, error) {
 	query := JobSelect() + "where id = $1"
-	rows, err := pgJobs.Db.Pool.Query(ctx, query, id)
+	rows, err := pgJobs.db.Pool.Query(ctx, query, id)
 	if err != nil {
 		return nil, err
 	}
-	jobModel, err := MapJob(rows)
-	if err != nil {
-		return nil, err
-	}
-	return job.NewSolidJob(
-		jobModel,
-		&PgJob{Db: pgJobs.Db, Id: id},
-		id,
-	), nil
+	return MapJob(pgJobs.db)(rows)
 }
 
 func (pgJobs *PgJobs) Add(ctx context.Context, model *job.JobModel) (job.Job, error) {
 	jobId := int64(0)
 	query := "INSERT INTO job (description_value, description_image_url, position_latitude, position_longitude, address_line_1, address_line_2, address_city, address_postal_code, address_district, price_value, price_currency, rating, tags, action_created_by_id) VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) returning id"
 	currentUser := user.CurrentUser(ctx)
-	row := pgJobs.Db.Pool.QueryRow(
+	row := pgJobs.db.Pool.QueryRow(
 		ctx,
 		query,
 		model.Description.Value,
@@ -62,7 +54,7 @@ func (pgJobs *PgJobs) Add(ctx context.Context, model *job.JobModel) (job.Job, er
 		return nil, err
 	}
 	pgJob := PgJob{
-		Db: pgJobs.Db,
+		db: pgJobs.db,
 		Id: jobId,
 	}
 	return job.NewSolidJob(
@@ -75,29 +67,21 @@ func (pgJobs *PgJobs) Add(ctx context.Context, model *job.JobModel) (job.Job, er
 			Rating:      model.Rating,
 			State:       job.JobStatus{Draft: time.Now()},
 		},
-		&pgJob,
-		jobId,
-	), nil
+		&pgJob), nil
 }
 
 func (pgJobs *PgJobs) List(ctx context.Context) ([]job.Job, error) {
 	return nil, errors.New("All jobs can not be listed")
 }
 
-func MapJobs(rows pgx.Rows, db *pg.PgDb) ([]job.Job, error) {
+func MapJobs(db *pg.PgDb, rows pgx.Rows) ([]job.Job, error) {
 	jobs := []job.Job{}
-	id := int64(0)
 	for rows.Next() {
-		pgJob := &PgJob{Db: db, Id: id}
-		jobModel, err := MapJob(rows)
+		mJob, err := MapJob(db)(rows)
 		if err != nil {
 			return nil, err
 		}
-		solidJob := job.NewSolidJob(
-			jobModel,
-			pgJob,
-			id)
-		jobs = append(jobs, solidJob)
+		jobs = append(jobs, mJob)
 	}
 	return jobs, nil
 }
@@ -112,7 +96,7 @@ type PgRelationJobs struct {
 
 func NewPgRelationJobs(pfJobs *PgJobs, relation pg.RelationEntity) PgRelationJobs {
 	return PgRelationJobs{
-		Db:       pfJobs.Db,
+		Db:       pfJobs.db,
 		Jobs:     pfJobs,
 		Relation: relation,
 	}
@@ -150,5 +134,5 @@ func (p PgRelationJobs) List(ctx context.Context) ([]job.Job, error) {
 	if err != nil {
 		return nil, err
 	}
-	return MapJobs(rows, p.Db)
+	return MapJobs(p.Db, rows)
 }

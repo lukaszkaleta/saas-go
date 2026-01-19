@@ -29,3 +29,10 @@ func (g *GlobalJobsLogger) NearBy(ctx context.Context, position *universal.Radar
 	}(time.Now())
 	return g.next.NearBy(ctx, position)
 }
+
+func (g *GlobalJobsLogger) ByQuery(ctx context.Context, query string) ([]Job, error) {
+	defer func(start time.Time) {
+		fmt.Printf("ByQuery for jobs took %v\n", time.Since(start))
+	}(time.Now())
+	return g.next.ByQuery(ctx, query)
+}

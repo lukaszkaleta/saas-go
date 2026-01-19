@@ -1,6 +1,4 @@
-drop function if exists update_job_search_vector();
-;;
-create function update_job_search_vector() returns trigger as $$
+create or replace function update_job_search_vector() returns trigger as $$
 begin
     new.search_vector :=
       setweight(to_tsvector('pg_catalog.norwegian', coalesce(NEW.description_value, '')), 'A') ||

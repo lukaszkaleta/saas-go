@@ -13,7 +13,7 @@ import (
 var JobUser = user.WithId(1)
 var WorkUser = user.WithId(2)
 
-func setupJobTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
+func SetupJobTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 	db := pg.LocalPgWithName("saas-go", "job_test")
 	fsSchema := pgfilestore.NewFilestoreSchema(db)
 	err := fsSchema.CreateTest()
@@ -26,6 +26,10 @@ func setupJobTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 		tb.Fatal(err)
 	}
 
+	_, err = db.Pool.Exec(tb.Context(), "delete from job")
+	if err != nil {
+		tb.Fatal(err)
+	}
 	_, err = db.Pool.Exec(tb.Context(), "delete from users")
 	if err != nil {
 		tb.Error(err)
@@ -51,10 +55,10 @@ func setupJobTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 
 func TestPgJob_Status(t *testing.T) {
 	ctx := user.WithUser(t.Context(), JobUser)
-	teardownSuite, db := setupJobTest(t)
+	teardownSuite, db := SetupJobTest(t)
 	defer teardownSuite(t)
 
-	jobs := PgJobs{Db: db}
+	jobs := PgJobs{db: db}
 	newJob, err := jobs.Add(
 		ctx,
 		&job.JobModel{
@@ -72,7 +76,7 @@ func TestPgJob_Status(t *testing.T) {
 	if job.JobDraft != newJob.State().Name(t.Context()) {
 		t.Error("job status is not draft")
 	}
-	globalJobs := PgGlobalJobs{Db: db}
+	globalJobs := NewPgGlobalJobs(db)
 	jobById, err := globalJobs.ById(t.Context(), newJob.Model().Id)
 	if err != nil {
 		t.Error(err)
