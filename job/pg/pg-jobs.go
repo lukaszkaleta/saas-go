@@ -98,7 +98,7 @@ type PgRelationJobs struct {
 	Relation pg.RelationEntity
 }
 
-func NewPgRelationJobs(db *pg.PgDb, jobs job.Jobs, relation pg.RelationEntity) PgRelationJobs {
+func NewPgRelationJobs(db *pg.PgDb, jobs job.Jobs, relation pg.RelationEntity) job.Jobs {
 	return PgRelationJobs{
 		db:       db,
 		Jobs:     jobs,
