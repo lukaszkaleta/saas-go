@@ -42,7 +42,7 @@ func TestPgMessages_Add(t *testing.T) {
 	drop, ctx, db := setupMessagesTest(t)
 	defer drop(t)
 
-	pgMessages := NewPgMessages(db, USER_ID)
+	pgMessages := NewPgMessages(db, pg.TableEntity{Name: "message", Id: USER_ID})
 	value := "test-message"
 	newMessage, err := pgMessages.Add(ctx, value)
 	if err != nil {

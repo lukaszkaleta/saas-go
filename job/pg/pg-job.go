@@ -72,7 +72,7 @@ func (pgJob *PgJob) Offers() job.Offers {
 }
 
 func (pgJob *PgJob) Messages() messages.Messages {
-	return pgMessages.NewPgMessages(pgJob.db, pgJob.Id)
+	return pgMessages.NewPgMessages(pgJob.db, pg.TableEntity(pgJob.tableEntity()))
 }
 
 func (pgJob *PgJob) tableEntity() pg.TableEntity {
@@ -80,7 +80,7 @@ func (pgJob *PgJob) tableEntity() pg.TableEntity {
 }
 
 func (pgJob *PgJob) localizationRelationEntity() pg.TableEntity {
-	return pgJob.db.TableEntity("job", pgJob.Id)
+	return pgJob.db.TableEntity("job_message", pgJob.Id)
 }
 
 func MapSearchJob(db *pg.PgDb) pgx.RowToFunc[*job.JobSearchModel] {

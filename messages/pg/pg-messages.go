@@ -12,26 +12,25 @@ import (
 )
 
 type PgMessages struct {
-	db *pg.PgDb
-	// ColumnName in owner is not user.
-	owner pg.RelationEntity
+	db    *pg.PgDb
+	owner pg.TableEntity
 }
 
-func NewPgMessages(db *pg.PgDb, owner pg.RelationEntity) messages.Messages {
+func NewPgMessages(db *pg.PgDb, owner pg.TableEntity) messages.Messages {
 	return &PgMessages{db: db, owner: owner}
 }
 
 func (pg *PgMessages) Add(ctx context.Context, value string) (messages.Message, error) {
-	return pg.AddFromModel(ctx, &messages.MessageModel{Value: value, OwnerId: pg.owner.RelationId})
+	return pg.AddFromModel(ctx, &messages.MessageModel{Value: value, OwnerId: pg.owner.Id})
 }
 
 func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.MessageModel) (messages.Message, error) {
-	if model.OwnerId != pg.owner.RelationId {
+	if model.OwnerId != pg.owner.Id {
 		return nil, errors.New("owner inside model and messages does not match")
 	}
 	messageId := int64(0)
 	currentUserId := universal.CurrentUserId(ctx)
-	query := fmt.Sprintf("insert into %s (owner_id, action_created_by_id, value) values (@ownerId, @currentUserId, @value) returning id", pg.owner.TableName)
+	query := fmt.Sprintf("insert into %s (owner_id, action_created_by_id, value) values (@ownerId, @currentUserId, @value) returning id", pg.owner.Name)
 	row := pg.db.Pool.QueryRow(ctx, query, MessageNamedArgs(model, currentUserId))
 	err := row.Scan(&messageId)
 	if err != nil {
@@ -45,8 +44,8 @@ func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.MessageM
 }
 
 func (pg *PgMessages) List(ctx context.Context) ([]messages.Message, error) {
-	query := fmt.Sprintf("select id, owner_id, value, action_created_by_id, action_created_at from %s where owner_id = @ownerId", pg.owner.TableName)
-	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"ownerId": pg.owner.RelationId})
+	query := fmt.Sprintf("select id, owner_id, value, action_created_by_id, action_created_at from %s where owner_id = @ownerId", pg.owner.Name)
+	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"ownerId": pg.owner.Id})
 	if err != nil {
 		return nil, err
 	}
