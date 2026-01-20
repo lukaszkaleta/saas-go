@@ -97,7 +97,10 @@ func (globalJobs *PgGlobalJobs) ActiveById(ctx context.Context, id int64) (job.J
 	if err != nil {
 		return nil, err
 	}
-	return MapJob(globalJobs.db)(rows)
+	if rows.Next() {
+		return MapJob(globalJobs.db)(rows)
+	}
+	return nil, nil
 }
 
 func (globalJobs *PgGlobalJobs) ById(ctx context.Context, id int64) (job.Job, error) {
@@ -106,7 +109,10 @@ func (globalJobs *PgGlobalJobs) ById(ctx context.Context, id int64) (job.Job, er
 	if err != nil {
 		return nil, err
 	}
-	return MapJob(globalJobs.db)(rows)
+	if rows.Next() {
+		return MapJob(globalJobs.db)(rows)
+	}
+	return nil, nil
 }
 
 func (globalJobs *PgGlobalJobs) AllActive(ctx context.Context) ([]job.Job, error) {
