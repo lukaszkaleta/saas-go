@@ -21,7 +21,7 @@ type PersonModel struct {
 	LastName      string            `json:"lastName"`
 	Email         string            `json:"email"`
 	Phone         string            `json:"phone"`
-	Avatar        *DescriptionModel `json:"avatarUrl"`
+	Avatar        *DescriptionModel `json:"avatar"`
 	AverageRating int               `json:"rating"`
 }
 
