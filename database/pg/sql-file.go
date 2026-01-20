@@ -6,50 +6,50 @@ import (
 	"strings"
 )
 
-type OptFunc func(*Opts)
+type SqlFile struct {
+	fs      fs.FS
+	db      *PgDb
+	path    string
+	options SqlFileOptions
+}
 
-func WithSkipNotExistingFile(opts *Opts) {
+func NewSqlFile(fs fs.FS, db *PgDb, path string, opts ...SqlFileOptionsFunc) *SqlFile {
+	o := defaultOptions()
+	for _, fn := range opts {
+		fn(&o)
+	}
+	return &SqlFile{fs: fs, db: db, path: path, options: o}
+}
+
+type SqlFileOptions struct {
+	skipNotExistingFile bool
+	querySeparator      string
+}
+
+type SqlFileOptionsFunc func(*SqlFileOptions)
+
+func WithSkipNotExistingFile(opts *SqlFileOptions) {
 	opts.skipNotExistingFile = true
 }
 
-func WithQuerySeparator(querySeparator string) OptFunc {
-	return func(opts *Opts) {
+func WithQuerySeparator(querySeparator string) SqlFileOptionsFunc {
+	return func(opts *SqlFileOptions) {
 		opts.querySeparator = querySeparator
 	}
 }
 
-func defaultOpts(filePath string) Opts {
-	return Opts{
-		filePath:            filePath,
+func defaultOptions() SqlFileOptions {
+	return SqlFileOptions{
 		skipNotExistingFile: false,
 		querySeparator:      ";",
 	}
 }
 
-type Opts struct {
-	filePath            string
-	skipNotExistingFile bool
-	querySeparator      string
-}
-type SqlFile struct {
-	fs   fs.FS
-	db   *PgDb
-	opts Opts
-}
-
-func NewSqlFile(fs fs.FS, db *PgDb, path string, opts ...OptFunc) *SqlFile {
-	o := defaultOpts(path)
-	for _, fn := range opts {
-		fn(&o)
-	}
-	return &SqlFile{fs: fs, db: db, opts: o}
-}
-
 func (es *SqlFile) Execute() error {
-	open, err := es.fs.Open(es.opts.filePath)
+	open, err := es.fs.Open(es.path)
 	if err != nil {
 		_, ok := err.(*fs.PathError)
-		if ok && es.opts.skipNotExistingFile {
+		if ok && es.options.skipNotExistingFile {
 			return nil
 		}
 		return err
@@ -58,6 +58,6 @@ func (es *SqlFile) Execute() error {
 	if err != nil {
 		return err
 	}
-	sqlArray := strings.Split(string(sqlStatements), es.opts.querySeparator)
+	sqlArray := strings.Split(string(sqlStatements), es.options.querySeparator)
 	return es.db.ExecuteSqls(sqlArray)
 }

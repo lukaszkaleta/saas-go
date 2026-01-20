@@ -59,7 +59,7 @@ func PublicStatuses() []string {
 	return []string{JobPublished}
 }
 
-// MessageModel
+// JobModel
 
 type JobModel struct {
 	Id          int64                       `json:"id"`

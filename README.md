@@ -12,3 +12,10 @@ For each module separate database have to be created:
     create database job_test owner "saas-go"
     create database users_test owner "saas-go"
     create database universal_test owner "saas-go"
+
+# postgres extensions
+
+    CREATE EXTENSION IF NOT EXISTS pg_trgm;
+    CREATE EXTENSION IF NOT EXISTS unnacent;
+    CREATE EXTENSION IF NOT EXISTS cube;
+    CREATE EXTENSION IF NOT EXISTS earthdistance;

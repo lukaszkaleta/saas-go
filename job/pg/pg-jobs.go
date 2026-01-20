@@ -78,16 +78,20 @@ func (pgJobs *PgJobs) List(ctx context.Context) ([]job.Job, error) {
 	return nil, errors.New("All jobs can not be listed")
 }
 
-func MapJobs(db *pg.PgDb, rows pgx.Rows) ([]job.Job, error) {
+func MapJobsWith(rows pgx.Rows, rowToFun pgx.RowToFunc[job.Job]) ([]job.Job, error) {
 	jobs := []job.Job{}
 	for rows.Next() {
-		mJob, err := MapJob(db)(rows)
+		mJob, err := rowToFun(rows)
 		if err != nil {
 			return nil, err
 		}
 		jobs = append(jobs, mJob)
 	}
 	return jobs, nil
+}
+
+func MapJobs(db *pg.PgDb, rows pgx.Rows) ([]job.Job, error) {
+	return MapJobsWith(rows, MapJob(db))
 }
 
 // Relation

@@ -83,6 +83,16 @@ func (pgJob *PgJob) localizationRelationEntity() pg.TableEntity {
 	return pgJob.db.TableEntity("job", pgJob.Id)
 }
 
+func MapSearchJob(db *pg.PgDb) pgx.RowToFunc[*job.JobSearchModel] {
+	return func(row pgx.CollectableRow) (*job.JobSearchModel, error) {
+		searchModel, err := MapJobSearch(row)
+		if err != nil {
+			return nil, err
+		}
+		return searchModel, nil
+	}
+}
+
 func MapJob(db *pg.PgDb) pgx.RowToFunc[job.Job] {
 	return func(row pgx.CollectableRow) (job.Job, error) {
 		model, err := MapJobModel(row)
@@ -92,6 +102,10 @@ func MapJob(db *pg.PgDb) pgx.RowToFunc[job.Job] {
 		pgJob := &PgJob{db: db, Id: model.Id}
 		return job.NewSolidJob(model, pgJob), nil
 	}
+}
+
+func MapJobSearch(row pgx.CollectableRow) (*job.JobSearchModel, error) {
+	return nil, nil
 }
 
 func MapJobModel(row pgx.CollectableRow) (*job.JobModel, error) {
@@ -167,5 +181,9 @@ func JobColumnString() string {
 }
 
 func JobSelect() string {
-	return "select " + strings.Join(JobColumns(), ",") + " from job "
+	return JobColumnsSelect() + " from job "
+}
+
+func JobColumnsSelect() string {
+	return "select " + JobColumnString()
 }
