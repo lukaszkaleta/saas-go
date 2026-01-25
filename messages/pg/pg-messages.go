@@ -63,18 +63,12 @@ func MessageNamedArgs(model *messages.MessageModel, currentUserId *int64) pgx.Na
 
 func MapMessages(rows pgx.Rows, db *pg.PgDb) ([]messages.Message, error) {
 	msgs := []messages.Message{}
-	id := int64(0)
 	for rows.Next() {
-		pgMessage := &PgMessage{Db: db, Id: id}
-		msgModel, err := MapMessageModel(rows)
+		msg, err := MapMessage(db, rows)
 		if err != nil {
 			return nil, err
 		}
-		solidMessage := messages.NewSolidMessage(
-			msgModel,
-			pgMessage,
-			id)
-		msgs = append(msgs, solidMessage)
+		msgs = append(msgs, msg)
 	}
 	return msgs, nil
 }

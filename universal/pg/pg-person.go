@@ -38,6 +38,6 @@ func (pgPerson *PgPerson) Avatar(_ context.Context) universal.Description {
 	return NewPgDescription(
 		pgPerson.Db,
 		pgPerson.TableEntity,
-		"avatar_value",
-		"avatar_url")
+		"avatar_description_value",
+		"avatar_description_url")
 }
