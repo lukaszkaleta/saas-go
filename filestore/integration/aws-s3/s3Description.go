@@ -7,10 +7,8 @@ import (
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
-func GenerateS3Description(ctx context.Context, s3Bucket *S3Bucket, description universal.Description) (string, error) {
-	model := description.Model(ctx)
-	objectKey := model.Value
-	presignedUrl, err := s3Bucket.PresignPutURL(ctx, objectKey, time.Hour, "image/png")
+func GenerateS3Description(ctx context.Context, s3Bucket *S3Bucket, objectKey string, description universal.Description) (string, error) {
+	presignedUrl, err := s3Bucket.PresignPutURL(ctx, objectKey, time.Hour, "image/jpg")
 	if err != nil {
 		return "", err
 	}
