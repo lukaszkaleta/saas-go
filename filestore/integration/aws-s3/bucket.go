@@ -50,8 +50,7 @@ func (basics S3Bucket) UploadFile(ctx context.Context, objectKey string, pathToF
 				slog.Error("Failed attempt to wait for object", "objectKey", objectKey, "error", err.Error())
 			}
 		}
-		region := basics.s3Client.Options().Region
-		return fmt.Sprintf("https://%s.s3-%s.amazonaws.com/%s", basics.name, region, objectKey), err
+		return basics.ObjectUrl(objectKey), err
 	}
 	return "", err
 }
@@ -86,4 +85,9 @@ func (basics S3Bucket) PresignPutURL(
 	}
 
 	return result.URL, nil
+}
+
+func (basics S3Bucket) ObjectUrl(objectKey string) string {
+	region := basics.s3Client.Options().Region
+	return fmt.Sprintf("https://%s.s3-%s.amazonaws.com/%s", basics.name, region, objectKey)
 }
