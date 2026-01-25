@@ -7,5 +7,5 @@ type Lister[T Idable] interface {
 }
 
 type FullText[T Idable] interface {
-	ByQuery(ctx context.Context, query *string) ([]T, error)
+	ByQuery(ctx context.Context, query *string) ([]*T, error)
 }

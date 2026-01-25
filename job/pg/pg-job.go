@@ -198,8 +198,6 @@ func MapSearchJob() pgx.RowToFunc[*job.JobSearchOutput] {
 			Paging:  jobSearchPaging,
 		}
 		err := row.Scan(
-			&jobSearchOutput.Ranking.Distance,
-			&jobSearchOutput.Ranking.Rank,
 			&jobModel.Id,
 			&jobModel.Description.Value,
 			&jobModel.Description.ImageUrl,
@@ -220,6 +218,9 @@ func MapSearchJob() pgx.RowToFunc[*job.JobSearchOutput] {
 			&jobModel.Tags,
 			&actionCreated.ById,
 			&actionCreated.MadeAt,
+
+			&jobSearchOutput.Ranking.Distance,
+			&jobSearchOutput.Ranking.Rank,
 		)
 		jobModel.State.Published = nullTimePublished.Time
 		jobModel.State.Occupied = nullTimeOccupied.Time

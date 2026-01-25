@@ -17,7 +17,7 @@ func NewPgGlobalJobs(Db *pg.PgDb) job.GlobalJobs {
 	return &PgGlobalJobs{db: Db}
 }
 
-func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input job.JobSearchInput) ([]job.JobSearchOutput, error) {
+func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input job.JobSearchInput) ([]*job.JobSearchOutput, error) {
 	if len(*input.Query) <= 2 {
 		return pgGlobalJobs.NearBy(ctx, input.Radar)
 	}
@@ -64,12 +64,12 @@ func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input job.JobSearc
 		return nil, err
 	}
 	defer rows.Close()
-	return MapSearchJobs(pgGlobalJobs.db, rows)
+	return MapSearchJobs(rows)
 }
 
-func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([]job.JobSearchOutput, error) {
-	sql := JobColumnsSelect() + `
-			0 as distance
+func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([]*job.JobSearchOutput, error) {
+	sql := JobColumnsSelect() + `,
+			0 as distance,
 			ts_rank_cd(search_vector, q) AS rank
 		  FROM job,
 			websearch_to_tsquery('norwegian', @query) q
@@ -82,16 +82,16 @@ func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([
 		return nil, err
 	}
 	defer rows.Close()
-	return MapSearchJobs(pgGlobalJobs.db, rows)
+	return MapSearchJobs(rows)
 }
 
-func (globalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.RadarModel) ([]job.JobSearchOutput, error) {
+func (globalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.RadarModel) ([]*job.JobSearchOutput, error) {
 	query := JobSelect() + " where status_published is not null and status_closed is null and status_occupied is null"
 	rows, err := globalJobs.db.Pool.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
-	return MapSearchJobs(globalJobs.db, rows)
+	return MapSearchJobs(rows)
 }
 
 func (globalJobs *PgGlobalJobs) ActiveById(ctx context.Context, id int64) (job.Job, error) {

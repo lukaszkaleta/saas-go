@@ -16,11 +16,25 @@ var WorkUser = user.WithId(2)
 func SetupJobTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 	db := pg.LocalPgWithName("saas-go", "job_test")
 	fsSchema := pgfilestore.NewFilestoreSchema(db)
+	schema := NewJobSchema(db)
+
+	dropFunc := func(tb testing.TB) {
+		err := schema.DropTest()
+		if err != nil {
+			panic(err)
+		}
+		err = fsSchema.DropTest()
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	dropFunc(tb)
+
 	err := fsSchema.CreateTest()
 	if err != nil {
 		tb.Fatal(err)
 	}
-	schema := NewJobSchema(db)
 	err = schema.CreateTest()
 	if err != nil {
 		tb.Fatal(err)
@@ -41,16 +55,7 @@ func SetupJobTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 		}
 	}
 
-	return func(tb testing.TB) {
-		err := schema.DropTest()
-		if err != nil {
-			panic(err)
-		}
-		err = fsSchema.DropTest()
-		if err != nil {
-			panic(err)
-		}
-	}, db
+	return dropFunc, db
 }
 
 func TestPgJob_Status(t *testing.T) {

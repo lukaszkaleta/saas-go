@@ -94,8 +94,17 @@ func MapJobs(db *pg.PgDb, rows pgx.Rows) ([]job.Job, error) {
 	return MapJobsWith(rows, MapJob(db))
 }
 
-func MapSearchJobs(db *pg.PgDb, rows pgx.Rows) ([]job.JobSearchOutput, error) {
-	return MapJobsWith(rows, MapSearchJob(db))
+func MapSearchJobs(rows pgx.Rows) ([]*job.JobSearchOutput, error) {
+	jobs := []*job.JobSearchOutput{}
+	mapSearchJob := MapSearchJob()
+	for rows.Next() {
+		searchJob, err := mapSearchJob(rows)
+		if err != nil {
+			return nil, err
+		}
+		jobs = append(jobs, searchJob)
+	}
+	return jobs, nil
 }
 
 // Relation
