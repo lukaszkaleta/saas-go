@@ -39,5 +39,5 @@ func (pgPerson *PgPerson) Avatar(_ context.Context) universal.Description {
 		pgPerson.Db,
 		pgPerson.TableEntity,
 		"avatar_description_value",
-		"avatar_description_url")
+		"avatar_description_image_url")
 }
