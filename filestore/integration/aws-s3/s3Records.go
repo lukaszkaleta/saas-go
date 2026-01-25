@@ -16,8 +16,8 @@ func AmazonS3RecordsFromBucket(s3Bucket *S3Bucket, records filestore.Records) *A
 	return &AmazonS3Records{records: records, s3Bucket: s3Bucket}
 }
 
-func AmazonS3RecordsFromClient(s3Client *s3.Client, bucketName string, records filestore.Records) *AmazonS3Records {
-	return AmazonS3RecordsFromBucket(NewS3Bucket(s3Client, bucketName), records)
+func AmazonS3RecordsFromClient(s3Client *s3.Client, appName string, bucketName string, records filestore.Records) *AmazonS3Records {
+	return AmazonS3RecordsFromBucket(NewS3Bucket(s3Client, appName, bucketName), records)
 }
 
 func (s3Records *AmazonS3Records) Add(ctx context.Context, model *filestore.RecordModel) (filestore.Record, error) {
