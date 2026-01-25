@@ -3,7 +3,7 @@ package job
 import "github.com/lukaszkaleta/saas-go/universal"
 
 type JobSearchPaging struct {
-	Id   int64   `db:"id"`
+	Id   int64   `json:"id"`
 	Rank float64 `json:"rank"`
 }
 
