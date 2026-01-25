@@ -36,7 +36,7 @@ func (g *GlobalJobsLogger) ByQuery(ctx context.Context, query *string) ([]*JobSe
 	return g.next.ByQuery(ctx, query)
 }
 
-func (g *GlobalJobsLogger) Search(ctx context.Context, input JobSearchInput) ([]*JobSearchOutput, error) {
+func (g *GlobalJobsLogger) Search(ctx context.Context, input *JobSearchInput) ([]*JobSearchOutput, error) {
 	defer func(start time.Time) {
 		fmt.Printf("ByQuery for jobs took %v\n", time.Since(start))
 	}(time.Now())

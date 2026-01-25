@@ -164,8 +164,21 @@ func JobColumns() []string {
 	}
 }
 
+func MapJobColumns(mapper func(column string) string) []string {
+	originalColumns := JobColumns()
+	columns := make([]string, len(originalColumns))
+	for i := range originalColumns {
+		columns[i] = mapper(originalColumns[i])
+	}
+	return columns
+}
+
 func JobColumnString() string {
 	return strings.Join(JobColumns(), ",")
+}
+
+func MapJobColumnString(mapper func(column string) string) string {
+	return strings.Join(MapJobColumns(mapper), ",")
 }
 
 func JobSelect() string {
@@ -174,6 +187,18 @@ func JobSelect() string {
 
 func JobColumnsSelect() string {
 	return "select " + JobColumnString()
+}
+
+func MapJobColumnsSelect(mapper func(column string) string) string {
+	return "select " + MapJobColumnString(mapper)
+}
+
+func JobColumnsSelectWithPrefix(prefix string) string {
+	return MapJobColumnsSelect(
+		func(c string) string {
+			return prefix + "." + c
+		},
+	)
 }
 
 // Mapping search

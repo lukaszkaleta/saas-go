@@ -17,7 +17,7 @@ func NewPgGlobalJobs(Db *pg.PgDb) job.GlobalJobs {
 	return &PgGlobalJobs{db: Db}
 }
 
-func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input job.JobSearchInput) ([]*job.JobSearchOutput, error) {
+func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input *job.JobSearchInput) ([]*job.JobSearchOutput, error) {
 	if len(*input.Query) <= 2 {
 		return pgGlobalJobs.NearBy(ctx, input.Radar)
 	}
@@ -29,14 +29,13 @@ func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input job.JobSearc
 	// First create ranked window query
 	ftsSql := `
 		WITH fts_limited AS (
-		  SELECT
-			id,
+		  	` + JobColumnsSelect() + `,
 			earth_point,
-			ts_rank_cd(search_vector, q) AS rank
+			ts_rank_cd(search_vector, q) AS rank 
 		  FROM job,
-			websearch_to_tsquery('norwegian', $1) q
+			websearch_to_tsquery('norwegian', @query) q
 		  WHERE 
-			search_vector @@ q
+			search_vector @@ q and
 			status_published is not null and 
 			status_closed is null and 
 			status_occupied is null
@@ -45,15 +44,15 @@ func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input job.JobSearc
 		)
 	`
 	// Then near by and order by distance
-	jobSql := JobColumnsSelect() + `
+	jobSql := JobColumnsSelectWithPrefix("p") + `,
 		  p.rank as rank,
 		  earth_distance(p.earth_point, ll_to_earth(@lat, @lon)) AS distance
 		FROM fts_limited p
-		WHERE p.earth_point
-		  <@ earth_box(ll_to_earth(@lat, @lon), @perimeter)
-			status_published is not null and 
-			status_closed is null and 
-			status_occupied is null
+		WHERE 
+			p.earth_point <@ earth_box(ll_to_earth(@lat, @lon), @perimeter) and
+			p.status_published is not null and 
+			p.status_closed is null and 
+			p.status_occupied is null
 		ORDER BY
 		  p.rank DESC,
 		  distance ASC
