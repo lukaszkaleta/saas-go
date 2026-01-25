@@ -30,3 +30,4 @@ require (
 )
 
 replace github.com/lukaszkaleta/saas-go/filestore => ../../../filestore
+replace github.com/lukaszkaleta/saas-go/universal => ../../../universal

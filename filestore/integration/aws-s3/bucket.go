@@ -19,7 +19,11 @@ type S3Bucket struct {
 }
 
 func NewS3Bucket(s3Client *s3.Client, name string) *S3Bucket {
-	return &S3Bucket{s3Client: s3Client, name: name}
+	envName := os.Getenv("ENVIRONMENT")
+	if envName == "" {
+		envName = "dev"
+	}
+	return &S3Bucket{s3Client: s3Client, name: envName + "-" + name}
 }
 
 // UploadFile reads from a file and puts the data into an object in a bucket.
