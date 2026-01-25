@@ -97,7 +97,7 @@ func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([
 
 func (globalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.RadarModel) ([]*job.JobSearchOutput, error) {
 	sql := JobColumnsSelect() + `,
-			earth_distance(earth_point, ll_to_earth(@lat, @lon))::integer AS distance,
+			earth_distance(earth_point, ll_to_earth(@lat, @lon)) AS distance,
 			earth_distance(earth_point, ll_to_earth(@lat, @lon)) AS rank
 		from job
 		where 

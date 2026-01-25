@@ -17,7 +17,7 @@ type JobSearchInput struct {
 }
 
 type JobSearchRanking struct {
-	Distance *int     `json:"distance"`
+	Distance *float64 `json:"distance"`
 	Rank     *float64 `json:"rank"`
 }
 
