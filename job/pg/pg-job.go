@@ -83,15 +83,7 @@ func (pgJob *PgJob) localizationRelationEntity() pg.TableEntity {
 	return pgJob.db.TableEntity("job", pgJob.Id)
 }
 
-func MapSearchJob(db *pg.PgDb) pgx.RowToFunc[*job.JobSearchModel] {
-	return func(row pgx.CollectableRow) (*job.JobSearchModel, error) {
-		searchModel, err := MapJobSearch(row)
-		if err != nil {
-			return nil, err
-		}
-		return searchModel, nil
-	}
-}
+// Mapping Job
 
 func MapJob(db *pg.PgDb) pgx.RowToFunc[job.Job] {
 	return func(row pgx.CollectableRow) (job.Job, error) {
@@ -102,10 +94,6 @@ func MapJob(db *pg.PgDb) pgx.RowToFunc[job.Job] {
 		pgJob := &PgJob{db: db, Id: model.Id}
 		return job.NewSolidJob(model, pgJob), nil
 	}
-}
-
-func MapJobSearch(row pgx.CollectableRow) (*job.JobSearchModel, error) {
-	return nil, nil
 }
 
 func MapJobModel(row pgx.CollectableRow) (*job.JobModel, error) {
@@ -186,4 +174,60 @@ func JobSelect() string {
 
 func JobColumnsSelect() string {
 	return "select " + JobColumnString()
+}
+
+// Mapping search
+
+func MapSearchJob() pgx.RowToFunc[*job.JobSearchOutput] {
+	return func(row pgx.CollectableRow) (*job.JobSearchOutput, error) {
+		jobModel := job.EmptyJobModel()
+
+		nullTimePublished := sql.NullTime{}
+		nullTimeOccupied := sql.NullTime{}
+		nullTimeClosed := sql.NullTime{}
+
+		actionCreated := universal.ActionModel{Name: "created"}
+		actions := make(map[string]*universal.ActionModel)
+		actions["created"] = &actionCreated
+
+		jobSearchRanking := &job.JobSearchRanking{}
+		jobSearchPaging := &job.JobSearchPaging{}
+		jobSearchOutput := &job.JobSearchOutput{
+			Model:   jobModel,
+			Ranking: jobSearchRanking,
+			Paging:  jobSearchPaging,
+		}
+		err := row.Scan(
+			&jobSearchOutput.Ranking.Distance,
+			&jobSearchOutput.Ranking.Rank,
+			&jobModel.Id,
+			&jobModel.Description.Value,
+			&jobModel.Description.ImageUrl,
+			&jobModel.Address.Line1,
+			&jobModel.Address.Line2,
+			&jobModel.Address.City,
+			&jobModel.Address.PostalCode,
+			&jobModel.Address.District,
+			&jobModel.Position.Lat,
+			&jobModel.Position.Lon,
+			&jobModel.Price.Value,
+			&jobModel.Price.Currency,
+			&jobModel.Rating,
+			&jobModel.State.Draft,
+			&nullTimePublished,
+			&nullTimeOccupied,
+			&nullTimeClosed,
+			&jobModel.Tags,
+			&actionCreated.ById,
+			&actionCreated.MadeAt,
+		)
+		jobModel.State.Published = nullTimePublished.Time
+		jobModel.State.Occupied = nullTimeOccupied.Time
+		jobModel.State.Closed = nullTimeClosed.Time
+		jobModel.Actions = universal.ActionsModel{List: actions}
+		if err != nil {
+			return nil, err
+		}
+		return jobSearchOutput, nil
+	}
 }

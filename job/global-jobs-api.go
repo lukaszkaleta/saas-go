@@ -7,8 +7,8 @@ import (
 )
 
 type GlobalJobs interface {
-	universal.FullText[Job]
-	Search(ctx context.Context, input JobSearchInput) ([]Job, error)
-	NearBy(ctx context.Context, position *universal.RadarModel) ([]Job, error)
+	universal.FullText[JobSearchOutput]
+	Search(ctx context.Context, input JobSearchInput) ([]JobSearchOutput, error)
+	NearBy(ctx context.Context, position *universal.RadarModel) ([]JobSearchOutput, error)
 	ById(ctx context.Context, id int64) (Job, error)
 }

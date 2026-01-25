@@ -2,26 +2,31 @@ package job
 
 import "github.com/lukaszkaleta/saas-go/universal"
 
-type JobSearch interface {
-}
-
-type JobSearchPosition struct {
+type JobSearchPaging struct {
 	Id   int64   `db:"id"`
 	Rank float64 `json:"rank"`
 }
 
 type JobSearchInput struct {
-	Query    string                `json:"query"`
-	Radar    *universal.RadarModel `json:"radar"`
-	Position JobSearchPosition     `json:"position"`
+	// query from client
+	Query *string `json:"query"`
+	// radar from client
+	Radar *universal.RadarModel `json:"radar"`
+	// paging from server (send back and forth from client)
+	Paging JobSearchPaging `json:"paging"`
 }
 
-type JobSearchResult struct {
-	Distance int     `json:"distance"`
-	Rank     float64 `json:"rank"`
+type JobSearchRanking struct {
+	Distance *int     `json:"distance"`
+	Rank     *float64 `json:"rank"`
 }
 
-type JobSearchModel struct {
-	Model     *JobModel       `json:"model"`
-	JobSearch JobSearchResult `json:"search"`
+type JobSearchOutput struct {
+	Model   *JobModel         `json:"job"`
+	Ranking *JobSearchRanking `json:"ranking"`
+	Paging  *JobSearchPaging  `json:"paging"`
+}
+
+func (jobSearchOutput JobSearchOutput) ID() int64 {
+	return jobSearchOutput.Model.Id
 }

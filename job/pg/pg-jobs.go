@@ -94,6 +94,10 @@ func MapJobs(db *pg.PgDb, rows pgx.Rows) ([]job.Job, error) {
 	return MapJobsWith(rows, MapJob(db))
 }
 
+func MapSearchJobs(db *pg.PgDb, rows pgx.Rows) ([]job.JobSearchOutput, error) {
+	return MapJobsWith(rows, MapSearchJob(db))
+}
+
 // Relation
 
 type PgRelationJobs struct {

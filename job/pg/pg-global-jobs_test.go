@@ -41,7 +41,8 @@ func TestPgGlobalJobs_ByQuery(t *testing.T) {
 	}
 
 	globalJobs := NewPgGlobalJobs(db)
-	foundJobs, err := globalJobs.ByQuery(ctx, "work")
+	query := "work"
+	foundJobs, err := globalJobs.ByQuery(ctx, &query)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -49,7 +50,8 @@ func TestPgGlobalJobs_ByQuery(t *testing.T) {
 		t.Errorf("got %v, want %v", foundJobs[0].ID(), hitDescription.ID())
 	}
 
-	foundJobs, err = globalJobs.ByQuery(ctx, "Wojaszowka")
+	q := "Wojaszowka"
+	foundJobs, err = globalJobs.ByQuery(ctx, &q)
 	if err != nil {
 		t.Fatal(err)
 	}

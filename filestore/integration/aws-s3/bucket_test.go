@@ -20,7 +20,7 @@ func TestBucket_UploadFile(t *testing.T) {
 	}
 
 	s3Client := s3.NewFromConfig(cfg)
-	bucket := NewS3Bucket(s3Client, "naborlyjob")
+	bucket := NewS3Bucket(s3Client, "naborly", "job-gallery")
 	url, err := bucket.UploadFile(t.Context(), "bucket.go", "bucket.go")
 	if err != nil {
 		slog.Error(err.Error())
@@ -37,7 +37,7 @@ func TestBucket_PresignedUrl(t *testing.T) {
 	}
 
 	s3Client := s3.NewFromConfig(cfg)
-	bucket := NewS3Bucket(s3Client, "naborly-prod-user-avatar")
+	bucket := NewS3Bucket(s3Client, "naborly", "user-avatar")
 	presignedURL, err := bucket.PresignPutURL(t.Context(), "presigned.png", time.Hour, "image/png")
 	if err != nil {
 		slog.Error(err.Error())
