@@ -55,3 +55,35 @@ func (basics S3Bucket) UploadFile(ctx context.Context, objectKey string, pathToF
 	}
 	return "", err
 }
+
+func (basics S3Bucket) PresignPutURL(
+	ctx context.Context,
+	objectKey string,
+	expiration time.Duration,
+	contentType string, // optional but recommended
+) (string, error) {
+
+	presigner := s3.NewPresignClient(basics.s3Client)
+
+	input := &s3.PutObjectInput{
+		Bucket:      aws.String(basics.name),
+		Key:         aws.String(objectKey),
+		ContentType: aws.String(contentType),
+	}
+
+	result, err := presigner.PresignPutObject(
+		ctx,
+		input,
+		s3.WithPresignExpires(expiration),
+	)
+	if err != nil {
+		slog.Error("Couldn't presign PUT URL",
+			"bucket", basics.name,
+			"objectKey", objectKey,
+			"error", err,
+		)
+		return "", err
+	}
+
+	return result.URL, nil
+}
