@@ -45,8 +45,8 @@ func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input *job.JobSear
 	`
 	// Then near by and order by distance
 	jobSql := JobColumnsSelectWithPrefix("p") + `,
+          earth_distance(p.earth_point, ll_to_earth(@lat, @lon)) AS distance
 		  p.rank as rank,
-		  earth_distance(p.earth_point, ll_to_earth(@lat, @lon)) AS distance
 		FROM fts_limited p
 		WHERE 
 			p.earth_point <@ earth_box(ll_to_earth(@lat, @lon), @perimeter) and
