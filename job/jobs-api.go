@@ -31,12 +31,12 @@ func JobHints(jobs []Job) []*JobHint {
 	return hints
 }
 
-func GeoJobs(jobs []Job) universal.GeoFeatureCollection[JobHint] {
+func GeoJobs(jobs []JobSearchOutput) universal.GeoFeatureCollection[JobHint] {
 	features := make([]universal.GeoFeature[JobHint], 0, len(jobs))
 	for i := range jobs {
 		m := jobs[i]
-		pt := universal.NewGeoPoint(m.Model().Position.Lon, m.Model().Position.Lat)
-		features = append(features, universal.NewGeoFeature[JobHint](strconv.FormatInt(m.Model().Id, 10), pt, *m.Model().Hint()))
+		pt := universal.NewGeoPoint(m.Model.Position.Lon, m.Model.Position.Lat)
+		features = append(features, universal.NewGeoFeature[JobHint](strconv.FormatInt(m.Model.Id, 10), pt, *m.Model.Hint()))
 	}
 	return universal.NewGeoFeatureCollection(features)
 }
