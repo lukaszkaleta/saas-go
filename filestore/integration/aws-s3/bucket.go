@@ -19,7 +19,7 @@ type S3Bucket struct {
 }
 
 func NewS3Bucket(s3Client *s3.Client, appName string, name string) *S3Bucket {
-	envName := os.Getenv("ENVIRONMENT")
+	envName := os.Getenv("APP_ENV")
 	if envName == "" {
 		envName = "dev"
 	}
