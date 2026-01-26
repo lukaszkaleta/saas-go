@@ -35,12 +35,16 @@ func (m *PgMessage) ID() int64 {
 func MapMessageModel(row pgx.CollectableRow) (*messages.MessageModel, error) {
 	model := messages.EmptyModel()
 	createdActionModel := universal.EmptyCreatedActionModel()
+	readActionModel := universal.EmptyActionModel("read")
 	err := row.Scan(
 		&model.Id,
 		&model.OwnerId,
+		&model.RecipientId,
 		&model.Value,
 		&createdActionModel.ById,
 		&createdActionModel.MadeAt,
+		&readActionModel.ById,
+		&readActionModel.MadeAt,
 	)
 	model.Actions.List[createdActionModel.Name] = createdActionModel
 	if err != nil {

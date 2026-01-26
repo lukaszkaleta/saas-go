@@ -12,16 +12,17 @@ import (
 )
 
 type PgMessages struct {
-	db    *pg.PgDb
-	owner pg.TableEntity
+	db          *pg.PgDb
+	recipientId int64
+	owner       pg.TableEntity
 }
 
-func NewPgMessages(db *pg.PgDb, owner pg.TableEntity) messages.Messages {
-	return &PgMessages{db: db, owner: owner}
+func NewPgMessages(db *pg.PgDb, recipientId int64, owner pg.TableEntity) messages.Messages {
+	return &PgMessages{db: db, recipientId: recipientId, owner: owner}
 }
 
 func (pg *PgMessages) Add(ctx context.Context, value string) (messages.Message, error) {
-	return pg.AddFromModel(ctx, &messages.MessageModel{Value: value, OwnerId: pg.owner.Id})
+	return pg.AddFromModel(ctx, &messages.MessageModel{Value: value, OwnerId: pg.owner.Id, RecipientId: pg.recipientId})
 }
 
 func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.MessageModel) (messages.Message, error) {
@@ -30,7 +31,7 @@ func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.MessageM
 	}
 	messageId := int64(0)
 	currentUserId := universal.CurrentUserId(ctx)
-	query := fmt.Sprintf("insert into %s (owner_id, action_created_by_id, value) values (@ownerId, @currentUserId, @value) returning id", pg.owner.Name)
+	query := fmt.Sprintf("insert into %s (owner_id, recipient_id, action_created_by_id, value) values (@ownerId, @recipientId, @currentUserId, @value) returning id", pg.owner.Name)
 	row := pg.db.Pool.QueryRow(ctx, query, MessageNamedArgs(model, currentUserId))
 	err := row.Scan(&messageId)
 	if err != nil {
@@ -56,6 +57,7 @@ func (pg *PgMessages) List(ctx context.Context) ([]messages.Message, error) {
 func MessageNamedArgs(model *messages.MessageModel, currentUserId *int64) pgx.NamedArgs {
 	return pgx.NamedArgs{
 		"ownerId":       model.OwnerId,
+		"recipientId":   model.RecipientId,
 		"currentUserId": currentUserId,
 		"value":         model.Value,
 	}

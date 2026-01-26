@@ -11,7 +11,7 @@ type Action interface {
 
 type ActionModel struct {
 	ById   *int64    `json:"byId"`
-	MadeAt time.Time `json:"madeAt"`
+	MadeAt time.Time `json:"at"`
 	Name   string    `json:"name"`
 }
 

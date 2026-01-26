@@ -13,14 +13,15 @@ const USER_ID = 1
 func setupMessagesTest(tb testing.TB) (func(tb testing.TB), context.Context, *pg.PgDb) {
 	db := pg.LocalPgWithName("saas-go", "messages_test")
 	schema := NewMessagesSchema(db)
-	err := schema.CreateTest()
-
 	dropFunc := func(tb testing.TB) {
 		err := schema.DropTest()
 		if err != nil {
 			panic(err)
 		}
 	}
+
+	dropFunc(tb)
+	err := schema.CreateTest()
 
 	if err != nil {
 		dropFunc(tb)
@@ -42,7 +43,7 @@ func TestPgMessages_Add(t *testing.T) {
 	drop, ctx, db := setupMessagesTest(t)
 	defer drop(t)
 
-	pgMessages := NewPgMessages(db, pg.TableEntity{Name: "message", Id: USER_ID})
+	pgMessages := NewPgMessages(db, USER_ID, pg.TableEntity{Name: "message", Id: USER_ID})
 	value := "test-message"
 	newMessage, err := pgMessages.Add(ctx, value)
 	if err != nil {
