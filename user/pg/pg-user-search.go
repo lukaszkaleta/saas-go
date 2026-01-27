@@ -22,7 +22,7 @@ func (s *PgUserSearch) ByPhone(ctx context.Context, phone string) (user.User, er
 	if err != nil {
 		return nil, err
 	}
-	userModels, err := pgx.CollectRows(rows, MapUser)
+	userModels, err := pgx.CollectRows(rows, MapUserModel)
 	if err != nil {
 		return nil, err
 	}
@@ -32,4 +32,17 @@ func (s *PgUserSearch) ByPhone(ctx context.Context, phone string) (user.User, er
 	userModel := userModels[0]
 	pgUser := PgUser{Db: s.Db, Id: userModel.Id}
 	return user.NewSolidUser(userModel, pgUser), nil
+}
+
+func (s *PgUserSearch) ModelsByIds(ctx context.Context, ids []int64) ([]*user.UserModel, error) {
+	query := "select * from users where id = any(@ids)"
+	rows, err := s.Db.Pool.Query(ctx, query, pgx.NamedArgs{"ids": ids})
+	if err != nil {
+		return nil, err
+	}
+	userModels, err := pgx.CollectRows(rows, MapUserModel)
+	if err != nil {
+		return nil, err
+	}
+	return userModels, nil
 }

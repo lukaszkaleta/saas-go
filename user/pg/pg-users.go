@@ -57,7 +57,7 @@ func (pgUsers *PgUsers) ById(ctx context.Context, id int64) (user.User, error) {
 		Db: pgUsers.Db,
 		Id: id,
 	}
-	userModel, err := pgx.CollectOneRow(rows, MapUser)
+	userModel, err := pgx.CollectOneRow(rows, MapUserModel)
 	return user.NewSolidUser(userModel, pgUser), err
 }
 
