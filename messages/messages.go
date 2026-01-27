@@ -22,8 +22,8 @@ func OwnerIds(ctx context.Context, list []Message) []int64 {
 
 func Models(ctx context.Context, list []Message) []*MessageModel {
 	models := make([]*MessageModel, len(list))
-	for _, msg := range list {
-		models = append(models, msg.Model(ctx))
+	for i, msg := range list {
+		models[i] = msg.Model(ctx)
 	}
 	return models
 }
@@ -31,10 +31,10 @@ func Models(ctx context.Context, list []Message) []*MessageModel {
 func ModelsAndOwners(ctx context.Context, list []Message) ([]*MessageModel, []int64) {
 	models := make([]*MessageModel, len(list))
 	ownerIds := make([]int64, len(list))
-	for _, msg := range list {
+	for i, msg := range list {
 		model := msg.Model(ctx)
-		models = append(models, model)
-		ownerIds = append(ownerIds, model.OwnerId)
+		models[i] = model
+		ownerIds[i] = model.OwnerId
 	}
 	return models, ownerIds
 }
