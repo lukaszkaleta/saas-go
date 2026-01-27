@@ -106,9 +106,9 @@ func MapJobModel(row pgx.CollectableRow) (*job.JobModel, error) {
 	nullTimeOccupied := sql.NullTime{}
 	nullTimeClosed := sql.NullTime{}
 
-	actionCreated := universal.ActionModel{Name: "created"}
+	actionCreatedModel := universal.EmptyCreatedActionModel()
 	actions := make(map[string]*universal.ActionModel)
-	actions["created"] = &actionCreated
+	actions[actionCreatedModel.Name] = actionCreatedModel
 
 	err := row.Scan(
 		&jobModel.Id,
@@ -129,8 +129,8 @@ func MapJobModel(row pgx.CollectableRow) (*job.JobModel, error) {
 		&nullTimeOccupied,
 		&nullTimeClosed,
 		&jobModel.Tags,
-		&actionCreated.ById,
-		&actionCreated.MadeAt,
+		&actionCreatedModel.ById,
+		&actionCreatedModel.MadeAt,
 	)
 	jobModel.State.Published = nullTimePublished.Time
 	jobModel.State.Occupied = nullTimeOccupied.Time

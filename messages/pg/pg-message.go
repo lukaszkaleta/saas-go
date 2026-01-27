@@ -2,6 +2,7 @@ package pg
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -34,19 +35,28 @@ func (m *PgMessage) ID() int64 {
 
 func MapMessageModel(row pgx.CollectableRow) (*messages.MessageModel, error) {
 	model := messages.EmptyModel()
-	createdActionModel := universal.EmptyCreatedActionModel()
-	readActionModel := universal.EmptyActionModel("read")
+
+	nullTimeRead := sql.NullTime{}
+
+	actionCreatedModel := universal.EmptyCreatedActionModel()
+	actionReadModel := universal.EmptyActionModel("read")
+	actions := make(map[string]*universal.ActionModel)
+	actions[actionCreatedModel.Name] = actionCreatedModel
+
 	err := row.Scan(
 		&model.Id,
 		&model.OwnerId,
 		&model.RecipientId,
 		&model.Value,
-		&createdActionModel.ById,
-		&createdActionModel.MadeAt,
-		&readActionModel.ById,
-		&readActionModel.MadeAt,
+		&actionCreatedModel.ById,
+		&actionCreatedModel.MadeAt,
+		&actionReadModel.ById,
+		&nullTimeRead,
 	)
-	model.Actions.List[createdActionModel.Name] = createdActionModel
+	model.Actions.List[actionCreatedModel.Name] = actionCreatedModel
+	actionCreatedModel.MadeAt = nullTimeRead.Time
+	model.Actions.List[actionReadModel.Name] = actionReadModel
+
 	if err != nil {
 		return nil, err
 	}
