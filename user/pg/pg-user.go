@@ -84,5 +84,6 @@ func MapUserModel(row pgx.CollectableRow) (*user.UserModel, error) {
 	if err != nil {
 		return nil, err
 	}
+	userModel.Person.Id = userModel.Id
 	return userModel, nil
 }
