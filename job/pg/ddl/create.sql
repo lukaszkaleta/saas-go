@@ -67,3 +67,4 @@ CREATE TABLE job_message (
 );
 CREATE INDEX message_job_idx ON job_message USING btree (owner_id);
 CREATE INDEX message_action_created_by_idx ON job_message USING btree (action_created_by_id);
+CREATE INDEX message_recipient_idx ON job_message USING btree (recipient_id);

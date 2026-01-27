@@ -11,40 +11,37 @@ import (
 )
 
 type PgOwnMessages struct {
-	db          *pg.PgDb
-	owner       pg.TableEntity
-	recipientId int64
+	db        *pg.PgDb
+	ownerName string
 }
 
-func MyOwnMessages(db *pg.PgDb, owner pg.TableEntity, recipientId int64) messages.Own {
-	return PgOwnMessages{db: db, owner: owner, recipientId: recipientId}
+func MyOwnMessages(db *pg.PgDb, ownerName string) messages.Own {
+	return PgOwnMessages{db: db, ownerName: ownerName}
 }
 
 func (pg PgOwnMessages) LastQuestionsToMe(ctx context.Context) ([]messages.Message, error) {
 	currentUserId := universal.CurrentUserId(ctx)
 	sqlTemplate := `
-		SELECT DISTINCT ON (j.id, jm.action_created_by_id)
-			jm.id as id,
-			jm.owner_id,
-			jm.recipient_id,
-		    jm.value,
-			jm.action_created_by_id,
-			jm.action_created_at,
-			jm.action_read_by_id,
-			jm.action_read_at
-		FROM job j
-		INNER JOIN job_message jm
-			ON jm.owner_id = j.id
-		WHERE
-			j.action_created_by_id = @currentUserId and
-		  	j.owner_id = @ownerId
-		ORDER BY
-			j.id,
-			jm.action_created_by_id,
-			jm.action_created_at DESC;
+SELECT DISTINCT ON (o.id, m.action_created_by_id)
+	m.id, 
+  	m.owner_id, 
+  	m.recipient_id, 
+  	m.value, 
+  	m.action_created_by_id, 
+  	m.action_created_at, 
+  	m.action_read_by_id, action_read_at
+FROM %s o
+INNER JOIN %s_message m
+    ON m.owner_id = o.id
+WHERE
+    o.action_created_by_id = @currentUserId
+ORDER BY
+    o.id,
+    m.action_created_by_id,
+    m.action_created_at DESC;
 	`
-	query := fmt.Sprintf(sqlTemplate, pg.owner.Name)
-	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"currentUserId": currentUserId, "ownerId": pg.owner.Id})
+	query := fmt.Sprintf(sqlTemplate, pg.ownerName, pg.ownerName)
+	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"currentUserId": currentUserId})
 	if err != nil {
 		return nil, err
 	}
