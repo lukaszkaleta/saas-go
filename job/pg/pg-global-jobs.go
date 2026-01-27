@@ -137,6 +137,15 @@ func (globalJobs *PgGlobalJobs) ById(ctx context.Context, id int64) (job.Job, er
 	return nil, nil
 }
 
+func (globalJobs *PgGlobalJobs) ByIds(ctx context.Context, ids []int64) ([]job.Job, error) {
+	query := JobSelect() + "where id = any(@ids)"
+	rows, err := globalJobs.db.Pool.Query(ctx, query, pgx.NamedArgs{"ids": ids})
+	if err != nil {
+		return nil, err
+	}
+	return MapJobs(globalJobs.db, rows)
+}
+
 func (globalJobs *PgGlobalJobs) AllActive(ctx context.Context) ([]job.Job, error) {
 	query := JobSelect() + " where status_published is not null and status_closed is null and status_occupied is null"
 	rows, err := globalJobs.db.Pool.Query(ctx, query)
