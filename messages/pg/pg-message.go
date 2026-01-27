@@ -37,7 +37,6 @@ func MapMessageModel(row pgx.CollectableRow) (*messages.MessageModel, error) {
 	model := messages.EmptyModel()
 
 	nullTimeRead := sql.NullTime{}
-	nullByIdRead := 0
 
 	actionCreatedModel := universal.EmptyCreatedActionModel()
 	actionReadModel := universal.EmptyActionModel("read")
