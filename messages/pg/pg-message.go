@@ -37,7 +37,7 @@ func MapMessageModel(row pgx.CollectableRow) (*messages.MessageModel, error) {
 	model := messages.EmptyModel()
 
 	nullTimeRead := sql.NullTime{}
-	nullByIdRead := int64(0)
+	nullByIdRead := 0
 
 	actionCreatedModel := universal.EmptyCreatedActionModel()
 	actionReadModel := universal.EmptyActionModel("read")
@@ -51,16 +51,14 @@ func MapMessageModel(row pgx.CollectableRow) (*messages.MessageModel, error) {
 		&model.Value,
 		&actionCreatedModel.ById,
 		&actionCreatedModel.MadeAt,
-		&nullByIdRead,
+		&actionReadModel.ById,
 		&nullTimeRead,
 	)
 	model.Actions.List[actionCreatedModel.Name] = actionCreatedModel
 	actionCreatedModel.MadeAt = nullTimeRead.Time
-	if nullByIdRead > 0 {
-		actionCreatedModel.ById = &nullByIdRead
-	} else {
+	if actionReadModel.ById == nil {
 		noOne := int64(0)
-		actionCreatedModel.ById = &noOne
+		actionReadModel.ById = &noOne
 	}
 	model.Actions.List[actionReadModel.Name] = actionReadModel
 
