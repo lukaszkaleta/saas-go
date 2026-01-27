@@ -43,9 +43,9 @@ func TestPgMessages_Add(t *testing.T) {
 	drop, ctx, db := setupMessagesTest(t)
 	defer drop(t)
 
-	pgMessages := NewPgMessages(db, USER_ID, pg.TableEntity{Name: "message", Id: USER_ID})
+	pgMessages := NewPgMessages(db, pg.TableEntity{Name: "message", Id: USER_ID})
 	value := "test-message"
-	newMessage, err := pgMessages.Add(ctx, value)
+	newMessage, err := pgMessages.Add(ctx, USER_ID, value)
 	if err != nil {
 		t.Fatal(err)
 	}
