@@ -15,6 +15,14 @@ func EmptyActionsModel() *ActionsModel {
 	return &ActionsModel{List: make(map[string]*ActionModel)}
 }
 
+func (am ActionsModel) Created() *ActionModel {
+	return am.WithName("created")
+}
+
+func (am ActionsModel) WithName(name string) *ActionModel {
+	return am.List[name]
+}
+
 type SolidActions struct {
 	actions Actions
 	model   *ActionsModel

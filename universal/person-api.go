@@ -32,6 +32,10 @@ func (model *PersonModel) Change(newModel *PersonModel) {
 	model.Phone = newModel.Phone
 }
 
+func (model *PersonModel) ID() int64 {
+	return model.Id
+}
+
 func EmptyPersonModel() *PersonModel {
 	return &PersonModel{
 		FirstName:     "",
