@@ -3,6 +3,7 @@ package universal
 type Actions interface {
 	List() map[string]*Action
 	WithName(name string) Action
+	Created() Action
 	Model() *ActionsModel
 }
 
@@ -29,4 +30,7 @@ func (s *SolidActions) Model() *ActionsModel {
 
 func (s *SolidActions) WithName(name string) Action {
 	return s.actions.WithName(name)
+}
+func (s *SolidActions) Created() Action {
+	return s.WithName("created")
 }

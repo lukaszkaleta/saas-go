@@ -15,8 +15,11 @@ type PgActions struct {
 }
 
 func (p PgActions) WithName(name string) universal.Action {
-	//TODO implement me
-	panic("implement me")
+	return nil
+}
+
+func (p PgActions) Created() universal.Action {
+	return p.WithName("created")
 }
 
 func (p PgActions) List() map[string]*universal.Action {
