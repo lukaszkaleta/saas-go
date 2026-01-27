@@ -44,7 +44,7 @@ func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.MessageM
 }
 
 func (pg *PgMessages) List(ctx context.Context) ([]messages.Message, error) {
-	query := fmt.Sprintf("select id, owner_id, value, action_created_by_id, action_created_at from %s where owner_id = @ownerId", pg.owner.Name)
+	query := fmt.Sprintf("select id, owner_id, recipient_id, value, action_created_by_id, action_created_at from %s where owner_id = @ownerId", pg.owner.Name)
 	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"ownerId": pg.owner.Id})
 	if err != nil {
 		return nil, err
