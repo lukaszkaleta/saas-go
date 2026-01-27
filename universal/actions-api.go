@@ -8,7 +8,7 @@ type Actions interface {
 }
 
 type ActionsModel struct {
-	List map[string]*ActionModel
+	List map[string]*ActionModel `json:"list"`
 }
 
 func EmptyActionsModel() *ActionsModel {
