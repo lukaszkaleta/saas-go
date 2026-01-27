@@ -80,6 +80,10 @@ func (m *JobModel) Hint() *JobHint {
 	}
 }
 
+func (m *JobModel) ID() int64 {
+	return m.Id
+}
+
 func EmptyJobModel() *JobModel {
 	return &JobModel{
 		Id:          0,
