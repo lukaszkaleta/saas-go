@@ -5,6 +5,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
+	"github.com/lukaszkaleta/saas-go/universal"
 	"github.com/lukaszkaleta/saas-go/user"
 )
 
@@ -45,4 +46,16 @@ func (s *PgUserSearch) ModelsByIds(ctx context.Context, ids []int64) ([]*user.Us
 		return nil, err
 	}
 	return userModels, nil
+}
+
+func (s *PgUserSearch) PersonModelsByIds(ctx context.Context, ids []int64) ([]*universal.PersonModel, error) {
+	userModesl, err := s.ModelsByIds(ctx, ids)
+	if err != nil {
+		return nil, err
+	}
+	personModels := make([]*universal.PersonModel, len(userModesl))
+	for i, userModel := range userModesl {
+		personModels[i] = userModel.Person
+	}
+	return personModels, nil
 }
