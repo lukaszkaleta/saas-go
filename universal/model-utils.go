@@ -1,25 +1,21 @@
 package universal
 
 type ModelAware interface {
-	Model() HasId
-}
-
-type HasId interface {
-	GetId() int64
+	Model() Idable
 }
 
 func ModelsToMap[T ModelAware](array []T) map[int64]T {
 	idMap := make(map[int64]T)
 	for _, modelAware := range array {
-		idMap[modelAware.Model().GetId()] = modelAware
+		idMap[modelAware.Model().ID()] = modelAware
 	}
 	return idMap
 }
 
-func HasIdToMap[T HasId](array []T) map[int64]T {
+func IdableToMap[T Idable](array []T) map[int64]T {
 	idMap := make(map[int64]T)
 	for _, modelAware := range array {
-		idMap[modelAware.GetId()] = modelAware
+		idMap[modelAware.ID()] = modelAware
 	}
 	return idMap
 }
