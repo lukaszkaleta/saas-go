@@ -19,3 +19,11 @@ func OwnerIds(ctx context.Context, list []Message) []int64 {
 	}
 	return ids
 }
+
+func Models(ctx context.Context, list []Message) []*MessageModel {
+	models := make([]*MessageModel, len(list))
+	for _, msg := range list {
+		models = append(models, msg.Model(ctx))
+	}
+	return models
+}
