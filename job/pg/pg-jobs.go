@@ -28,7 +28,10 @@ func (pgJobs *PgJobs) ById(ctx context.Context, id int64) (job.Job, error) {
 	if err != nil {
 		return nil, err
 	}
-	return MapJob(pgJobs.db)(rows)
+	if rows.Next() {
+		return MapJob(pgJobs.db)(rows)
+	}
+	return nil, nil
 }
 
 func (pgJobs *PgJobs) Add(ctx context.Context, model *job.JobModel) (job.Job, error) {
