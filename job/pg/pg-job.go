@@ -135,7 +135,7 @@ func MapJobModel(row pgx.CollectableRow) (*job.JobModel, error) {
 	jobModel.State.Published = nullTimePublished.Time
 	jobModel.State.Occupied = nullTimeOccupied.Time
 	jobModel.State.Closed = nullTimeClosed.Time
-	jobModel.Actions = universal.ActionsModel{List: actions}
+	jobModel.Actions = &universal.ActionsModel{List: actions}
 	if err != nil {
 		return nil, err
 	}
@@ -253,7 +253,7 @@ func MapSearchJob() pgx.RowToFunc[*job.JobSearchOutput] {
 		jobModel.State.Published = nullTimePublished.Time
 		jobModel.State.Occupied = nullTimeOccupied.Time
 		jobModel.State.Closed = nullTimeClosed.Time
-		jobModel.Actions = universal.ActionsModel{List: actions}
+		jobModel.Actions = &universal.ActionsModel{List: actions}
 		if err != nil {
 			return nil, err
 		}

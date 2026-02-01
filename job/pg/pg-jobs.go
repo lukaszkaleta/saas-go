@@ -61,6 +61,8 @@ func (pgJobs *PgJobs) Add(ctx context.Context, model *job.JobModel) (job.Job, er
 		db: pgJobs.db,
 		Id: jobId,
 	}
+	actionList := make(map[string]*universal.ActionModel)
+	actionList["created"] = universal.EmptyActionModel("created")
 	return job.NewSolidJob(
 		&job.JobModel{
 			Id:          jobId,
@@ -70,6 +72,7 @@ func (pgJobs *PgJobs) Add(ctx context.Context, model *job.JobModel) (job.Job, er
 			Price:       &universal.PriceModel{},
 			Rating:      model.Rating,
 			State:       job.JobStatus{Draft: time.Now()},
+			Actions:     &universal.ActionsModel{List: actionList},
 		},
 		&pgJob), nil
 }

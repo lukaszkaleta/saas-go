@@ -70,7 +70,7 @@ type JobModel struct {
 	Description *universal.DescriptionModel `json:"description"`
 	State       JobStatus                   `json:"state"`
 	Tags        []string                    `json:"tags"`
-	Actions     universal.ActionsModel      `json:"actions"`
+	Actions     *universal.ActionsModel     `json:"actions"`
 }
 
 func (m *JobModel) Hint() *JobHint {
