@@ -27,6 +27,16 @@ func (pg *PgRecords) Add(ctx context.Context, model *filestore.RecordModel) (fil
 		return nil, err
 	}
 
+	if pg.filesystemId <= 0 {
+		sql = "insert into filestore_filesystem (name_value, name_slug) values (@name, @slug) returning id"
+		filesystemId := int64(0)
+		row := pg.db.Pool.QueryRow(ctx, sql, pgx.NamedArgs{"name": "record", "slug": ""})
+		err := row.Scan(&filesystemId)
+		if err != nil {
+			return nil, err
+		}
+		pg.filesystemId = filesystemId
+	}
 	sql = "insert into filesystem_record (filesystem_id, record_id) values (@filesystemId, @recordId)"
 	_, err = pg.db.Pool.Exec(ctx, sql, pgx.NamedArgs{"filesystemId": pg.filesystemId, "recordId": recordId})
 	if err != nil {
