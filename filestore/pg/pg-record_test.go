@@ -41,7 +41,7 @@ func TestPgRecord_Model(t *testing.T) {
 	teardownSuite, db := setupTest(t)
 	defer teardownSuite(t)
 
-	records := PgRecords{db: db}
+	records := NewPgRecords(db, 0)
 	recordModel := &filestore.RecordModel{
 		Name:        universal.SluggedName("file-name"),
 		Description: &universal.DescriptionModel{Value: "file-description", ImageUrl: "file-image-url"},

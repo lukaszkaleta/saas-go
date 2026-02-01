@@ -48,7 +48,7 @@ func (p PgFileSystem) Update(ctx context.Context, newModel *filestore.FileSystem
 }
 
 func (p PgFileSystem) Records() filestore.Records {
-	return &PgRecords{db: p.db, filesystemId: p.Id}
+	return NewPgRecords(p.db, p.Id)
 }
 
 func MapFileSystemModel(row pgx.CollectableRow) (*filestore.FileSystemModel, error) {

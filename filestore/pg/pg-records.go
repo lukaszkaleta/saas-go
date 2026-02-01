@@ -14,6 +14,10 @@ type PgRecords struct {
 	filesystemId int64
 }
 
+func NewPgRecords(db *pg.PgDb, filesystemId int64) *PgRecords {
+	return &PgRecords{db: db, filesystemId: filesystemId}
+}
+
 func (pg *PgRecords) Add(ctx context.Context, model *filestore.RecordModel) (filestore.Record, error) {
 	sql := "insert into filestore_record (name_value, name_slug, description_value, description_image_url) values (@nameValue, @nameSlug, @descriptionValue, @descriptionImageUrl) returning id"
 	recordId := int64(0)
@@ -23,7 +27,7 @@ func (pg *PgRecords) Add(ctx context.Context, model *filestore.RecordModel) (fil
 		return nil, err
 	}
 
-	sql = "insert into fileystem_record (filesystem_id, record_id) values (@filesystemId, @recordId)"
+	sql = "insert into filesystem_record (filesystem_id, record_id) values (@filesystemId, @recordId)"
 	_, err = pg.db.Pool.Exec(ctx, sql, pgx.NamedArgs{"filesystemId": pg.filesystemId, "recordId": recordId})
 	if err != nil {
 		return nil, err
