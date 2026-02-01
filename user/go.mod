@@ -2,9 +2,9 @@ module github.com/lukaszkaleta/saas-go/user
 
 go 1.25.0
 
-require github.com/lukaszkaleta/saas-go/universal v0.2.161
+require github.com/lukaszkaleta/saas-go/universal v0.2.162
 
-require github.com/lukaszkaleta/saas-go/filestore v0.2.161
+require github.com/lukaszkaleta/saas-go/filestore v0.2.162
 
 replace github.com/lukaszkaleta/saas-go => ../
 
