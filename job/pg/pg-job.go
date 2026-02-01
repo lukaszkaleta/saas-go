@@ -46,14 +46,14 @@ func (pgJob *PgJob) Description() universal.Description {
 }
 
 func (pgJob *PgJob) FileSystem() filestore.FileSystem {
-	return &pgFilestore.PgFileSystem{
-		Db: pgJob.db,
-		Owner: pg.RelationEntity{
+	return pgFilestore.NewPgFileSystem(
+		pgJob.db,
+		pg.RelationEntity{
 			RelationId: pgJob.Id,
 			TableName:  "job_filesystem",
 			ColumnName: "job_id",
 		},
-	}
+	)
 }
 
 func (pgJob *PgJob) State() universal.State {

@@ -22,7 +22,7 @@ func TestPgRecord_Update(t *testing.T) {
 	teardownSuite, db := setupTest(t)
 	defer teardownSuite(t)
 
-	records := PgRecords{Db: db}
+	records := PgRecords{db: db}
 	record, err := records.Add(t.Context(), filestore.EmptyRecordModel())
 	if err != nil {
 		t.Fatal(err)
@@ -41,7 +41,7 @@ func TestPgRecord_Model(t *testing.T) {
 	teardownSuite, db := setupTest(t)
 	defer teardownSuite(t)
 
-	records := PgRecords{Db: db}
+	records := PgRecords{db: db}
 	recordModel := &filestore.RecordModel{
 		Name:        universal.SluggedName("file-name"),
 		Description: &universal.DescriptionModel{Value: "file-description", ImageUrl: "file-image-url"},

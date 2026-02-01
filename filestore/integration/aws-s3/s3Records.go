@@ -12,6 +12,21 @@ type AmazonS3Records struct {
 	s3Bucket *S3Bucket
 }
 
+func (s3Records *AmazonS3Records) AddFromUrl(ctx context.Context, url string) (filestore.Record, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s3Records *AmazonS3Records) AddAll(ctx context.Context, model []*filestore.RecordModel) ([]filestore.Record, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s3Records *AmazonS3Records) AddFromUrls(ctx context.Context, urls []string) ([]filestore.Record, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func AmazonS3RecordsFromBucket(s3Bucket *S3Bucket, records filestore.Records) *AmazonS3Records {
 	return &AmazonS3Records{records: records, s3Bucket: s3Bucket}
 }

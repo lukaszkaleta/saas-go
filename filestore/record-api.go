@@ -60,14 +60,14 @@ func NewSolidRecord(model *RecordModel, record Record) Record {
 	return &SolidRecord{model, record}
 }
 
-func (addr SolidRecord) Update(ctx context.Context, newModel *RecordModel) error {
-	addr.model.Change(newModel)
-	if addr.Record == nil {
+func (record SolidRecord) Update(ctx context.Context, newModel *RecordModel) error {
+	record.model.Change(newModel)
+	if record.Record == nil {
 		return nil
 	}
-	return addr.Record.Update(ctx, newModel)
+	return record.Record.Update(ctx, newModel)
 }
 
-func (addr SolidRecord) Model(ctx context.Context) *RecordModel {
-	return addr.model
+func (record SolidRecord) Model(ctx context.Context) *RecordModel {
+	return record.model
 }

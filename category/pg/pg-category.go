@@ -36,7 +36,7 @@ func (pgCategory PgCategory) Parent(ctx context.Context) (category.Category, err
 		return nil, err
 	}
 	if row.Next() {
-		parent, err := MapCategory(pgCategory.Db)(row)
+		parent, err := MapCategoryFunc(pgCategory.Db)(row)
 		if err != nil {
 			return nil, err
 		}
@@ -45,17 +45,21 @@ func (pgCategory PgCategory) Parent(ctx context.Context) (category.Category, err
 	return nil, nil
 }
 
-func MapCategory(db *pg.PgDb) pgx.RowToFunc[category.Category] {
+func MapCategoryFunc(db *pg.PgDb) pgx.RowToFunc[category.Category] {
 	return func(row pgx.CollectableRow) (category.Category, error) {
-		model, err := MapCategoryModel(row)
-		if err != nil {
-			return nil, err
-		}
-		return category.NewSolidCategory(&model, PgCategory{Db: db, Id: model.Id}), nil
+		return MapCategory(db, row)
 	}
 }
 
-func MapCategoryModel(row pgx.CollectableRow) (category.CategoryModel, error) {
+func MapCategory(db *pg.PgDb, row pgx.CollectableRow) (category.Category, error) {
+	model, err := MapCategoryModel(row)
+	if err != nil {
+		return nil, err
+	}
+	return category.NewSolidCategory(model, PgCategory{Db: db, Id: model.Id}), nil
+}
+
+func MapCategoryModel(row pgx.CollectableRow) (*category.CategoryModel, error) {
 	categoryModel := category.EmptyCategoryModel()
 	err := row.Scan(
 		&categoryModel.Id,
@@ -65,7 +69,7 @@ func MapCategoryModel(row pgx.CollectableRow) (category.CategoryModel, error) {
 		&categoryModel.Description.Value,
 		&categoryModel.Description.ImageUrl)
 	if err != nil {
-		return *categoryModel, err
+		return categoryModel, err
 	}
-	return *categoryModel, nil
+	return categoryModel, nil
 }

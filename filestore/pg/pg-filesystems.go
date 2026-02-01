@@ -27,7 +27,7 @@ func (pgFileSystem PgFileSystems) Add(ctx context.Context, name string, ownerId 
 		return nil, err
 	}
 	newFileSystem := PgFileSystem{
-		Db:    pgFileSystem.Db,
+		db:    pgFileSystem.Db,
 		Id:    newId,
 		Owner: FileSystemRelationEntity(name, ownerId),
 	}

@@ -9,18 +9,25 @@ import (
 )
 
 type PgFileSystem struct {
-	Db    *pg.PgDb
+	db    *pg.PgDb
 	Id    int64
 	Owner pg.RelationEntity
 }
 
+func NewPgFileSystem(db *pg.PgDb, id pg.RelationEntity) filestore.FileSystem {
+	return &PgFileSystem{
+		db:    db,
+		Owner: id,
+	}
+}
+
 func (p PgFileSystem) Model(ctx context.Context) *filestore.FileSystemModel {
 	query := "select * from filestore_filesystem where id=&id"
-	rows, err := p.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": p.Id})
+	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": p.Id})
 	if err != nil {
 		return nil
 	}
-	fileSystemModel, err := pgx.CollectOneRow(rows, MapFileSystem)
+	fileSystemModel, err := pgx.CollectOneRow(rows, MapFileSystemModel)
 	if err != nil {
 		return nil
 	}
@@ -30,7 +37,7 @@ func (p PgFileSystem) Model(ctx context.Context) *filestore.FileSystemModel {
 func (p PgFileSystem) Update(ctx context.Context, newModel *filestore.FileSystemModel) error {
 	newModel.Id = p.Id
 	query := "update filestore_filesystem set name_value = @nameValue, name_slug = @nameSlug where id = @id"
-	cmd, err := p.Db.Pool.Exec(ctx, query, FileSystemNamedArgs(newModel))
+	cmd, err := p.db.Pool.Exec(ctx, query, FileSystemNamedArgs(newModel))
 	if err != nil {
 		return err
 	}
@@ -41,10 +48,10 @@ func (p PgFileSystem) Update(ctx context.Context, newModel *filestore.FileSystem
 }
 
 func (p PgFileSystem) Records() filestore.Records {
-	return &PgRecords{Db: p.Db}
+	return &PgRecords{db: p.db, filesystemId: p.Id}
 }
 
-func MapFileSystem(row pgx.CollectableRow) (*filestore.FileSystemModel, error) {
+func MapFileSystemModel(row pgx.CollectableRow) (*filestore.FileSystemModel, error) {
 	fsm := filestore.EmptyFileSystemModel()
 	err := row.Scan(
 		&fsm.Id,
@@ -54,4 +61,17 @@ func MapFileSystem(row pgx.CollectableRow) (*filestore.FileSystemModel, error) {
 		return nil, err
 	}
 	return fsm, nil
+}
+
+func MapFileSystem(db *pg.PgDb, owner pg.RelationEntity, row pgx.CollectableRow) (filestore.FileSystem, error) {
+	model, err := MapFileSystemModel(row)
+	if err != nil {
+		return nil, err
+	}
+	newFileSystem := PgFileSystem{
+		db:    db,
+		Id:    model.Id,
+		Owner: owner,
+	}
+	return filestore.NewSolidFileSystem(model, newFileSystem), nil
 }
