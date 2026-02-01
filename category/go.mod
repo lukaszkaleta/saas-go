@@ -2,7 +2,7 @@ module github.com/lukaszkaleta/saas-go/category
 
 go 1.25.0
 
-require github.com/lukaszkaleta/saas-go/universal v0.2.167
+require github.com/lukaszkaleta/saas-go/universal v0.2.168
 
 replace github.com/lukaszkaleta/saas-go => ../
 
