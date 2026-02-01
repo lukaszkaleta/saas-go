@@ -15,7 +15,7 @@ type PgRecord struct {
 	Id int64
 }
 
-func (p PgRecord) Description(ctx context.Context) universal.Description {
+func (p PgRecord) Description() universal.Description {
 	return universalPg.NewPgDescription(
 		p.Db,
 		pg.TableEntity{Id: p.Id, Name: "filestore_record"},

@@ -10,7 +10,7 @@ import (
 // API
 
 type Record interface {
-	Description(ctx context.Context) universal.Description
+	Description() universal.Description
 	Model(ctx context.Context) *RecordModel
 	Update(ctx context.Context, newModel *RecordModel) error
 }
@@ -57,8 +57,8 @@ type SolidRecord struct {
 	Record Record
 }
 
-func (record SolidRecord) Description(ctx context.Context) universal.Description {
-	return record.Record.Description(ctx)
+func (record SolidRecord) Description() universal.Description {
+	return record.Record.Description()
 }
 
 func NewSolidRecord(model *RecordModel, record Record) Record {
