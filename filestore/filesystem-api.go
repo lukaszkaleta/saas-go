@@ -9,9 +9,11 @@ import (
 // API
 
 type FileSystem interface {
+	universal.Idable
 	Model(ctx context.Context) *FileSystemModel
 	Update(ctx context.Context, newModel *FileSystemModel) error
 	Records() Records
+	Init(ctx context.Context) (int64, error)
 }
 
 // Builder
@@ -19,8 +21,13 @@ type FileSystem interface {
 // Model
 
 type FileSystemModel struct {
+	universal.Idable
 	Id   int64 `json:"id"`
 	Name *universal.NameModel
+}
+
+func (model *FileSystemModel) ID() int64 {
+	return model.Id
 }
 
 func (model *FileSystemModel) Change(newModel *FileSystemModel) {
@@ -62,4 +69,15 @@ func (addr SolidFileSystem) Records() Records {
 		return NoRecords{}
 	}
 	return addr.FileSystem.Records()
+}
+
+func (addr SolidFileSystem) Init(ctx context.Context) (int64, error) {
+	if addr.FileSystem == nil {
+		return 0, nil
+	}
+	return addr.FileSystem.Init(ctx)
+}
+
+func (addr SolidFileSystem) ID() int64 {
+	return addr.model.Id
 }

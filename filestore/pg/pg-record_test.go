@@ -11,18 +11,28 @@ import (
 func setupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 	db := pg.LocalPgWithName("saas-go", "filestore_test")
 	schema := NewFilestoreSchema(db)
-	schema.Create()
-
-	return func(tb testing.TB) {
+	drop := func(tb testing.TB) {
+		schema.DropTest()
 		schema.Drop()
-	}, db
+	}
+
+	drop(tb)
+	schema.Create()
+	schema.CreateTest()
+
+	return drop, db
 }
 
 func TestPgRecord_Update(t *testing.T) {
 	teardownSuite, db := setupTest(t)
 	defer teardownSuite(t)
 
-	records := PgRecords{db: db}
+	relationEntity := pg.RelationEntity{
+		TableName:  "test_filesystem",
+		RelationId: 10,
+		ColumnName: "test_id",
+	}
+	records := NewPgRecords(db, NewPgFileSystem(db, relationEntity))
 	record, err := records.Add(t.Context(), filestore.EmptyRecordModel())
 	if err != nil {
 		t.Fatal(err)
@@ -41,7 +51,12 @@ func TestPgRecord_Model(t *testing.T) {
 	teardownSuite, db := setupTest(t)
 	defer teardownSuite(t)
 
-	records := NewPgRecords(db, 0)
+	relationEntity := pg.RelationEntity{
+		TableName:  "test_filesystem",
+		RelationId: 10,
+		ColumnName: "test_id",
+	}
+	records := NewPgRecords(db, NewPgFileSystem(db, relationEntity))
 	recordModel := &filestore.RecordModel{
 		Name:        universal.SluggedName("file-name"),
 		Description: &universal.DescriptionModel{Value: "file-description", ImageUrl: "file-image-url"},

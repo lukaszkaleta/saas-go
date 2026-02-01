@@ -10,12 +10,12 @@ import (
 )
 
 type PgRecords struct {
-	db           *pg.PgDb
-	filesystemId int64
+	db *pg.PgDb
+	fs filestore.FileSystem
 }
 
-func NewPgRecords(db *pg.PgDb, filesystemId int64) *PgRecords {
-	return &PgRecords{db: db, filesystemId: filesystemId}
+func NewPgRecords(db *pg.PgDb, fs filestore.FileSystem) *PgRecords {
+	return &PgRecords{db: db, fs: fs}
 }
 
 func (pg *PgRecords) Add(ctx context.Context, model *filestore.RecordModel) (filestore.Record, error) {
@@ -27,18 +27,13 @@ func (pg *PgRecords) Add(ctx context.Context, model *filestore.RecordModel) (fil
 		return nil, err
 	}
 
-	if pg.filesystemId <= 0 {
-		sql = "insert into filestore_filesystem (name_value, name_slug) values (@name, @slug) returning id"
-		filesystemId := int64(0)
-		row := pg.db.Pool.QueryRow(ctx, sql, pgx.NamedArgs{"name": "record", "slug": ""})
-		err := row.Scan(&filesystemId)
-		if err != nil {
-			return nil, err
-		}
-		pg.filesystemId = filesystemId
+	fsId, err := pg.fs.Init(ctx)
+	if err != nil {
+		return nil, err
 	}
+
 	sql = "insert into filesystem_record (filesystem_id, record_id) values (@filesystemId, @recordId)"
-	_, err = pg.db.Pool.Exec(ctx, sql, pgx.NamedArgs{"filesystemId": pg.filesystemId, "recordId": recordId})
+	_, err = pg.db.Pool.Exec(ctx, sql, pgx.NamedArgs{"filesystemId": fsId, "recordId": recordId})
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +99,7 @@ func (pg *PgRecords) ById(ctx context.Context, recordId int64) (filestore.Record
 
 func (pg *PgRecords) Urls(ctx context.Context) ([]string, error) {
 	sql := "select description_image_url from filestore_record where id in (select record_id from filesystem_record where filesystem_id = @fsId)"
-	rows, err := pg.db.Pool.Query(ctx, sql, pgx.NamedArgs{"fsId": pg.filesystemId})
+	rows, err := pg.db.Pool.Query(ctx, sql, pgx.NamedArgs{"fsId": pg.fs.ID()})
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +109,7 @@ func (pg *PgRecords) Urls(ctx context.Context) ([]string, error) {
 
 func (pg *PgRecords) FindByUrl(ctx context.Context, url string) (filestore.Record, error) {
 	sql := "select * from filestore_record where description_image_url = @url and id in (select record_id from filesystem_record where filesystem_id = @fsId)"
-	rows, err := pg.db.Pool.Query(ctx, sql, pgx.NamedArgs{"url": url, "fsId": pg.filesystemId})
+	rows, err := pg.db.Pool.Query(ctx, sql, pgx.NamedArgs{"url": url, "fsId": pg.fs.ID()})
 	if err != nil {
 		return nil, err
 	}

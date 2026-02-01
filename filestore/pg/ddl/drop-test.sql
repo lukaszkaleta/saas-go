@@ -1,1 +1,1 @@
--- empty
+drop table if exists test_filesystem;
