@@ -1,5 +1,10 @@
 package universal
 
+import (
+	"context"
+	"time"
+)
+
 type Actions interface {
 	List() map[string]*Action
 	WithName(name string) Action
@@ -13,6 +18,15 @@ type ActionsModel struct {
 
 func EmptyActionsModel() *ActionsModel {
 	return &ActionsModel{List: make(map[string]*ActionModel)}
+}
+
+func CreatedNowActions(ctx context.Context) *ActionsModel {
+	model := EmptyActionsModel()
+	createdModel := EmptyCreatedActionModel()
+	createdModel.MadeAt = time.Now()
+	createdModel.ById = CurrentUserId(ctx)
+	model.List["created"] = createdModel
+	return model
 }
 
 func (am ActionsModel) Created() *ActionModel {
