@@ -22,6 +22,13 @@ func (pg *PgRecords) Add(ctx context.Context, model *filestore.RecordModel) (fil
 	if err != nil {
 		return nil, err
 	}
+
+	sql = "insert into fileystem_record (filesystem_id, record_id) values (@filesystemId, @recordId)"
+	_, err = pg.db.Pool.Exec(ctx, sql, pgx.NamedArgs{"filesystemId": pg.filesystemId, "recordId": recordId})
+	if err != nil {
+		return nil, err
+	}
+
 	newRecord := PgRecord{
 		Db: pg.db,
 		Id: recordId,
@@ -72,6 +79,7 @@ func (pg *PgRecords) ById(ctx context.Context, recordId int64) (filestore.Record
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	record := PgRecord{
 		Db: pg.db,
 		Id: recordId,
@@ -81,16 +89,22 @@ func (pg *PgRecords) ById(ctx context.Context, recordId int64) (filestore.Record
 }
 
 func (pg *PgRecords) Urls(ctx context.Context) ([]string, error) {
-	//sql := "select description_image_url from filestore_record where description_image_url = @url"
-	return make([]string, 0), nil
-}
-
-func (pg *PgRecords) FindByUrl(ctx context.Context, url string) (filestore.Record, error) {
-	sql := "select * from filestore_record where description_image_url = @url"
-	rows, err := pg.db.Pool.Query(ctx, sql, pgx.NamedArgs{"url": url})
+	sql := "select description_image_url from filestore_record where id in (select record_id from filesystem_record where filesystem_id = @fsId)"
+	rows, err := pg.db.Pool.Query(ctx, sql, pgx.NamedArgs{"fsId": pg.filesystemId})
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
+	return pgx.CollectRows(rows, pgx.RowTo[string])
+}
+
+func (pg *PgRecords) FindByUrl(ctx context.Context, url string) (filestore.Record, error) {
+	sql := "select * from filestore_record where description_image_url = @url and id in (select record_id from filesystem_record where filesystem_id = @fsId)"
+	rows, err := pg.db.Pool.Query(ctx, sql, pgx.NamedArgs{"url": url, "fsId": pg.filesystemId})
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 	return MapRecord(pg.db, rows)
 }
 
