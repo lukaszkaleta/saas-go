@@ -6,11 +6,22 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/filestore"
+	"github.com/lukaszkaleta/saas-go/universal"
+	universalPg "github.com/lukaszkaleta/saas-go/universal/pg"
 )
 
 type PgRecord struct {
 	Db *pg.PgDb
 	Id int64
+}
+
+func (p PgRecord) Description(ctx context.Context) universal.Description {
+	return universalPg.NewPgDescription(
+		p.Db,
+		pg.TableEntity{Id: p.Id, Name: "filestore_record"},
+		"description_value",
+		"description_image_url",
+	)
 }
 
 func (p PgRecord) Model(ctx context.Context) *filestore.RecordModel {
