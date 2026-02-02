@@ -46,5 +46,5 @@ ORDER BY
 		return nil, err
 	}
 	defer rows.Close()
-	return MapMessages(rows, pg.db)
+	return MapMessages(pg.db, rows)
 }
