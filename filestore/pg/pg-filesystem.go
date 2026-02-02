@@ -56,8 +56,7 @@ func (p *PgFileSystem) Records() filestore.Records {
 	return NewPgRecords(p.db, p)
 }
 
-func (p *PgFileSystem) Init(ctx context.Context) (int64, error) {
-
+func (p *PgFileSystem) CheckExistence(ctx context.Context) (int64, error) {
 	sql := fmt.Sprintf("select filesystem_id from %s where %s = @relationId", p.Owner.TableName, p.Owner.ColumnName)
 	rows, err := p.db.Pool.Query(ctx, sql, pgx.NamedArgs{"relationId": p.Owner.RelationId})
 	if err != nil {
@@ -75,8 +74,19 @@ func (p *PgFileSystem) Init(ctx context.Context) (int64, error) {
 			return filesystemId, nil
 		}
 	}
+	return 0, nil
+}
 
-	sql = "insert into filestore_filesystem (name_value, name_slug) values (@name, @slug) returning id"
+func (p *PgFileSystem) Init(ctx context.Context) (int64, error) {
+	filesystemId, err := p.CheckExistence(ctx)
+	if err != nil {
+		return 0, err
+	}
+	if filesystemId > 0 {
+		return filesystemId, nil
+	}
+
+	sql := "insert into filestore_filesystem (name_value, name_slug) values (@name, @slug) returning id"
 	row := p.db.Pool.QueryRow(ctx, sql, pgx.NamedArgs{"name": p.Owner.TableName, "slug": p.Owner.TableName})
 	err = row.Scan(&filesystemId)
 	if err != nil {

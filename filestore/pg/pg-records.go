@@ -98,8 +98,16 @@ func (pg *PgRecords) ById(ctx context.Context, recordId int64) (filestore.Record
 }
 
 func (pg *PgRecords) Urls(ctx context.Context) ([]string, error) {
+	filesystemId, err := pg.fs.CheckExistence(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if filesystemId <= 0 {
+		return []string{}, nil
+	}
+
 	sql := "select description_image_url from filestore_record where id in (select record_id from filesystem_record where filesystem_id = @fsId)"
-	rows, err := pg.db.Pool.Query(ctx, sql, pgx.NamedArgs{"fsId": pg.fs.ID()})
+	rows, err := pg.db.Pool.Query(ctx, sql, pgx.NamedArgs{"fsId": filesystemId})
 	if err != nil {
 		return nil, err
 	}

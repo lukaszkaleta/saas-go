@@ -14,6 +14,7 @@ type FileSystem interface {
 	Update(ctx context.Context, newModel *FileSystemModel) error
 	Records() Records
 	Init(ctx context.Context) (int64, error)
+	CheckExistence(ctx context.Context) (int64, error)
 }
 
 // Builder
@@ -76,6 +77,13 @@ func (addr SolidFileSystem) Init(ctx context.Context) (int64, error) {
 		return 0, nil
 	}
 	return addr.FileSystem.Init(ctx)
+}
+
+func (addr SolidFileSystem) CheckExistence(ctx context.Context) (int64, error) {
+	if addr.FileSystem == nil {
+		return 0, nil
+	}
+	return addr.FileSystem.CheckExistence(ctx)
 }
 
 func (addr SolidFileSystem) ID() int64 {
