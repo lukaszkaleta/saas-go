@@ -60,9 +60,9 @@ CREATE TABLE job_message (
   owner_id bigint not null references job,
   recipient_id bigint not null references users,
   value TEXT NOT NULL,
-  action_created_by_id bigint not null references users(id),
+  action_created_by_id bigint not null references users,
   action_created_at timestamp not null default now(),
-  action_read_by_id bigint references users(id),
+  action_read_by_id bigint references users,
   action_read_at timestamp
 );
 CREATE INDEX message_job_idx ON job_message USING btree (owner_id);

@@ -28,6 +28,7 @@ func (pgJobs *PgJobs) ById(ctx context.Context, id int64) (job.Job, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	if rows.Next() {
 		return MapJob(pgJobs.db)(rows)
 	}

@@ -8,8 +8,11 @@ import (
 
 type Messages interface {
 	universal.Lister[Message]
+	universal.Idables[Message]
 	Add(ctx context.Context, recipientId int64, value string) (Message, error)
 	AddFromModel(ctx context.Context, model *MessageModel) (Message, error)
+	ForRecipient(ctx context.Context, recipient universal.Idable) ([]Message, error)
+	ForRecipientById(ctx context.Context, id int64) ([]Message, error)
 }
 
 func OwnerIds(ctx context.Context, list []Message) []int64 {

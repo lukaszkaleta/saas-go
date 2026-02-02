@@ -44,13 +44,43 @@ func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.MessageM
 }
 
 func (pg *PgMessages) List(ctx context.Context) ([]messages.Message, error) {
-	query := fmt.Sprintf("select id, owner_id, recipient_id, value, action_created_by_id, action_created_at, action_read_by_id, action_read_at from %s where owner_id = @ownerId", pg.owner.Name)
+	query := fmt.Sprintf(ColumnsSelect()+" from %s where owner_id = @ownerId", pg.owner.Name)
 	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"ownerId": pg.owner.Id})
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	return MapMessages(rows, pg.db)
+	return MapMessages(pg.db, rows)
+}
+
+func (pg *PgMessages) ById(ctx context.Context, id int64) (messages.Message, error) {
+	query := fmt.Sprintf(ColumnsSelect()+" from %s where id = @id and owner_id = @ownerId", pg.owner.Name)
+	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": id, "ownerId": pg.owner.Id})
+	if err != nil {
+		return nil, err
+	}
+	mapMessages, err := MapMessages(pg.db, rows)
+	if err != nil {
+		return nil, err
+	}
+	return mapMessages[0], nil
+}
+
+func (pg *PgMessages) ForRecipient(ctx context.Context, recipient universal.Idable) ([]messages.Message, error) {
+	query := fmt.Sprintf(ColumnsSelect()+" from %s where owner_id = @ownerId and recipient_id = @recipientId", pg.owner.Name)
+	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"ownerId": pg.owner.Id, "recipientId": recipient.ID()})
+	if err != nil {
+		return nil, err
+	}
+	return MapMessages(pg.db, rows)
+}
+
+func (pg *PgMessages) ForRecipientById(ctx context.Context, id int64) ([]messages.Message, error) {
+	query := fmt.Sprintf(ColumnsSelect()+" from %s where owner_id = @ownerId and recipient_id = (select recipient_id from %s where id = @id)", pg.owner.Name)
+	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"ownerId": pg.owner.Id, "id": id})
+	if err != nil {
+		return nil, err
+	}
+	return MapMessages(pg.db, rows)
 }
 
 func MessageNamedArgs(model *messages.MessageModel, currentUserId *int64) pgx.NamedArgs {
@@ -62,8 +92,9 @@ func MessageNamedArgs(model *messages.MessageModel, currentUserId *int64) pgx.Na
 	}
 }
 
-func MapMessages(rows pgx.Rows, db *pg.PgDb) ([]messages.Message, error) {
+func MapMessages(db *pg.PgDb, rows pgx.Rows) ([]messages.Message, error) {
 	msgs := []messages.Message{}
+	defer rows.Close()
 	for rows.Next() {
 		msg, err := MapMessage(db, rows)
 		if err != nil {

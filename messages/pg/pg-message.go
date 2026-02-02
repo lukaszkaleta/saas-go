@@ -2,6 +2,7 @@ package pg
 
 import (
 	"context"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -64,4 +65,29 @@ func MapMessage(db *pg.PgDb, row pgx.CollectableRow) (messages.Message, error) {
 	}
 	pgMessage := &PgMessage{Db: db, Id: model.Id, OwnerId: model.OwnerId}
 	return messages.NewSolidMessage(model, pgMessage, model.Id), nil
+}
+
+func Columns() []string {
+	return []string{
+		"id",
+		"owner_id",
+		"recipient_id",
+		"value",
+		"action_created_by_id",
+		"action_created_at",
+		"action_read_by_id",
+		"action_read_at",
+	}
+}
+
+func ColumnString() string {
+	return strings.Join(Columns(), ",")
+}
+
+func ColumnsSelect() string {
+	return "select " + ColumnString()
+}
+
+func Select(table string) string {
+	return ColumnsSelect() + " from " + table + " "
 }
