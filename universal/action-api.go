@@ -10,9 +10,9 @@ type Action interface {
 }
 
 type ActionModel struct {
-	ById   *int64    `json:"byId"`
-	MadeAt time.Time `json:"at"`
-	Name   string    `json:"name"`
+	ById   *int64     `json:"byId"`
+	MadeAt *time.Time `json:"at"`
+	Name   string     `json:"name"`
 }
 
 func (m *ActionModel) Exists() bool {
@@ -22,7 +22,7 @@ func (m *ActionModel) Exists() bool {
 func EmptyActionModel(name string) *ActionModel {
 	return &ActionModel{
 		ById:   nil,
-		MadeAt: time.Time{},
+		MadeAt: &time.Time{},
 		Name:   name,
 	}
 }

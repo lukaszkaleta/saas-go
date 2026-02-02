@@ -2,7 +2,6 @@ package pg
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -37,13 +36,8 @@ func (m *PgMessage) ID() int64 {
 func MapMessageModel(row pgx.CollectableRow) (*messages.MessageModel, error) {
 	model := messages.EmptyModel()
 
-	nullTimeRead := sql.NullTime{}
-	var actionCreatedAt time.Time
-
 	actionCreatedModel := universal.EmptyCreatedActionModel()
 	actionReadModel := universal.EmptyActionModel("read")
-	actions := make(map[string]*universal.ActionModel)
-	actions[actionCreatedModel.Name] = actionCreatedModel
 
 	err := row.Scan(
 		&model.Id,
@@ -51,21 +45,23 @@ func MapMessageModel(row pgx.CollectableRow) (*messages.MessageModel, error) {
 		&model.RecipientId,
 		&model.Value,
 		&actionCreatedModel.ById,
-		&actionCreatedAt,
+		&actionCreatedModel.MadeAt,
 		&actionReadModel.ById,
-		&nullTimeRead,
+		&actionReadModel.MadeAt,
 	)
-	model.Actions.List[actionCreatedModel.Name] = actionCreatedModel
-	actionCreatedModel.MadeAt = nullTimeRead.Time
-	if actionReadModel.ById == nil {
-		noOne := int64(0)
-		actionReadModel.ById = &noOne
-	}
-	model.Actions.List[actionReadModel.Name] = actionReadModel
-
 	if err != nil {
 		return nil, err
 	}
+	// created
+	model.Actions.List[actionCreatedModel.Name] = actionCreatedModel
+	// read
+	if actionReadModel.ById == nil {
+		noOne := int64(0)
+		actionReadModel.ById = &noOne
+		actionReadModel.MadeAt = &time.Time{}
+	}
+	model.Actions.List[actionReadModel.Name] = actionReadModel
+
 	return model, nil
 }
 

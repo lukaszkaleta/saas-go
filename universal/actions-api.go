@@ -21,9 +21,10 @@ func EmptyActionsModel() *ActionsModel {
 }
 
 func CreatedNowActions(ctx context.Context) *ActionsModel {
+	now := time.Now()
 	model := EmptyActionsModel()
 	createdModel := EmptyCreatedActionModel()
-	createdModel.MadeAt = time.Now()
+	createdModel.MadeAt = &now
 	createdModel.ById = CurrentUserId(ctx)
 	model.List["created"] = createdModel
 	return model
