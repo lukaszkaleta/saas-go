@@ -2,7 +2,6 @@ package pgjob
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -51,17 +50,9 @@ func (o *PgOffer) Model() *job.OfferModel {
 func MapOffer(row pgx.CollectableRow) (*job.OfferModel, error) {
 	offerModel := job.EmptyOfferModel()
 
-	nullTimeAccepted := sql.NullTime{}
-	nullTimeRejected := sql.NullTime{}
-
-	actionCreated := universal.ActionModel{Name: job.Created}
-	actionAccepted := universal.ActionModel{Name: job.Accepted}
-	actionRejected := universal.ActionModel{Name: job.Rejected}
-	actions := make(map[string]*universal.ActionModel)
-	actions[job.Created] = &actionCreated
-	actions[job.Accepted] = &actionAccepted
-	actions[job.Rejected] = &actionRejected
-
+	actionCreatedModel := universal.EmptyCreatedActionModel()
+	actionAcceptedModel := universal.EmptyActionModel(job.Accepted)
+	actionRejectedModel := universal.EmptyActionModel(job.Rejected)
 	err := row.Scan(
 		&offerModel.Id,
 		&offerModel.JobId,
@@ -70,16 +61,16 @@ func MapOffer(row pgx.CollectableRow) (*job.OfferModel, error) {
 		&offerModel.Description.Value,
 		&offerModel.Description.ImageUrl,
 		&offerModel.Rating,
-		&actionCreated.ById,
-		&actionCreated.MadeAt,
-		&actionAccepted.ById,
-		&nullTimeAccepted,
-		&actionRejected.ById,
-		&nullTimeRejected,
+		&actionCreatedModel.ById,
+		&actionCreatedModel.MadeAt,
+		&actionAcceptedModel.ById,
+		&actionAcceptedModel.MadeAt,
+		&actionRejectedModel.ById,
+		&actionRejectedModel.MadeAt,
 	)
-	actionAccepted.MadeAt = nullTimeAccepted.Time
-	actionRejected.MadeAt = nullTimeRejected.Time
-	offerModel.Actions = universal.ActionsModel{List: actions}
+	offerModel.Actions.List[actionCreatedModel.Name] = actionCreatedModel
+	offerModel.Actions.List[actionAcceptedModel.Name] = actionCreatedModel
+	offerModel.Actions.List[actionRejectedModel.Name] = actionCreatedModel
 	if err != nil {
 		return nil, err
 	}

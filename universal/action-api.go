@@ -20,9 +20,23 @@ func (m *ActionModel) Exists() bool {
 }
 
 func EmptyActionModel(name string) *ActionModel {
+	noOne := int64(0)
+	return NowActionModelForUser(name, &noOne)
+}
+
+func ZeroActionModelForUser(name string, userId *int64) *ActionModel {
 	return &ActionModel{
-		ById:   nil,
+		ById:   userId,
 		MadeAt: &time.Time{},
+		Name:   name,
+	}
+}
+
+func NowActionModelForUser(name string, userId *int64) *ActionModel {
+	now := time.Now()
+	return &ActionModel{
+		ById:   userId,
+		MadeAt: &now,
 		Name:   name,
 	}
 }

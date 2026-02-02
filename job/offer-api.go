@@ -64,9 +64,10 @@ func (s *SolidOffer) Accept(ctx context.Context) error {
 			return err
 		}
 	}
+	now := time.Now()
 	s.model.Actions.List[Accepted] = &universal.ActionModel{
 		ById:   universal.CurrentUserId(ctx),
-		MadeAt: time.Now(),
+		MadeAt: &now,
 		Name:   Accepted,
 	}
 	return nil
@@ -79,9 +80,10 @@ func (s *SolidOffer) Reject(ctx context.Context) error {
 			return err
 		}
 	}
+	now := time.Now()
 	s.model.Actions.List[Rejected] = &universal.ActionModel{
 		ById:   universal.CurrentUserId(ctx),
-		MadeAt: time.Now(),
+		MadeAt: &now,
 		Name:   Rejected,
 	}
 	return nil

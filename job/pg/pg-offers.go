@@ -2,7 +2,6 @@ package pgjob
 
 import (
 	"context"
-	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -48,11 +47,7 @@ func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.
 		Id: offerId,
 	}
 	actionsList := make(map[string]*universal.ActionModel)
-	actionsList[job.Created] = &universal.ActionModel{
-		ById:   &user.Id,
-		MadeAt: time.Now(),
-		Name:   job.Created,
-	}
+	actionsList[job.Created] = universal.NowActionModelForUser(job.Created, &user.Id)
 	return job.NewSolidOffer(
 		&job.OfferModel{
 			Id:          offerId,

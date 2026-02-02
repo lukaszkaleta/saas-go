@@ -2,7 +2,6 @@ package pg
 
 import (
 	"context"
-	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -52,14 +51,7 @@ func MapMessageModel(row pgx.CollectableRow) (*messages.MessageModel, error) {
 	if err != nil {
 		return nil, err
 	}
-	// created
 	model.Actions.List[actionCreatedModel.Name] = actionCreatedModel
-	// read
-	if actionReadModel.ById == nil {
-		noOne := int64(0)
-		actionReadModel.ById = &noOne
-		actionReadModel.MadeAt = &time.Time{}
-	}
 	model.Actions.List[actionReadModel.Name] = actionReadModel
 
 	return model, nil
