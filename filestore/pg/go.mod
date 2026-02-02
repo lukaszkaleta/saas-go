@@ -18,8 +18,10 @@ require (
 	golang.org/x/text v0.33.0 // indirect
 )
 
+replace github.com/lukaszkaleta/saas-go/database/pg => ../../database/pg
+
 replace github.com/lukaszkaleta/saas-go/filestore => ../../filestore
 
 replace github.com/lukaszkaleta/saas-go/universal => ../../universal
 
-replace github.com/lukaszkaleta/saas-go/database/pg => ../../database/pg
+replace github.com/lukaszkaleta/saas-go/universal/pg => ../../universal/pg
