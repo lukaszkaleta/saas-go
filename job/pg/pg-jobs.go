@@ -101,6 +101,7 @@ func MapJobs(db *pg.PgDb, rows pgx.Rows) ([]job.Job, error) {
 func MapSearchJobs(rows pgx.Rows) ([]*job.JobSearchOutput, error) {
 	jobs := []*job.JobSearchOutput{}
 	mapSearchJob := MapSearchJob()
+	defer rows.Close()
 	for rows.Next() {
 		searchJob, err := mapSearchJob(rows)
 		if err != nil {

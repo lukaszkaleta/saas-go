@@ -58,7 +58,7 @@ CREATE INDEX job_offer_job_idx ON job_offer USING btree (job_id);
 CREATE TABLE job_message (
   id bigint not null primary key default nextval('job_sequence'),
   owner_id bigint not null references job,
-  recipient_id bigint not null references job,
+  recipient_id bigint not null references users,
   value TEXT NOT NULL,
   action_created_by_id bigint not null references users(id),
   action_created_at timestamp not null default now(),

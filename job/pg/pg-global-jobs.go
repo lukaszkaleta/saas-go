@@ -96,6 +96,9 @@ func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([
 }
 
 func (globalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.RadarModel) ([]*job.JobSearchOutput, error) {
+	if radar == nil || radar.Position == nil || radar.Position.Lat == 0 || radar.Position.Lon == 0 {
+		return globalJobs.allActiveSearch(ctx)
+	}
 	sql := JobColumnsSelect() + `,
 			earth_distance(earth_point, ll_to_earth(@lat, @lon)) AS distance,
 			earth_distance(earth_point, ll_to_earth(@lat, @lon)) AS rank
@@ -153,4 +156,13 @@ func (globalJobs *PgGlobalJobs) AllActive(ctx context.Context) ([]job.Job, error
 		return nil, err
 	}
 	return MapJobs(globalJobs.db, rows)
+}
+
+func (globalJobs *PgGlobalJobs) allActiveSearch(ctx context.Context) ([]*job.JobSearchOutput, error) {
+	query := JobColumnsSelect() + " 0 as distance, 0 as rank from job where status_published is not null and status_closed is null and status_occupied is null"
+	rows, err := globalJobs.db.Pool.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	return MapSearchJobs(rows)
 }
