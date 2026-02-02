@@ -22,11 +22,11 @@ func NewPgFileSystem(db *pg.PgDb, owner pg.RelationEntity) filestore.FileSystem 
 	}
 }
 
-func (p PgFileSystem) ID() int64 {
+func (p *PgFileSystem) ID() int64 {
 	return p.Id
 }
 
-func (p PgFileSystem) Model(ctx context.Context) *filestore.FileSystemModel {
+func (p *PgFileSystem) Model(ctx context.Context) *filestore.FileSystemModel {
 	query := "select * from filestore_filesystem where id=&id"
 	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": p.ID()})
 	if err != nil {
@@ -39,7 +39,7 @@ func (p PgFileSystem) Model(ctx context.Context) *filestore.FileSystemModel {
 	return fileSystemModel
 }
 
-func (p PgFileSystem) Update(ctx context.Context, newModel *filestore.FileSystemModel) error {
+func (p *PgFileSystem) Update(ctx context.Context, newModel *filestore.FileSystemModel) error {
 	newModel.Id = p.ID()
 	query := "update filestore_filesystem set name_value = @nameValue, name_slug = @nameSlug where id = @id"
 	cmd, err := p.db.Pool.Exec(ctx, query, FileSystemNamedArgs(newModel))
@@ -52,11 +52,11 @@ func (p PgFileSystem) Update(ctx context.Context, newModel *filestore.FileSystem
 	return nil
 }
 
-func (p PgFileSystem) Records() filestore.Records {
+func (p *PgFileSystem) Records() filestore.Records {
 	return NewPgRecords(p.db, p)
 }
 
-func (p PgFileSystem) Init(ctx context.Context) (int64, error) {
+func (p *PgFileSystem) Init(ctx context.Context) (int64, error) {
 
 	sql := fmt.Sprintf("select filesystem_id from %s where %s = @relationId", p.Owner.TableName, p.Owner.ColumnName)
 	rows, err := p.db.Pool.Query(ctx, sql, pgx.NamedArgs{"relationId": p.Owner.RelationId})
@@ -64,25 +64,30 @@ func (p PgFileSystem) Init(ctx context.Context) (int64, error) {
 		return 0, err
 	}
 	defer rows.Close()
-	var fsId int64
+	filesystemId := int64(0)
 	if rows.Next() {
-		err := rows.Scan(&fsId)
+		err := rows.Scan(&filesystemId)
 		if err != nil {
 			return 0, err
 		}
-		if fsId > 0 {
-			p.Id = fsId
-			return fsId, nil
+		if filesystemId > 0 {
+			p.Id = filesystemId
+			return filesystemId, nil
 		}
 	}
 
 	sql = "insert into filestore_filesystem (name_value, name_slug) values (@name, @slug) returning id"
-	filesystemId := int64(0)
 	row := p.db.Pool.QueryRow(ctx, sql, pgx.NamedArgs{"name": p.Owner.TableName, "slug": p.Owner.TableName})
 	err = row.Scan(&filesystemId)
 	if err != nil {
 		return 0, err
 	}
+	sql = fmt.Sprintf("insert into %s (filesystem_id, %s) values (@filesystemId, @relationId)", p.Owner.TableName, p.Owner.ColumnName)
+	_, err = p.db.Pool.Exec(ctx, sql, pgx.NamedArgs{"filesystemId": filesystemId, "relationId": p.Owner.RelationId})
+	if err != nil {
+		return 0, err
+	}
+
 	p.Id = filesystemId
 	return filesystemId, nil
 }
@@ -104,7 +109,7 @@ func MapFileSystem(db *pg.PgDb, owner pg.RelationEntity, row pgx.CollectableRow)
 	if err != nil {
 		return nil, err
 	}
-	newFileSystem := PgFileSystem{
+	newFileSystem := &PgFileSystem{
 		db:    db,
 		Id:    model.Id,
 		Owner: owner,

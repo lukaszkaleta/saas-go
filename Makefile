@@ -20,19 +20,19 @@ tags:
 	git push --tags
 
 reset_build:
-	cd universal && rm -r go.sum || true && go mod tidy && go build && cd ..
-	cd database/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
-	cd universal/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
-	cd filestore && rm -r go.sum || true && go mod tidy && go build && cd ..
-	cd filestore/pg && rm -r go.sum || true && go mod tidy && go mod tidy && go build && cd ../..
-	cd messages && rm -r go.sum || true && go mod tidy && go build && cd ..
-	cd messages/pg && rm -r go.sum || true && go mod tidy && go mod tidy && go build && cd ../..
-	cd category && rm -r go.sum || true && go mod tidy && go build && cd ..
-	cd category/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
-	cd job && rm -r go.sum || true && go mod tidy && go build && cd ..
-	cd job/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
-	cd user && rm -r go.sum || true && go mod tidy && go build && cd ..
-	cd user/pg && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd universal && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd database/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd universal/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd filestore && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd filestore/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go mod tidy && go build && cd ../..
+	cd messages && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd messages/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go mod tidy && go build && cd ../..
+	cd category && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd category/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd job && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd job/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd user && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd user/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
 
 build:
 	cd universal && go build && cd ..

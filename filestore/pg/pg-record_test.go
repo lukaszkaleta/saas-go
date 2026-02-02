@@ -8,7 +8,7 @@ import (
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
-func setupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
+func setupPgFilestoreTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 	db := pg.LocalPgWithName("saas-go", "filestore_test")
 	schema := NewFilestoreSchema(db)
 	drop := func(tb testing.TB) {
@@ -24,7 +24,7 @@ func setupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 }
 
 func TestPgRecord_Update(t *testing.T) {
-	teardownSuite, db := setupTest(t)
+	teardownSuite, db := setupPgFilestoreTest(t)
 	defer teardownSuite(t)
 
 	relationEntity := pg.RelationEntity{
@@ -48,7 +48,7 @@ func TestPgRecord_Update(t *testing.T) {
 }
 
 func TestPgRecord_Model(t *testing.T) {
-	teardownSuite, db := setupTest(t)
+	teardownSuite, db := setupPgFilestoreTest(t)
 	defer teardownSuite(t)
 
 	relationEntity := pg.RelationEntity{
