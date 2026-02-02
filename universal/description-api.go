@@ -16,7 +16,7 @@ type Description interface {
 // Builder
 
 func DescriptionFromModel(model *DescriptionModel) Description {
-	return SolidDescription{
+	return &SolidDescription{
 		model:       model,
 		Description: nil,
 	}
@@ -52,7 +52,7 @@ func NewSolidDescription(model *DescriptionModel, Description Description) Descr
 	return &SolidDescription{model, Description}
 }
 
-func (sd SolidDescription) Update(ctx context.Context, newModel *DescriptionModel) error {
+func (sd *SolidDescription) Update(ctx context.Context, newModel *DescriptionModel) error {
 	sd.model.Change(newModel)
 	if sd.Description == nil {
 		return nil
@@ -60,7 +60,7 @@ func (sd SolidDescription) Update(ctx context.Context, newModel *DescriptionMode
 	return sd.Description.Update(ctx, newModel)
 }
 
-func (sd SolidDescription) UpdateImageUrl(ctx context.Context, imageUrl *string) error {
+func (sd *SolidDescription) UpdateImageUrl(ctx context.Context, imageUrl *string) error {
 	sd.model.ImageUrl = *imageUrl
 	if sd.Description == nil {
 		return nil
@@ -68,7 +68,7 @@ func (sd SolidDescription) UpdateImageUrl(ctx context.Context, imageUrl *string)
 	return sd.Description.UpdateImageUrl(ctx, imageUrl)
 }
 
-func (sd SolidDescription) Model(ctx context.Context) *DescriptionModel {
+func (sd *SolidDescription) Model(ctx context.Context) *DescriptionModel {
 	return sd.model
 }
 
