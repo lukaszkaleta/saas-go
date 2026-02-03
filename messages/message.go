@@ -9,6 +9,7 @@ import (
 type Message interface {
 	universal.Idable
 	Model(ctx context.Context) *MessageModel
+	Acknowledge(ctx context.Context) error
 }
 
 type MessageModel struct {
@@ -39,6 +40,13 @@ type SolidMessage struct {
 	Id      int64
 	model   *MessageModel
 	message Message
+}
+
+func (m *SolidMessage) Acknowledge(ctx context.Context) error {
+	if m.message != nil {
+		return m.message.Acknowledge(ctx)
+	}
+	return nil
 }
 
 func NewSolidMessage(model *MessageModel, message Message, id int64) Message {

@@ -2,6 +2,7 @@ package pg
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
@@ -11,9 +12,16 @@ import (
 )
 
 type PgMessage struct {
-	Db      *pg.PgDb
-	Id      int64
-	OwnerId int64
+	Db    *pg.PgDb
+	Id    int64
+	Owner pg.RelationEntity
+}
+
+func (m *PgMessage) Acknowledge(ctx context.Context) error {
+	currentUserId := universal.CurrentUserId(ctx)
+	query := fmt.Sprintf("update %s set action_read_at = now(), action_read_by_id = @userId where id = @id", m.Owner.TableName)
+	_, err := m.Db.Pool.Exec(ctx, query, pgx.NamedArgs{"userId": currentUserId, "id": m.Id})
+	return err
 }
 
 func (m *PgMessage) Model(ctx context.Context) *messages.MessageModel {
@@ -63,7 +71,8 @@ func MapMessage(db *pg.PgDb, row pgx.CollectableRow) (messages.Message, error) {
 	if err != nil {
 		return nil, err
 	}
-	pgMessage := &PgMessage{Db: db, Id: model.Id, OwnerId: model.OwnerId}
+	relationEntity := pg.RelationEntity{TableName: "", RelationId: model.OwnerId, ColumnName: ""}
+	pgMessage := &PgMessage{Db: db, Id: model.Id, Owner: relationEntity}
 	return messages.NewSolidMessage(model, pgMessage, model.Id), nil
 }
 

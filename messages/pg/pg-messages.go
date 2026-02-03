@@ -26,7 +26,7 @@ func (pg *PgMessages) Add(ctx context.Context, recipientId int64, value string) 
 
 func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.MessageModel) (messages.Message, error) {
 	if model.OwnerId != pg.owner.Id {
-		return nil, errors.New("owner inside model and messages does not match")
+		return nil, errors.New("Owner inside model and messages does not match")
 	}
 	messageId := int64(0)
 	currentUserId := universal.CurrentUserId(ctx)
@@ -37,9 +37,9 @@ func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.MessageM
 		return nil, err
 	}
 	return &PgMessage{
-		Db:      pg.db,
-		Id:      messageId,
-		OwnerId: model.OwnerId,
+		Db:    pg.db,
+		Id:    messageId,
+		Owner: pg.owner.RelationEntityWithColumnName("job_message", "owner_id"),
 	}, nil
 }
 
