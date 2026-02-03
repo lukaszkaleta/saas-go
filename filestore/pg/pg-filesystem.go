@@ -32,6 +32,7 @@ func (p *PgFileSystem) Model(ctx context.Context) *filestore.FileSystemModel {
 	if err != nil {
 		return nil
 	}
+	defer rows.Close()
 	fileSystemModel, err := pgx.CollectOneRow(rows, MapFileSystemModel)
 	if err != nil {
 		return nil

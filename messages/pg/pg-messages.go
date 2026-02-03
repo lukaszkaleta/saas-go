@@ -49,7 +49,7 @@ func (pg *PgMessages) List(ctx context.Context) ([]messages.Message, error) {
 	if err != nil {
 		return nil, err
 	}
-	return MapMessages(pg.db, pg.owner, rows)
+	return pgx.CollectRows(rows, MapMessage(pg.db, pg.owner))
 }
 
 func (pg *PgMessages) ById(ctx context.Context, id int64) (messages.Message, error) {
@@ -58,11 +58,7 @@ func (pg *PgMessages) ById(ctx context.Context, id int64) (messages.Message, err
 	if err != nil {
 		return nil, err
 	}
-	mapMessages, err := MapMessages(pg.db, pg.owner, rows)
-	if err != nil {
-		return nil, err
-	}
-	return mapMessages[0], nil
+	return pgx.CollectOneRow(rows, MapMessage(pg.db, pg.owner))
 }
 
 func (pg *PgMessages) ForRecipient(ctx context.Context, recipient universal.Idable) ([]messages.Message, error) {
@@ -71,7 +67,7 @@ func (pg *PgMessages) ForRecipient(ctx context.Context, recipient universal.Idab
 	if err != nil {
 		return nil, err
 	}
-	return MapMessages(pg.db, pg.owner, rows)
+	return pgx.CollectRows(rows, MapMessage(pg.db, pg.owner))
 }
 
 func (pg *PgMessages) ForRecipientById(ctx context.Context, id int64) ([]messages.Message, error) {
@@ -80,7 +76,7 @@ func (pg *PgMessages) ForRecipientById(ctx context.Context, id int64) ([]message
 	if err != nil {
 		return nil, err
 	}
-	return MapMessages(pg.db, pg.owner, rows)
+	return pgx.CollectRows(rows, MapMessage(pg.db, pg.owner))
 }
 
 func (pg *PgMessages) Acknowledge(ctx context.Context) error {
@@ -100,17 +96,4 @@ func MessageNamedArgs(model *messages.MessageModel, currentUserId *int64) pgx.Na
 		"currentUserId": currentUserId,
 		"value":         model.Value,
 	}
-}
-
-func MapMessages(db *pg.PgDb, owner pg.RelationEntity, rows pgx.Rows) ([]messages.Message, error) {
-	defer rows.Close()
-	msgs := []messages.Message{}
-	for rows.Next() {
-		msg, err := MapMessage(db, owner, rows)
-		if err != nil {
-			return nil, err
-		}
-		msgs = append(msgs, msg)
-	}
-	return msgs, nil
 }

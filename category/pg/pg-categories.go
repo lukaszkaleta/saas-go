@@ -66,7 +66,7 @@ func (pgCategories *PgCategories) AllLocalized(ctx context.Context, country stri
 	if err != nil {
 		return nil, err
 	}
-	return MapCategoryModels(rows)
+	return pgx.CollectRows(rows, MapCategoryModels())
 }
 
 func (pgCategories *PgCategories) ById(ctx context.Context, id int64) (category.Category, error) {
@@ -99,20 +99,15 @@ func (pgCategories *PgCategories) ByIds(ctx context.Context, ids []int64) ([]*ca
 	return categories, nil
 }
 
-func MapCategoryModels(rows pgx.Rows) ([]*category.CategoryModel, error) {
-	var categories []*category.CategoryModel
-	for rows.Next() {
+func MapCategoryModels() pgx.RowToFunc[*category.CategoryModel] {
+	return func(row pgx.CollectableRow) (*category.CategoryModel, error) {
 		categoryModel := new(category.CategoryModel)
 		categoryModel.Name = new(universal.NameModel)
 		categoryModel.Description = new(universal.DescriptionModel)
-		err := rows.Scan(&categoryModel.Id,
+		err := row.Scan(&categoryModel.Id,
 			&categoryModel.ParentId,
 			&categoryModel.Name.Value,
 			&categoryModel.Name.Slug)
-		if err != nil {
-			return nil, err
-		}
-		categories = append(categories, categoryModel)
+		return categoryModel, err
 	}
-	return categories, nil
 }

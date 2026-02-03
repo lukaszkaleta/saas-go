@@ -3,6 +3,7 @@ package pgjob
 import (
 	"context"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/job"
 )
@@ -26,6 +27,5 @@ func (pgJobSearch *PgJobSearch) ByQuery(ctx context.Context, query string) ([]jo
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	return MapJobs(pgJobSearch.db, rows)
+	return pgx.CollectRows(rows, MapJob(pgJobSearch.db))
 }

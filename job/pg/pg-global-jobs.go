@@ -70,7 +70,7 @@ func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input *job.JobSear
 		return nil, err
 	}
 	defer rows.Close()
-	return MapSearchJobs(rows)
+	return pgx.CollectRows(rows, MapSearchJob())
 }
 
 func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([]*job.JobSearchOutput, error) {
@@ -92,7 +92,7 @@ func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([
 		return nil, err
 	}
 	defer rows.Close()
-	return MapSearchJobs(rows)
+	return pgx.CollectRows(rows, MapSearchJob())
 }
 
 func (globalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.RadarModel) ([]*job.JobSearchOutput, error) {
@@ -113,7 +113,7 @@ func (globalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.Rad
 	if err != nil {
 		return nil, err
 	}
-	return MapSearchJobs(rows)
+	return pgx.CollectRows(rows, MapSearchJob())
 }
 
 func (globalJobs *PgGlobalJobs) ActiveById(ctx context.Context, id int64) (job.Job, error) {
@@ -146,7 +146,7 @@ func (globalJobs *PgGlobalJobs) ByIds(ctx context.Context, ids []int64) ([]job.J
 	if err != nil {
 		return nil, err
 	}
-	return MapJobs(globalJobs.db, rows)
+	return pgx.CollectRows(rows, MapJob(globalJobs.db))
 }
 
 func (globalJobs *PgGlobalJobs) AllActive(ctx context.Context) ([]job.Job, error) {
@@ -155,7 +155,7 @@ func (globalJobs *PgGlobalJobs) AllActive(ctx context.Context) ([]job.Job, error
 	if err != nil {
 		return nil, err
 	}
-	return MapJobs(globalJobs.db, rows)
+	return pgx.CollectRows(rows, MapJob(globalJobs.db))
 }
 
 func (globalJobs *PgGlobalJobs) allActiveSearch(ctx context.Context) ([]*job.JobSearchOutput, error) {
@@ -164,5 +164,5 @@ func (globalJobs *PgGlobalJobs) allActiveSearch(ctx context.Context) ([]*job.Job
 	if err != nil {
 		return nil, err
 	}
-	return MapSearchJobs(rows)
+	return pgx.CollectRows(rows, MapSearchJob())
 }

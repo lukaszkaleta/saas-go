@@ -34,7 +34,7 @@ with my_jobs as (
 	if err != nil {
 		return nil, err
 	}
-	return MapMessages(pg.db, pg.owner, rows)
+	return pgx.CollectRows(rows, MapMessage(pg.db, pg.owner))
 }
 
 func (pg PgInbox) LastAnswers(ctx context.Context) ([]messages.Message, error) {
@@ -53,5 +53,5 @@ with my_tasks as (
 	if err != nil {
 		return nil, err
 	}
-	return MapMessages(pg.db, pg.owner, rows)
+	return pgx.CollectRows(rows, MapMessage(pg.db, pg.owner))
 }

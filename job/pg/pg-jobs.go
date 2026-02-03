@@ -83,36 +83,6 @@ func (pgJobs *PgJobs) List(ctx context.Context) ([]job.Job, error) {
 	return nil, errors.New("All jobs can not be listed")
 }
 
-func MapJobsWith(rows pgx.Rows, rowToFun pgx.RowToFunc[job.Job]) ([]job.Job, error) {
-	jobs := []job.Job{}
-	for rows.Next() {
-		mJob, err := rowToFun(rows)
-		if err != nil {
-			return nil, err
-		}
-		jobs = append(jobs, mJob)
-	}
-	return jobs, nil
-}
-
-func MapJobs(db *pg.PgDb, rows pgx.Rows) ([]job.Job, error) {
-	return MapJobsWith(rows, MapJob(db))
-}
-
-func MapSearchJobs(rows pgx.Rows) ([]*job.JobSearchOutput, error) {
-	jobs := []*job.JobSearchOutput{}
-	mapSearchJob := MapSearchJob()
-	defer rows.Close()
-	for rows.Next() {
-		searchJob, err := mapSearchJob(rows)
-		if err != nil {
-			return nil, err
-		}
-		jobs = append(jobs, searchJob)
-	}
-	return jobs, nil
-}
-
 // Relation
 
 type PgRelationJobs struct {
@@ -161,5 +131,5 @@ func (p PgRelationJobs) List(ctx context.Context) ([]job.Job, error) {
 	if err != nil {
 		return nil, err
 	}
-	return MapJobs(p.db, rows)
+	return pgx.CollectRows(rows, MapJob(p.db))
 }
