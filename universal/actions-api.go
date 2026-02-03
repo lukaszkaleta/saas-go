@@ -9,7 +9,7 @@ type Actions interface {
 	List() map[string]*Action
 	WithName(name string) Action
 	Created() Action
-	Model() *ActionsModel
+	Model(ctx context.Context) (*ActionsModel, error)
 }
 
 type ActionsModel struct {
