@@ -1,6 +1,7 @@
 package pgjob
 
 import (
+	"context"
 	"database/sql"
 	"strings"
 
@@ -24,9 +25,17 @@ func (pgJob *PgJob) ID() int64 {
 	return pgJob.Id
 }
 
-func (pgJob *PgJob) Model() *job.JobModel {
-	//TODO implement me
-	panic("implement me")
+func (pgJob *PgJob) Model(ctx context.Context) (*job.JobModel, error) {
+	query := JobSelect() + " where id = @id"
+	rows, err := pgJob.db.Pool.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		return MapJobModel(rows)
+	}
+	return nil, nil
 }
 
 func (pgJob *PgJob) Address() universal.Address {

@@ -1,6 +1,7 @@
 package job
 
 import (
+	"context"
 	"time"
 
 	"github.com/lukaszkaleta/saas-go/filestore"
@@ -12,7 +13,7 @@ import (
 
 type Job interface {
 	universal.Idable
-	Model() *JobModel
+	Model(ctx context.Context) (*JobModel, error)
 	Address() universal.Address
 	Position() universal.Position
 	Price() universal.Price
@@ -120,47 +121,47 @@ func (solidJob *SolidJob) ID() int64 {
 	return solidJob.Id
 }
 
-func (solidJob *SolidJob) Model() *JobModel {
-	return solidJob.model
+func (solidJob *SolidJob) Model(ctx context.Context) (*JobModel, error) {
+	return solidJob.model, nil
 }
 
 func (solidJob *SolidJob) Position() universal.Position {
 	if solidJob.Job != nil {
 		return universal.NewSolidPosition(
-			solidJob.Model().Position,
+			solidJob.model.Position,
 			solidJob.Job.Position(),
 		)
 	}
-	return universal.NewSolidPosition(solidJob.Model().Position, nil)
+	return universal.NewSolidPosition(solidJob.model.Position, nil)
 }
 
 func (solidJob *SolidJob) Price() universal.Price {
 	if solidJob.Job != nil {
 		return universal.NewSolidPrice(
-			solidJob.Model().Price,
+			solidJob.model.Price,
 			solidJob.Job.Price(),
 		)
 	}
-	return universal.NewSolidPrice(solidJob.Model().Price, nil)
+	return universal.NewSolidPrice(solidJob.model.Price, nil)
 }
 
 func (solidJob *SolidJob) Address() universal.Address {
 	if solidJob.Job != nil {
 		return universal.NewSolidAddress(
-			solidJob.Model().Address,
+			solidJob.model.Address,
 			solidJob.Job.Address(),
 		)
 	}
-	return universal.NewSolidAddress(solidJob.Model().Address, nil)
+	return universal.NewSolidAddress(solidJob.model.Address, nil)
 }
 func (solidJob *SolidJob) Description() universal.Description {
 	if solidJob.Job != nil {
 		return universal.NewSolidDescription(
-			solidJob.Model().Description,
+			solidJob.model.Description,
 			solidJob.Job.Description(),
 		)
 	}
-	return universal.NewSolidDescription(solidJob.Model().Description, nil)
+	return universal.NewSolidDescription(solidJob.model.Description, nil)
 }
 
 func (solidJob *SolidJob) FileSystem() filestore.FileSystem {
@@ -169,7 +170,7 @@ func (solidJob *SolidJob) FileSystem() filestore.FileSystem {
 
 func (solidJob *SolidJob) State() universal.State {
 	available := JobStatuses()
-	current := solidJob.Model().State.Current()
+	current := solidJob.model.State.Current()
 	if solidJob.Job != nil {
 		return universal.NewSolidState(
 			current,
