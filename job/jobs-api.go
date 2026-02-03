@@ -13,19 +13,21 @@ type Jobs interface {
 	List(ctx context.Context) ([]Job, error)
 }
 
-func JobModels(jobs []Job) []*JobModel {
+func JobModels(ctx context.Context, jobs []Job) []*JobModel {
 	var models []*JobModel
 	for _, modelAware := range jobs {
-		models = append(models, modelAware.Model()) // note the = instead of :=
+		model, _ := modelAware.Model(ctx)
+		models = append(models, model) // note the = instead of :=
 	}
 	return models
 }
 
-func JobHints(jobs []Job) []*JobHint {
+func JobHints(ctx context.Context, jobs []Job) []*JobHint {
 	var hints []*JobHint
 	for _, o := range jobs {
 		if o != nil {
-			hints = append(hints, o.Model().Hint()) // note the = instead of :=
+			model, _ := o.Model(ctx)
+			hints = append(hints, model.Hint()) // note the = instead of :=
 		}
 	}
 	return hints

@@ -17,7 +17,10 @@ type GlobalJobs interface {
 func InvolvedUserIds(ctx context.Context, list []Job) []*int64 {
 	idsMap := map[*int64]bool{}
 	for _, jobI := range list {
-		model := jobI.Model()
+		model, err := jobI.Model(ctx)
+		if err != nil {
+			return []*int64{}
+		}
 		id := model.Actions.Created().ById
 		idsMap[id] = true
 	}

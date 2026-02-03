@@ -139,7 +139,7 @@ func (p PgRelationJobs) Add(ctx context.Context, jobModel *job.JobModel) (job.Jo
 		return newJob, err
 	}
 	query := fmt.Sprintf("INSERT INTO %s(job_id, %s) VALUES( $1, $2 )", p.Relation.TableName, p.Relation.ColumnName)
-	_, err = p.db.Pool.Exec(ctx, query, newJob.Model().Id, p.Relation.RelationId)
+	_, err = p.db.Pool.Exec(ctx, query, newJob.ID(), p.Relation.RelationId)
 	if err != nil {
 		return newJob, err
 	}
