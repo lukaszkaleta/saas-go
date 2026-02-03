@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
@@ -34,7 +35,7 @@ func (p PgActions) List() map[string]*universal.Action {
 
 func (p PgActions) Model(ctx context.Context) (*universal.ActionsModel, error) {
 	sql := fmt.Sprintf("select * from %s where id = @id", p.tableEntity.Name)
-	rows, err := p.db.Pool.Query(ctx, sql)
+	rows, err := p.db.Pool.Query(ctx, sql, pgx.NamedArgs{"id": p.tableEntity.Id})
 	if err != nil {
 		return nil, err
 	}
