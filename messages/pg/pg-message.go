@@ -66,13 +66,12 @@ func MapMessageModel(row pgx.CollectableRow) (*messages.MessageModel, error) {
 	return model, nil
 }
 
-func MapMessage(db *pg.PgDb, row pgx.CollectableRow) (messages.Message, error) {
+func MapMessage(db *pg.PgDb, owner pg.RelationEntity, row pgx.CollectableRow) (messages.Message, error) {
 	model, err := MapMessageModel(row)
 	if err != nil {
 		return nil, err
 	}
-	relationEntity := pg.RelationEntity{TableName: "", RelationId: model.OwnerId, ColumnName: ""}
-	pgMessage := &PgMessage{Db: db, Id: model.Id, Owner: relationEntity}
+	pgMessage := &PgMessage{Db: db, Id: model.Id, Owner: owner}
 	return messages.NewSolidMessage(model, pgMessage, model.Id), nil
 }
 

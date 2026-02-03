@@ -10,12 +10,12 @@ import (
 )
 
 type PgOwnMessages struct {
-	db        *pg.PgDb
-	ownerName string
+	db    *pg.PgDb
+	owner pg.RelationEntity
 }
 
-func MyOwnMessages(db *pg.PgDb, ownerName string) messages.Own {
-	return PgOwnMessages{db: db, ownerName: ownerName}
+func MyOwnMessages(db *pg.PgDb, owner pg.RelationEntity) messages.Own {
+	return PgOwnMessages{db: db, owner: owner}
 }
 
 func (pg PgOwnMessages) LastQuestionsToMe(ctx context.Context) ([]messages.Message, error) {
@@ -35,5 +35,5 @@ with my_jobs as (
 		return nil, err
 	}
 	defer rows.Close()
-	return MapMessages(pg.db, rows)
+	return MapMessages(pg.db, pg.owner, rows)
 }

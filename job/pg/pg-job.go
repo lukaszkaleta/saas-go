@@ -83,7 +83,7 @@ func (pgJob *PgJob) Offers() job.Offers {
 func (pgJob *PgJob) Messages() messages.Messages {
 	return pgMessages.NewPgMessages(
 		pgJob.db,
-		pg.TableEntity{Name: "job_message", Id: pgJob.Id},
+		pg.RelationEntity{TableName: "job_message", ColumnName: "job_id", RelationId: pgJob.Id},
 	)
 }
 
