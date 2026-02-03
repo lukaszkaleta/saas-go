@@ -2,7 +2,6 @@ package pg
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -29,10 +28,9 @@ with my_jobs as (
     from job_message
         where owner_id in (select id from job where job.action_created_by_id = @currentUserId)
 )
-select ` + ColumnsSelect() + ` from my_jobs where rank = 1
+` + ColumnsSelect() + ` from my_jobs where rank = 1
 `
-	query := fmt.Sprintf(sqlTemplate, pg.ownerName, pg.ownerName)
-	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"currentUserId": currentUserId})
+	rows, err := pg.db.Pool.Query(ctx, sqlTemplate, pgx.NamedArgs{"currentUserId": currentUserId})
 	if err != nil {
 		return nil, err
 	}
