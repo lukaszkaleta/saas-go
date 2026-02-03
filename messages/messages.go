@@ -13,6 +13,7 @@ type Messages interface {
 	AddFromModel(ctx context.Context, model *MessageModel) (Message, error)
 	ForRecipient(ctx context.Context, recipient universal.Idable) ([]Message, error)
 	ForRecipientById(ctx context.Context, id int64) ([]Message, error)
+	Acknowledge(ctx context.Context) error
 }
 
 func OwnerIds(ctx context.Context, list []Message) []int64 {

@@ -83,6 +83,16 @@ func (pg *PgMessages) ForRecipientById(ctx context.Context, id int64) ([]message
 	return MapMessages(pg.db, rows)
 }
 
+func (pg *PgMessages) Acknowledge(ctx context.Context) error {
+	currentUserId := universal.CurrentUserId(ctx)
+	sql := fmt.Sprintf("update %s set action_read_by_id = @currentUserId where owner_id = @ownerId and action_created_by_id <> @currentUserId", pg.owner.Name)
+	_, err := pg.db.Pool.Exec(ctx, sql, pgx.NamedArgs{"ownerId": pg.owner.Id, "currentUserId": currentUserId})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func MessageNamedArgs(model *messages.MessageModel, currentUserId *int64) pgx.NamedArgs {
 	return pgx.NamedArgs{
 		"ownerId":       model.OwnerId,
