@@ -29,7 +29,7 @@ with my_jobs as (
     from job_message
         where owner_id in (select id from job where job.action_created_by_id = @currentUserId)
 )
-` + ColumnsSelect() + ` from my_jobs where rank = 1
+select ` + ColumnsSelect() + ` from my_jobs where rank = 1
 `
 	query := fmt.Sprintf(sqlTemplate, pg.ownerName, pg.ownerName)
 	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"currentUserId": currentUserId})
