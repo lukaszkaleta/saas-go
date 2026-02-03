@@ -23,6 +23,22 @@ func OwnerIds(ctx context.Context, list []Message) []int64 {
 	return ids
 }
 
+func InvolvedUserIds(ctx context.Context, list []Message) []*int64 {
+	idsMap := map[*int64]bool{}
+	for _, msg := range list {
+		model := msg.Model(ctx)
+		id1 := model.RecipientId
+		idsMap[&id1] = true
+		id2 := model.Actions.Created().ById
+		idsMap[id2] = true
+	}
+	ids := make([]*int64, 0, len(idsMap))
+	for id := range idsMap {
+		ids = append(ids, id)
+	}
+	return ids
+}
+
 func Models(ctx context.Context, list []Message) []*MessageModel {
 	models := make([]*MessageModel, len(list))
 	for i, msg := range list {
