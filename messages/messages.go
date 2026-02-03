@@ -19,7 +19,11 @@ type Messages interface {
 func OwnerIds(ctx context.Context, list []Message) []int64 {
 	ids := make([]int64, len(list))
 	for _, msg := range list {
-		ids = append(ids, msg.Model(ctx).OwnerId)
+		model, err := msg.Model(ctx)
+		if err != nil {
+			panic(err)
+		}
+		ids = append(ids, model.OwnerId)
 	}
 	return ids
 }
@@ -27,7 +31,10 @@ func OwnerIds(ctx context.Context, list []Message) []int64 {
 func InvolvedUserIds(ctx context.Context, list []Message) []*int64 {
 	idsMap := map[*int64]bool{}
 	for _, msg := range list {
-		model := msg.Model(ctx)
+		model, err := msg.Model(ctx)
+		if err != nil {
+			panic(err)
+		}
 		id1 := model.RecipientId
 		idsMap[&id1] = true
 		id2 := model.Actions.Created().ById
@@ -43,7 +50,11 @@ func InvolvedUserIds(ctx context.Context, list []Message) []*int64 {
 func Models(ctx context.Context, list []Message) []*MessageModel {
 	models := make([]*MessageModel, len(list))
 	for i, msg := range list {
-		models[i] = msg.Model(ctx)
+		model, err := msg.Model(ctx)
+		if err != nil {
+			panic(err)
+		}
+		models[i] = model
 	}
 	return models
 }
@@ -52,7 +63,10 @@ func ModelsAndOwners(ctx context.Context, list []Message) ([]*MessageModel, []in
 	models := make([]*MessageModel, len(list))
 	ownerIds := make([]int64, len(list))
 	for i, msg := range list {
-		model := msg.Model(ctx)
+		model, err := msg.Model(ctx)
+		if err != nil {
+			panic(err)
+		}
 		models[i] = model
 		ownerIds[i] = model.OwnerId
 	}
