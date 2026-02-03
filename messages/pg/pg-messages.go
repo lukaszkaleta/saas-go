@@ -75,7 +75,7 @@ func (pg *PgMessages) ForRecipient(ctx context.Context, recipient universal.Idab
 }
 
 func (pg *PgMessages) ForRecipientById(ctx context.Context, id int64) ([]messages.Message, error) {
-	query := fmt.Sprintf(ColumnsSelect()+" from %s where owner_id = @ownerId and recipient_id = (select recipient_id from %s where id = @id)", pg.owner.Name)
+	query := fmt.Sprintf(ColumnsSelect()+" from %s where owner_id = @ownerId and recipient_id = (select recipient_id from %s where id = @id)", pg.owner.Name, pg.owner.Name)
 	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"ownerId": pg.owner.Id, "id": id})
 	if err != nil {
 		return nil, err
