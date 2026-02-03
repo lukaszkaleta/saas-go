@@ -35,7 +35,7 @@ func (s *PgUserSearch) ByPhone(ctx context.Context, phone string) (user.User, er
 	return user.NewSolidUser(userModel, pgUser), nil
 }
 
-func (s *PgUserSearch) ModelsByIds(ctx context.Context, ids []int64) ([]*user.UserModel, error) {
+func (s *PgUserSearch) ModelsByIds(ctx context.Context, ids []*int64) ([]*user.UserModel, error) {
 	query := "select * from users where id = any(@ids)"
 	rows, err := s.Db.Pool.Query(ctx, query, pgx.NamedArgs{"ids": ids})
 	if err != nil {
@@ -48,7 +48,7 @@ func (s *PgUserSearch) ModelsByIds(ctx context.Context, ids []int64) ([]*user.Us
 	return userModels, nil
 }
 
-func (s *PgUserSearch) PersonModelsByIds(ctx context.Context, ids []int64) ([]*universal.PersonModel, error) {
+func (s *PgUserSearch) PersonModelsByIds(ctx context.Context, ids []*int64) ([]*universal.PersonModel, error) {
 	userModesl, err := s.ModelsByIds(ctx, ids)
 	if err != nil {
 		return nil, err

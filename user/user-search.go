@@ -8,6 +8,6 @@ import (
 
 type UserSearch interface {
 	ByPhone(ctx context.Context, phone string) (User, error)
-	PersonModelsByIds(ctx context.Context, ids []int64) ([]*universal.PersonModel, error)
-	ModelsByIds(ctx context.Context, ids []int64) ([]*UserModel, error)
+	PersonModelsByIds(ctx context.Context, ids []*int64) ([]*universal.PersonModel, error)
+	ModelsByIds(ctx context.Context, ids []*int64) ([]*UserModel, error)
 }
