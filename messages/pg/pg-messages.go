@@ -103,8 +103,8 @@ func MessageNamedArgs(model *messages.MessageModel, currentUserId *int64) pgx.Na
 }
 
 func MapMessages(db *pg.PgDb, owner pg.RelationEntity, rows pgx.Rows) ([]messages.Message, error) {
-	msgs := []messages.Message{}
 	defer rows.Close()
+	msgs := []messages.Message{}
 	for rows.Next() {
 		msg, err := MapMessage(db, owner, rows)
 		if err != nil {

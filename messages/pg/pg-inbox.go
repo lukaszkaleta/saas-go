@@ -34,7 +34,6 @@ with my_jobs as (
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 	return MapMessages(pg.db, pg.owner, rows)
 }
 
@@ -54,6 +53,5 @@ with my_tasks as (
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 	return MapMessages(pg.db, pg.owner, rows)
 }
