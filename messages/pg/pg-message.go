@@ -25,7 +25,7 @@ func (m *PgMessage) Acknowledge(ctx context.Context) error {
 }
 
 func (m *PgMessage) Model(ctx context.Context) *messages.MessageModel {
-	query := "select * from message where id=@id"
+	query := fmt.Sprintf(ColumnsSelect()+" from %s where id=@id", m.Owner.TableName)
 	rows, err := m.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": m.Id})
 	if err != nil {
 		return nil
