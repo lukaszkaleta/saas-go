@@ -26,18 +26,13 @@ func (p *PgFileSystem) ID() int64 {
 	return p.Id
 }
 
-func (p *PgFileSystem) Model(ctx context.Context) *filestore.FileSystemModel {
+func (p *PgFileSystem) Model(ctx context.Context) (*filestore.FileSystemModel, error) {
 	query := "select * from filestore_filesystem where id=&id"
 	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": p.ID()})
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	defer rows.Close()
-	fileSystemModel, err := pgx.CollectOneRow(rows, MapFileSystemModel)
-	if err != nil {
-		return nil
-	}
-	return fileSystemModel
+	return pgx.CollectOneRow(rows, MapFileSystemModel)
 }
 
 func (p *PgFileSystem) Update(ctx context.Context, newModel *filestore.FileSystemModel) error {

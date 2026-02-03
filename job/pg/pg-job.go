@@ -31,11 +31,7 @@ func (pgJob *PgJob) Model(ctx context.Context) (*job.JobModel, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	if rows.Next() {
-		return MapJobModel(rows)
-	}
-	return nil, nil
+	return pgx.CollectOneRow(rows, MapJobModel)
 }
 
 func (pgJob *PgJob) Address() universal.Address {

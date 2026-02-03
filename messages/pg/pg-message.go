@@ -24,17 +24,13 @@ func (m *PgMessage) Acknowledge(ctx context.Context) error {
 	return err
 }
 
-func (m *PgMessage) Model(ctx context.Context) *messages.MessageModel {
+func (m *PgMessage) Model(ctx context.Context) (*messages.MessageModel, error) {
 	query := fmt.Sprintf(ColumnsSelect()+" from %s where id=@id", m.Owner.TableName)
 	rows, err := m.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": m.Id})
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	model, err := pgx.CollectOneRow(rows, MapMessageModel)
-	if err != nil {
-		return nil
-	}
-	return model
+	return pgx.CollectOneRow(rows, MapMessageModel)
 }
 
 func (m *PgMessage) ID() int64 {

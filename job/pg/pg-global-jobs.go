@@ -69,7 +69,6 @@ func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input *job.JobSear
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 	return pgx.CollectRows(rows, MapSearchJob())
 }
 
@@ -91,7 +90,6 @@ func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 	return pgx.CollectRows(rows, MapSearchJob())
 }
 
@@ -122,10 +120,7 @@ func (globalJobs *PgGlobalJobs) ActiveById(ctx context.Context, id int64) (job.J
 	if err != nil {
 		return nil, err
 	}
-	if rows.Next() {
-		return MapJob(globalJobs.db)(rows)
-	}
-	return nil, nil
+	return pgx.CollectOneRow(rows, MapJob(globalJobs.db))
 }
 
 func (globalJobs *PgGlobalJobs) ById(ctx context.Context, id int64) (job.Job, error) {
@@ -134,10 +129,7 @@ func (globalJobs *PgGlobalJobs) ById(ctx context.Context, id int64) (job.Job, er
 	if err != nil {
 		return nil, err
 	}
-	if rows.Next() {
-		return MapJob(globalJobs.db)(rows)
-	}
-	return nil, nil
+	return pgx.CollectOneRow(rows, MapJob(globalJobs.db))
 }
 
 func (globalJobs *PgGlobalJobs) ByIds(ctx context.Context, ids []int64) ([]job.Job, error) {

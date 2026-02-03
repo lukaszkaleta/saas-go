@@ -75,15 +75,7 @@ func (pgCategories *PgCategories) ById(ctx context.Context, id int64) (category.
 	if err != nil {
 		return nil, err
 	}
-	pgCategory := PgCategory{
-		Db: pgCategories.Db,
-		Id: id,
-	}
-	categoryModel, err := pgx.CollectOneRow(rows, MapCategoryModel)
-	if err != nil {
-		return nil, err
-	}
-	return category.NewSolidCategory(categoryModel, pgCategory), nil
+	return pgx.CollectOneRow(rows, MapCategoryFunc(pgCategories.Db))
 }
 
 func (pgCategories *PgCategories) ByIds(ctx context.Context, ids []int64) ([]*category.CategoryModel, error) {
@@ -92,11 +84,7 @@ func (pgCategories *PgCategories) ByIds(ctx context.Context, ids []int64) ([]*ca
 	if err != nil {
 		return nil, err
 	}
-	categories, err := pgx.CollectRows(rows, MapCategoryModel)
-	if err != nil {
-		return nil, err
-	}
-	return categories, nil
+	return pgx.CollectRows(rows, MapCategoryModel)
 }
 
 func MapCategoryModels() pgx.RowToFunc[*category.CategoryModel] {

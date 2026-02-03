@@ -35,14 +35,7 @@ func (pgCategory PgCategory) Parent(ctx context.Context) (category.Category, err
 	if err != nil {
 		return nil, err
 	}
-	if row.Next() {
-		parent, err := MapCategoryFunc(pgCategory.Db)(row)
-		if err != nil {
-			return nil, err
-		}
-		return parent, nil
-	}
-	return nil, nil
+	return pgx.CollectOneRow(row, MapCategoryFunc(pgCategory.Db))
 }
 
 func MapCategoryFunc(db *pg.PgDb) pgx.RowToFunc[category.Category] {

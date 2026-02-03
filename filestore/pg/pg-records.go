@@ -88,13 +88,7 @@ func (pg *PgRecords) ById(ctx context.Context, recordId int64) (filestore.Record
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	record := PgRecord{
-		Db: pg.db,
-		Id: recordId,
-	}
-	recordModel, err := pgx.CollectOneRow(rows, MapRecordModel)
-	return filestore.NewSolidRecord(recordModel, record), err
+	return pgx.CollectOneRow(rows, MapRecordFunc(pg.db))
 }
 
 func (pg *PgRecords) Urls(ctx context.Context) ([]string, error) {
@@ -111,7 +105,6 @@ func (pg *PgRecords) Urls(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 	return pgx.CollectRows(rows, pgx.RowTo[string])
 }
 
@@ -121,8 +114,7 @@ func (pg *PgRecords) FindByUrl(ctx context.Context, url string) (filestore.Recor
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	return MapRecord(pg.db, rows)
+	return pgx.CollectOneRow(rows, MapRecordFunc(pg.db))
 }
 
 func RecordNamedArgs(model *filestore.RecordModel) pgx.NamedArgs {

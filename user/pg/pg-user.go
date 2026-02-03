@@ -52,13 +52,15 @@ func (pgUser PgUser) TableEntity() pg.TableEntity {
 	return pgUser.Db.TableEntity("users", pgUser.Id)
 }
 
-func MapUser(db *pg.PgDb, row pgx.CollectableRow) (user.User, error) {
-	model, err := MapUserModel(row)
-	if err != nil {
-		return nil, err
+func MapUser(db *pg.PgDb) pgx.RowToFunc[user.User] {
+	return func(row pgx.CollectableRow) (user.User, error) {
+		model, err := MapUserModel(row)
+		if err != nil {
+			return nil, err
+		}
+		pgUser := PgUser{Db: db, Id: model.Id}
+		return user.NewSolidUser(model, pgUser), nil
 	}
-	pgUser := PgUser{Db: db, Id: model.Id}
-	return user.NewSolidUser(model, pgUser), nil
 }
 
 func MapUserModel(row pgx.CollectableRow) (*user.UserModel, error) {

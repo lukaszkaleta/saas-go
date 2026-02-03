@@ -24,17 +24,13 @@ func (p PgRecord) Description() universal.Description {
 	)
 }
 
-func (p PgRecord) Model(ctx context.Context) *filestore.RecordModel {
+func (p PgRecord) Model(ctx context.Context) (*filestore.RecordModel, error) {
 	query := "select * from filestore_record where id=@id"
 	rows, err := p.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": p.Id})
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	recordModel, err := pgx.CollectOneRow(rows, MapRecordModel)
-	if err != nil {
-		return nil
-	}
-	return recordModel
+	return pgx.CollectOneRow(rows, MapRecordModel)
 }
 
 func (p PgRecord) Update(ctx context.Context, newModel *filestore.RecordModel) error {
@@ -77,4 +73,10 @@ func MapRecordModel(row pgx.CollectableRow) (*filestore.RecordModel, error) {
 		return nil, err
 	}
 	return record, nil
+}
+
+func MapRecordModelFunc() pgx.RowToFunc[*filestore.RecordModel] {
+	return func(row pgx.CollectableRow) (*filestore.RecordModel, error) {
+		return MapRecordModel(row)
+	}
 }

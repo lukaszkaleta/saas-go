@@ -53,12 +53,7 @@ func (pgUsers *PgUsers) ById(ctx context.Context, id int64) (user.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	pgUser := PgUser{
-		Db: pgUsers.Db,
-		Id: id,
-	}
-	userModel, err := pgx.CollectOneRow(rows, MapUserModel)
-	return user.NewSolidUser(userModel, pgUser), err
+	return pgx.CollectOneRow(rows, MapUser(pgUsers.Db))
 }
 
 func (pgUsers *PgUsers) ListAll(ctx context.Context) ([]user.User, error) {
@@ -67,60 +62,26 @@ func (pgUsers *PgUsers) ListAll(ctx context.Context) ([]user.User, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	users := []user.User{}
-	for rows.Next() {
-		userModel := user.NewUserModel()
-		id := int64(0)
-		err := UserRowScan(rows, userModel, &id)
-		if err != nil {
-			return nil, err
-		}
-		pgUser := PgUser{Db: pgUsers.Db, Id: id}
-		solidUser := user.NewSolidUser(userModel, &pgUser)
-		users = append(users, solidUser)
-	}
-	return users, nil
+	return pgx.CollectRows(rows, MapUser(pgUsers.Db))
 }
 
 func (pgUsers *PgUsers) EstablishAccount(ctx context.Context, model *user.UserModel) (user.User, error) {
-	user, err := pgUsers.Search().ByPhone(ctx, model.Person.Phone)
+	userByPhone, err := pgUsers.Search().ByPhone(ctx, model.Person.Phone)
 	if err != nil {
-		return user, err
+		return userByPhone, err
 	}
 
-	if user != nil {
-		user.Person().Update(ctx, model.Person)
+	if userByPhone != nil {
+		userByPhone.Person().Update(ctx, model.Person)
 	} else {
-		user, err = pgUsers.Add(ctx, model.Person)
+		userByPhone, err = pgUsers.Add(ctx, model.Person)
 		if err != nil {
-			return user, err
+			return userByPhone, err
 		}
 	}
 
-	user.Account().Update(ctx, model.Account)
-	user.Address().Update(ctx, model.Address)
+	userByPhone.Account().Update(ctx, model.Account)
+	userByPhone.Address().Update(ctx, model.Address)
 
-	return user, nil
-}
-
-func UserRowScan(row pgx.Rows, userRow *user.UserModel, id *int64) error {
-	err := row.Scan(
-		&id,
-		&userRow.Account.Token,
-		&userRow.Person.FirstName,
-		&userRow.Person.LastName,
-		&userRow.Person.Email,
-		&userRow.Person.Phone,
-		&userRow.Address.Line1,
-		&userRow.Address.Line2,
-		&userRow.Address.City,
-		&userRow.Address.PostalCode,
-		&userRow.Address.District,
-		&userRow.Settings.Radar.Perimeter,
-		&userRow.Settings.Radar.Position.Lon,
-		&userRow.Settings.Radar.Position.Lat,
-	)
-	userRow.Id = *id
-	return err
+	return userByPhone, nil
 }

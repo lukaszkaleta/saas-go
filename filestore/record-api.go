@@ -11,7 +11,7 @@ import (
 
 type Record interface {
 	Description() universal.Description
-	Model(ctx context.Context) *RecordModel
+	Model(ctx context.Context) (*RecordModel, error)
 	Update(ctx context.Context, newModel *RecordModel) error
 }
 
@@ -73,6 +73,6 @@ func (record SolidRecord) Update(ctx context.Context, newModel *RecordModel) err
 	return record.Record.Update(ctx, newModel)
 }
 
-func (record SolidRecord) Model(ctx context.Context) *RecordModel {
-	return record.model
+func (record SolidRecord) Model(ctx context.Context) (*RecordModel, error) {
+	return record.model, nil
 }

@@ -10,7 +10,7 @@ import (
 
 type FileSystem interface {
 	universal.Idable
-	Model(ctx context.Context) *FileSystemModel
+	Model(ctx context.Context) (*FileSystemModel, error)
 	Update(ctx context.Context, newModel *FileSystemModel) error
 	Records() Records
 	Init(ctx context.Context) (int64, error)
@@ -61,8 +61,8 @@ func (addr SolidFileSystem) Update(ctx context.Context, newModel *FileSystemMode
 	return addr.FileSystem.Update(ctx, newModel)
 }
 
-func (addr SolidFileSystem) Model(ctx context.Context) *FileSystemModel {
-	return addr.model
+func (addr SolidFileSystem) Model(ctx context.Context) (*FileSystemModel, error) {
+	return addr.model, nil
 }
 
 func (addr SolidFileSystem) Records() Records {

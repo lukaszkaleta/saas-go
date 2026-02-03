@@ -8,7 +8,7 @@ import (
 
 type Message interface {
 	universal.Idable
-	Model(ctx context.Context) *MessageModel
+	Model(ctx context.Context) (*MessageModel, error)
 	Acknowledge(ctx context.Context) error
 }
 
@@ -57,8 +57,8 @@ func NewSolidMessage(model *MessageModel, message Message, id int64) Message {
 	}
 }
 
-func (m *SolidMessage) Model(ctx context.Context) *MessageModel {
-	return m.model
+func (m *SolidMessage) Model(ctx context.Context) (*MessageModel, error) {
+	return m.model, nil
 }
 
 func (m *SolidMessage) ID() int64 {
