@@ -68,7 +68,7 @@ func (db *PgDb) TableEntity(name string, id int64) TableEntity {
 }
 
 func Config(url string) *pgxpool.Config {
-	const defaultMaxConns = int32(40)
+	const defaultMaxConns = int32(2)
 	const defaultMinConns = int32(0)
 	const defaultMaxConnLifetime = time.Hour
 	const defaultMaxConnIdleTime = time.Minute * 30
