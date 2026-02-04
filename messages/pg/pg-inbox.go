@@ -37,6 +37,28 @@ with my_jobs as (
 	return pgx.CollectRows(rows, MapMessage(pg.db, pg.owner))
 }
 
+func (pg PgInbox) CountUnreadQuestions(ctx context.Context) (int, error) {
+	currentUserId := universal.CurrentUserId(ctx)
+	sqlTemplate := `
+with my_jobs as (
+    select
+        *,
+        rank() over (partition by owner_id order by action_created_at desc)
+    from job_message
+        where owner_id in (select id from job where job.action_created_by_id = @currentUserId)
+		and action_read_by_id is null
+)
+select count(*) from my_jobs where rank = 1
+`
+	row := pg.db.Pool.QueryRow(ctx, sqlTemplate, pgx.NamedArgs{"currentUserId": currentUserId})
+	var count int
+	err := row.Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 func (pg PgInbox) LastAnswers(ctx context.Context) ([]messages.Message, error) {
 	currentUserId := universal.CurrentUserId(ctx)
 	sqlTemplate := `
@@ -54,4 +76,26 @@ with my_tasks as (
 		return nil, err
 	}
 	return pgx.CollectRows(rows, MapMessage(pg.db, pg.owner))
+}
+
+func (pg PgInbox) CountUnreadAnswers(ctx context.Context) (int, error) {
+	currentUserId := universal.CurrentUserId(ctx)
+	sqlTemplate := `
+with my_tasks as (
+    select
+        *,
+        rank() over (partition by owner_id order by action_created_at desc)
+    from job_message
+        where recipient_id = @currentUserId
+		and action_read_by_id is null
+)
+select count(*) from my_jobs where rank = 1
+`
+	row := pg.db.Pool.QueryRow(ctx, sqlTemplate, pgx.NamedArgs{"currentUserId": currentUserId})
+	var count int
+	err := row.Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }
