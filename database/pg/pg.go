@@ -87,19 +87,43 @@ func Config(url string) *pgxpool.Config {
 	dbConfig.HealthCheckPeriod = defaultHealthCheckPeriod
 	dbConfig.ConnConfig.ConnectTimeout = defaultConnectTimeout
 
-	dbConfig.BeforeAcquire = func(ctx context.Context, c *pgx.Conn) bool {
-		slog.Debug("Before acquiring the connection pool to the database!!")
-		return true
-	}
+	arc := PoolWatch{}
 
-	dbConfig.AfterRelease = func(c *pgx.Conn) bool {
-		slog.Debug("After releasing the connection pool to the database!!")
-		return true
-	}
-
-	dbConfig.BeforeClose = func(c *pgx.Conn) {
-		slog.Debug("Closed the connection pool to the database!!")
-	}
+	dbConfig.BeforeConnect = arc.BeforeConnect
+	dbConfig.AfterConnect = arc.AfterConnect
+	dbConfig.BeforeAcquire = arc.BeforeAcquire
+	dbConfig.AfterRelease = arc.AfterRelease
+	dbConfig.BeforeClose = arc.BeforeClose
 
 	return dbConfig
+}
+
+type PoolWatch struct {
+	counter int
+}
+
+func (arc *PoolWatch) BeforeConnect(context.Context, *pgx.ConnConfig) error {
+	slog.Info("Before connect", "counter", arc.counter)
+	return nil
+}
+
+func (arc *PoolWatch) BeforeAcquire(ctx context.Context, c *pgx.Conn) bool {
+	arc.counter++
+	slog.Info("Before acquiring the connection pool to the database", "counter", arc.counter)
+	return true
+}
+
+func (arc *PoolWatch) AfterRelease(c *pgx.Conn) bool {
+	arc.counter--
+	slog.Info("After releasing the connection pool to the database", "counter", arc.counter)
+	return true
+}
+
+func (arc *PoolWatch) AfterConnect(context.Context, *pgx.Conn) error {
+	slog.Info("After connect", "counter", arc.counter)
+	return nil
+}
+
+func (arc *PoolWatch) BeforeClose(c *pgx.Conn) {
+	slog.Info("Closed the connection pool to the database", "counter", arc.counter)
 }
