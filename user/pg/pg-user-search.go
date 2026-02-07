@@ -27,7 +27,10 @@ func (s *PgUserSearch) ByPhone(ctx context.Context, phone string) (user.User, er
 	if err != nil {
 		return nil, err
 	}
-	return collectRows[0], nil
+	if len(collectRows) > 0 {
+		return collectRows[0], nil
+	}
+	return nil, nil
 }
 
 func (s *PgUserSearch) ModelsByIds(ctx context.Context, ids []*int64) ([]*user.UserModel, error) {
