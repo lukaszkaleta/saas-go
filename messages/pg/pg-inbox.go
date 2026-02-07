@@ -46,6 +46,7 @@ with my_jobs as (
         rank() over (partition by owner_id order by action_created_at desc)
     from job_message
         where owner_id in (select id from job where job.action_created_by_id = @currentUserId)
+		and action_created_by_id <> @currentUserId
 		and action_read_by_id is null
 )
 select count(*) from my_jobs where rank = 1
@@ -69,7 +70,7 @@ with my_tasks as (
     from job_message
         where recipient_id = @currentUserId
 )
-` + ColumnsSelect() + ` from my_jobs where rank = 1
+` + ColumnsSelect() + ` from my_tasks where rank = 1
 `
 	rows, err := pg.db.Pool.Query(ctx, sqlTemplate, pgx.NamedArgs{"currentUserId": currentUserId})
 	if err != nil {
