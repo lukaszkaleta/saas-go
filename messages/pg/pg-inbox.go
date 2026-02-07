@@ -90,7 +90,7 @@ with my_tasks as (
         where recipient_id = @currentUserId
 		and action_read_by_id is null
 )
-select count(*) from my_jobs where rank = 1
+select count(*) from my_tasks where rank = 1
 `
 	row := pg.db.Pool.QueryRow(ctx, sqlTemplate, pgx.NamedArgs{"currentUserId": currentUserId})
 	var count int
