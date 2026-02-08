@@ -151,7 +151,7 @@ func (globalJobs *PgGlobalJobs) AllActive(ctx context.Context) ([]job.Job, error
 }
 
 func (globalJobs *PgGlobalJobs) allActiveSearch(ctx context.Context) ([]*job.JobSearchOutput, error) {
-	query := JobColumnsSelect() + " 0 as distance, 0 as rank from job where status_published is not null and status_closed is null and status_occupied is null"
+	query := JobColumnsSelect() + ", 0 as distance, 0 as rank from job where status_published is not null and status_closed is null and status_occupied is null"
 	rows, err := globalJobs.db.Pool.Query(ctx, query)
 	if err != nil {
 		return nil, err
