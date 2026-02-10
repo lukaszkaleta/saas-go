@@ -5,6 +5,20 @@ import (
 	"time"
 )
 
+// Objects which holds actions are actions aware
+
+type ActionsAware interface {
+	Actions() Actions
+}
+
+func CreatedUserId(ctx context.Context, actionsAware ActionsAware) (*int64, error) {
+	model, err := actionsAware.Actions().Model(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return model.Created().ById, nil
+}
+
 type Actions interface {
 	List() map[string]*Action
 	WithName(name string) Action

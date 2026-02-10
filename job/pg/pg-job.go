@@ -25,6 +25,14 @@ func (pgJob *PgJob) ID() int64 {
 	return pgJob.Id
 }
 
+func (pgJob *PgJob) OwnerUserId(ctx context.Context) (*int64, error) {
+	model, err := pgJob.Actions().Model(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return model.Created().ById, nil
+}
+
 func (pgJob *PgJob) Model(ctx context.Context) (*job.JobModel, error) {
 	query := JobSelect() + " where id = @id"
 	rows, err := pgJob.db.Pool.Query(ctx, query)
