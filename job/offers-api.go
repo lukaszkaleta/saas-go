@@ -55,7 +55,7 @@ func (m MessagesOfferMaker) Make(ctx context.Context, model *OfferModel) (Offer,
 	offerModel := offer.Model()
 	offerMessage := offerModel.Description.Value
 	// Make offer message a message which will be put into chat:
-	message := fmt.Sprintf("% %s, %s",
+	message := fmt.Sprintf("%s %s, %s",
 		offerModel.Price.Value,
 		offerModel.Price.Currency,
 		offerMessage,
