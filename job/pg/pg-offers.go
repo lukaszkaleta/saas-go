@@ -15,13 +15,13 @@ type PgOffers struct {
 	JobId int64
 }
 
-func (p *PgOffers) Waiting(ctx context.Context) ([]job.Offer, error) {
+func (pgOffers *PgOffers) Waiting(ctx context.Context) ([]job.Offer, error) {
 	query := "select * from job_offer where job_id = $1 and action_accepted_at is null and action_rejected_at is null"
-	rows, err := p.db.Pool.Query(ctx, query, p.JobId)
+	rows, err := pgOffers.db.Pool.Query(ctx, query, pgOffers.JobId)
 	if err != nil {
 		return nil, err
 	}
-	return MapOffers(rows, p.db)
+	return pgx.CollectRows(rows, MapOffer(pgOffers.db))
 }
 
 func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.Offer, error) {
@@ -59,17 +59,11 @@ func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.
 	), nil
 }
 
-func MapOffers(rows pgx.Rows, db *pg.PgDb) ([]job.Offer, error) {
-	offers := []job.Offer{}
-	id := int64(0)
-	for rows.Next() {
-		pgOffer := &PgOffer{db: db, Id: id}
-		offerModel, err := MapOffer(rows)
-		if err != nil {
-			return nil, err
-		}
-		solidOffer := job.NewSolidOffer(offerModel, pgOffer)
-		offers = append(offers, solidOffer)
+func (pgOffers *PgOffers) FromUser(ctx context.Context, user universal.Idable) (job.Offer, error) {
+	query := "select * from job_offer where job_id = @jobId and action_created_by_id = @userId order by action_created_at_desc limit 1"
+	rows, err := pgOffers.db.Pool.Query(ctx, query, pgx.NamedArgs{"jobId": pgOffers.JobId, "userId": user.ID()})
+	if err != nil {
+		return nil, err
 	}
-	return offers, nil
+	return pgx.CollectOneRow(rows, MapOffer(pgOffers.db))
 }

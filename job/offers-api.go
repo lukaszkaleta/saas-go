@@ -18,6 +18,8 @@ type OfferWaiter interface {
 type Offers interface {
 	OfferMaker
 	OfferWaiter
+
+	FromUser(ctx context.Context, user universal.Idable) (Offer, error)
 }
 
 // No offers implementation
@@ -55,7 +57,7 @@ func (m MessagesOfferMaker) Make(ctx context.Context, model *OfferModel) (Offer,
 	offerModel := offer.Model()
 	offerMessage := offerModel.Description.Value
 	// Make offer message a message which will be put into chat:
-	message := fmt.Sprintf("%s, %s",
+	message := fmt.Sprintf("%s: %s",
 		offerModel.Price.UserFriendly(),
 		offerMessage,
 	)

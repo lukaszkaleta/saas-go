@@ -54,6 +54,7 @@ CREATE TABLE job_offer (
   action_rejected_at timestamp
 );
 CREATE INDEX job_offer_job_idx ON job_offer USING btree (job_id);
+CREATE INDEX job_offer_job_user_idx ON job_offer USING btree (job_id, action_created_by_id);
 
 CREATE TABLE job_message (
   id bigint not null primary key default nextval('job_sequence'),

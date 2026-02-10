@@ -47,9 +47,8 @@ func (o *PgOffer) Model() *job.OfferModel {
 	return &job.OfferModel{}
 }
 
-func MapOffer(row pgx.CollectableRow) (*job.OfferModel, error) {
+func MapOfferModel(row pgx.CollectableRow) (*job.OfferModel, error) {
 	offerModel := job.EmptyOfferModel()
-
 	actionCreatedModel := universal.EmptyCreatedActionModel()
 	actionAcceptedModel := universal.EmptyActionModel(job.Accepted)
 	actionRejectedModel := universal.EmptyActionModel(job.Rejected)
@@ -75,4 +74,17 @@ func MapOffer(row pgx.CollectableRow) (*job.OfferModel, error) {
 		return nil, err
 	}
 	return offerModel, nil
+
+}
+
+func MapOffer(db *pg.PgDb) pgx.RowToFunc[job.Offer] {
+	return func(row pgx.CollectableRow) (job.Offer, error) {
+		model, err := MapOfferModel(row)
+		if err != nil {
+			return nil, err
+		}
+		pgOffer := &PgOffer{db: db, Id: model.Id}
+		solidOffer := job.NewSolidOffer(model, pgOffer)
+		return solidOffer, nil
+	}
 }
