@@ -15,6 +15,15 @@ type PgOffers struct {
 	JobId int64
 }
 
+func (pgOffers *PgOffers) ById(ctx context.Context, id int64) (job.Offer, error) {
+	query := "select * from job_offer where job_id = @jobId and id = @id"
+	rows, err := pgOffers.db.Pool.Query(ctx, query, pgx.NamedArgs{"jobId": pgOffers.JobId, "id": id})
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectOneRow(rows, MapOffer(pgOffers.db))
+}
+
 func (pgOffers *PgOffers) Waiting(ctx context.Context) ([]job.Offer, error) {
 	query := "select * from job_offer where job_id = $1 and action_accepted_at is null and action_rejected_at is null"
 	rows, err := pgOffers.db.Pool.Query(ctx, query, pgOffers.JobId)

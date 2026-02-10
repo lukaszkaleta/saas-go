@@ -19,6 +19,7 @@ type Offers interface {
 	OfferMaker
 	OfferWaiter
 
+	ById(ctx context.Context, id int64) (Offer, error)
 	FromUser(ctx context.Context, user universal.Idable) (Offer, error)
 }
 
@@ -27,6 +28,13 @@ type Offers interface {
 type NoOffers struct {
 }
 
+func (n NoOffers) ById(ctx context.Context, id int64) (Offer, error) {
+	return nil, nil
+}
+
+func (n NoOffers) FromUser(ctx context.Context, user universal.Idable) (Offer, error) {
+	return nil, nil
+}
 func (n NoOffers) Waiting(ctx context.Context) ([]Offer, error) {
 	return nil, nil
 }
@@ -54,7 +62,10 @@ func (m MessagesOfferMaker) Make(ctx context.Context, model *OfferModel) (Offer,
 	if err != nil {
 		return nil, err
 	}
-	offerModel := offer.Model()
+	offerModel, err := offer.Model(ctx)
+	if err != nil {
+		return nil, err
+	}
 	offerMessage := offerModel.Description.Value
 	// Make offer message a message which will be put into chat:
 	message := fmt.Sprintf("%s: %s",
