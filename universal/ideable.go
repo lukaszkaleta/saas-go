@@ -10,7 +10,7 @@ type JustId struct {
 	id int64
 }
 
-func (ji *JustId) ID() int64 {
+func (ji JustId) ID() int64 {
 	return ji.id
 }
 
