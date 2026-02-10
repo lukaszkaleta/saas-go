@@ -8,7 +8,7 @@ import (
 )
 
 type Offer interface {
-	Model() *OfferModel
+	Model(ctx context.Context) (*OfferModel, error)
 	Accept(ctx context.Context) error
 	Reject(ctx context.Context) error
 	Accepted() (bool, error)
@@ -105,6 +105,6 @@ func (s *SolidOffer) Rejected() (bool, error) {
 	return actionModel.Exists(), nil
 }
 
-func (s *SolidOffer) Model() *OfferModel {
-	return s.model
+func (s *SolidOffer) Model(ctx context.Context) (*OfferModel, error) {
+	return s.model, nil
 }

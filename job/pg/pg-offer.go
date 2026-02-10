@@ -15,36 +15,41 @@ type PgOffer struct {
 	Id int64
 }
 
-func (o *PgOffer) Accept(ctx context.Context) error {
+func (pgOffer *PgOffer) Accept(ctx context.Context) error {
 	currentUser := user.CurrentUser(ctx)
 	query := "update job_offer set action_accepted_at = now(), action_rejected_at = null, action_rejected_by_id = null, action_accepted_by_id = $1 where id = $2"
-	_, err := o.db.Pool.Exec(ctx, query, currentUser.Id, o.Id)
+	_, err := pgOffer.db.Pool.Exec(ctx, query, currentUser.Id, pgOffer.Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (o *PgOffer) Reject(ctx context.Context) error {
+func (pgOffer *PgOffer) Reject(ctx context.Context) error {
 	currentUser := user.CurrentUser(ctx)
 	query := "update job_offer set action_rejected_at = now(), action_accepted_at = null, action_accepted_by_id = null ,action_rejected_by_id = $1 where id = $2"
-	_, err := o.db.Pool.Exec(ctx, query, currentUser.Id, o.Id)
+	_, err := pgOffer.db.Pool.Exec(ctx, query, currentUser.Id, pgOffer.Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (o *PgOffer) Accepted() (bool, error) {
+func (pgOffer *PgOffer) Accepted() (bool, error) {
 	return true, nil
 }
 
-func (o *PgOffer) Rejected() (bool, error) {
+func (pgOffer *PgOffer) Rejected() (bool, error) {
 	return false, nil
 }
 
-func (o *PgOffer) Model() *job.OfferModel {
-	return &job.OfferModel{}
+func (pgOffer *PgOffer) Model(ctx context.Context) (*job.OfferModel, error) {
+	query := "select * from job_offer where job_id = @jobId"
+	rows, err := pgOffer.db.Pool.Query(ctx, query, pgx.NamedArgs{"jobId": pgOffer.Id})
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectOneRow(rows, MapOfferModel)
 }
 
 func MapOfferModel(row pgx.CollectableRow) (*job.OfferModel, error) {
