@@ -7,11 +7,11 @@ type Idable interface {
 }
 
 type JustId struct {
-	id int64
+	Id int64
 }
 
 func (ji JustId) ID() int64 {
-	return ji.id
+	return ji.Id
 }
 
 type Idables[T Idable] interface {
