@@ -68,7 +68,7 @@ with my_tasks as (
         *,
         rank() over (partition by owner_id order by action_created_at desc)
     from job_message
-        where recipient_id = @currentUserId
+        where user_id = @currentUserId
 )
 ` + ColumnsSelect() + ` from my_tasks where rank = 1
 `
@@ -87,7 +87,7 @@ with my_tasks as (
         *,
         rank() over (partition by owner_id order by action_created_at desc)
     from job_message
-        where recipient_id = @currentUserId
+        where user_id = @currentUserId
 		and action_read_by_id is null
 )
 select count(*) from my_tasks where rank = 1

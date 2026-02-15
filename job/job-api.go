@@ -74,14 +74,18 @@ type JobModel struct {
 	Actions     *universal.ActionsModel     `json:"actions"`
 }
 
-func (m *JobModel) Hint() *JobHint {
+func (m JobModel) Hint() *JobHint {
 	return &JobHint{
 		Id:    m.Id,
 		Price: m.Price.UserFriendly(),
 	}
 }
 
-func (m *JobModel) ID() int64 {
+func (m JobModel) GetActions() *universal.ActionsModel {
+	return m.Actions
+}
+
+func (m JobModel) ID() int64 {
 	return m.Id
 }
 

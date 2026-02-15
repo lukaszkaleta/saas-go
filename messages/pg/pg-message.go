@@ -77,7 +77,7 @@ func Columns() []string {
 	return []string{
 		"id",
 		"owner_id",
-		"recipient_id",
+		"user_id",
 		"value",
 		"action_created_by_id",
 		"action_created_at",

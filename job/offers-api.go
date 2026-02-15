@@ -43,8 +43,6 @@ func (n NoOffers) Make(ctx context.Context, model *OfferModel) (Offer, error) {
 	return nil, nil
 }
 
-// Offer maker with
-
 type MessagesOfferMaker struct {
 	inner OfferMaker
 	job   Job
@@ -72,11 +70,12 @@ func (m MessagesOfferMaker) Make(ctx context.Context, model *OfferModel) (Offer,
 		offerModel.Price.UserFriendly(),
 		offerMessage,
 	)
-	userCreatedAt, err := universal.CreatedUserId(ctx, m.job)
+
+	jobCreatedById, err := universal.CreatedById[OfferModel](ctx, offer)
 	if err != nil {
 		return nil, err
 	}
-	_, err = m.job.Messages().Add(ctx, *userCreatedAt, message)
+	_, err = m.job.Messages().Add(ctx, jobCreatedById, message)
 	if err != nil {
 		return nil, err
 	}

@@ -8,11 +8,11 @@ import (
 )
 
 type Offer interface {
-	Model(ctx context.Context) (*OfferModel, error)
-	Accept(ctx context.Context) error
-	Reject(ctx context.Context) error
-	Accepted() (bool, error)
-	Rejected() (bool, error)
+	universal.Idable
+	universal.Acceptable
+	universal.Rejectable
+	universal.ActionsAware
+	universal.ModelAware[OfferModel]
 }
 
 const Created = "created"
@@ -20,23 +20,29 @@ const Rejected = "rejected"
 const Accepted = "accepted"
 
 type OfferModel struct {
+	universal.Idable
 	Id          int64                       `json:"id"`
 	JobId       int64                       `json:"jobId"`
 	Price       *universal.PriceModel       `json:"price"`
 	Description *universal.DescriptionModel `json:"description"`
 	Rating      int                         `json:"rating"`
-	Actions     universal.ActionsModel      `json:"actions"`
+	Actions     *universal.ActionsModel     `json:"actions"`
+}
+
+func (m OfferModel) GetActions() *universal.ActionsModel {
+	return m.Actions
 }
 
 func EmptyOfferModel() *OfferModel {
-	return &OfferModel{
+	om := &OfferModel{
 		Id:          0,
 		JobId:       0,
 		Price:       universal.EmptyPriceModel(),
 		Description: universal.EmptyDescriptionModel(),
 		Rating:      0,
-		Actions:     universal.ActionsModel{},
 	}
+	om.Actions = universal.EmptyActionsModel()
+	return om
 }
 
 //
@@ -52,9 +58,14 @@ func NewSolidOffer(model *OfferModel, offer Offer) Offer {
 }
 
 type SolidOffer struct {
+	universal.Idable
 	Id    int64
 	model *OfferModel
 	Offer Offer
+}
+
+func (s *SolidOffer) ID() int64 {
+	return s.Id
 }
 
 func (s *SolidOffer) Accept(ctx context.Context) error {
@@ -107,4 +118,68 @@ func (s *SolidOffer) Rejected() (bool, error) {
 
 func (s *SolidOffer) Model(ctx context.Context) (*OfferModel, error) {
 	return s.model, nil
+}
+
+func (s *SolidOffer) Actions() universal.Actions {
+	return s.Offer.Actions()
+}
+
+//
+// When accepting offer
+//
+
+type MessagesOfferAcceptor struct {
+	inner Offer
+	job   Job
+}
+
+func (m *MessagesOfferAcceptor) Accept(ctx context.Context) error {
+	userId, err := universal.CreatedById[JobModel](ctx, m.job)
+	if err != nil {
+		return err
+	}
+	_, err = m.job.Messages().Add(ctx, userId, "Offer accepted")
+	if err != nil {
+		return err
+	}
+	return m.inner.Accept(ctx)
+}
+
+func NewMessagesOfferAcceptor(inner Offer, job Job) universal.Acceptor {
+	return &MessagesOfferAcceptor{
+		inner: inner,
+		job:   job,
+	}
+}
+
+//
+// When rejecting offer
+//
+
+type MessagesOfferRejecter struct {
+	inner Offer
+	job   Job
+}
+
+func (m *MessagesOfferRejecter) Reject(ctx context.Context) error {
+	// Check who created offer
+	offerModel, err := m.inner.Model(ctx)
+	if err != nil {
+		return err
+	}
+	userId := offerModel.Actions.CreatedById()
+	// Add message that offer is rejected
+	_, err = m.job.Messages().Add(ctx, *userId, "Offer rejected")
+	if err != nil {
+		return err
+	}
+	// Reject offer.
+	return m.inner.Reject(ctx)
+}
+
+func NewMessagesOfferRejecter(inner Offer, job Job) universal.Rejecter {
+	return &MessagesOfferRejecter{
+		inner: inner,
+		job:   job,
+	}
 }

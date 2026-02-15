@@ -13,15 +13,24 @@ type Message interface {
 }
 
 type MessageModel struct {
-	Id          int64                   `json:"id"`
-	OwnerId     int64                   `json:"ownerId"`
-	RecipientId int64                   `json:"recipientId"`
-	Value       string                  `json:"value"`
-	Actions     *universal.ActionsModel `json:"actions"`
+	Id             int64                   `json:"id"`
+	OwnerId        int64                   `json:"ownerId"`
+	RecipientId    int64                   `json:"recipientId"`
+	Value          string                  `json:"value"`
+	ValueGenerated bool                    `json:"generated"`
+	Actions        *universal.ActionsModel `json:"actions"`
 }
 
 func EmptyModel() *MessageModel {
 	return EmptyOwnerModel(0)
+}
+
+func (m *MessageModel) ID() int64 {
+	return m.Id
+}
+
+func (m *MessageModel) GetActions() *universal.ActionsModel {
+	return m.Actions
 }
 
 func EmptyOwnerModel(ownerId int64) *MessageModel {

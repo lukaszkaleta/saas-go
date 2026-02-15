@@ -7,7 +7,7 @@ import (
 type PgAction struct {
 }
 
-func (p PgAction) Model() universal.ActionsModel {
+func (p PgAction) Model() *universal.ActionModel {
 	//TODO implement me
 	panic("implement me")
 }

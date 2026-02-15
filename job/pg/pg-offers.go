@@ -57,13 +57,16 @@ func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.
 	}
 	actionsList := make(map[string]*universal.ActionModel)
 	actionsList[job.Created] = universal.NowActionModelForUser(job.Created, &user.Id)
+
+	actions := universal.ActionsModel{List: actionsList}
+	offerModel := job.OfferModel{
+		Id:          offerId,
+		Description: model.Description,
+		Price:       model.Price,
+	}
+	offerModel.Actions = &actions
 	return job.NewSolidOffer(
-		&job.OfferModel{
-			Id:          offerId,
-			Description: model.Description,
-			Price:       model.Price,
-			Actions:     universal.ActionsModel{List: actionsList},
-		},
+		&offerModel,
 		&pgOffer,
 	), nil
 }

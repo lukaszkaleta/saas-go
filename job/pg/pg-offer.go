@@ -7,12 +7,21 @@ import (
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/job"
 	"github.com/lukaszkaleta/saas-go/universal"
+	pgUniversal "github.com/lukaszkaleta/saas-go/universal/pg"
 	"github.com/lukaszkaleta/saas-go/user"
 )
 
 type PgOffer struct {
 	db *pg.PgDb
 	Id int64
+}
+
+func (pgOffer *PgOffer) ID() int64 {
+	return pgOffer.Id
+}
+
+func (pgOffer *PgOffer) Actions() universal.Actions {
+	return pgUniversal.NewPgActions(pgOffer.db, pgOffer.tableEntity())
 }
 
 func (pgOffer *PgOffer) Accept(ctx context.Context) error {
@@ -50,6 +59,10 @@ func (pgOffer *PgOffer) Model(ctx context.Context) (*job.OfferModel, error) {
 		return nil, err
 	}
 	return pgx.CollectOneRow(rows, MapOfferModel)
+}
+
+func (pgOffer *PgOffer) tableEntity() pg.TableEntity {
+	return pgOffer.db.TableEntity("job_offer", pgOffer.Id)
 }
 
 func MapOfferModel(row pgx.CollectableRow) (*job.OfferModel, error) {

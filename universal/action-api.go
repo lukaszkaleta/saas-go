@@ -6,7 +6,7 @@ import (
 )
 
 type Action interface {
-	Model() ActionsModel
+	Model() *ActionModel
 }
 
 type ActionModel struct {

@@ -11,12 +11,13 @@ type ActionsAware interface {
 	Actions() Actions
 }
 
-func CreatedUserId(ctx context.Context, actionsAware ActionsAware) (*int64, error) {
-	model, err := actionsAware.Actions().Model(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return model.Created().ById, nil
+type ActionsAwareModel interface {
+	Idable
+	GetActions() *ActionsModel
+}
+
+func (am *ActionsModel) GetActions() *ActionsModel {
+	return am
 }
 
 type Actions interface {
@@ -27,6 +28,7 @@ type Actions interface {
 }
 
 type ActionsModel struct {
+	Idable
 	List map[string]*ActionModel `json:"list"`
 }
 
@@ -44,12 +46,20 @@ func CreatedNowActions(ctx context.Context) *ActionsModel {
 	return model
 }
 
-func (am ActionsModel) Created() *ActionModel {
+func (am *ActionsModel) Created() *ActionModel {
 	return am.WithName("created")
 }
 
-func (am ActionsModel) WithName(name string) *ActionModel {
+func (am *ActionsModel) WithName(name string) *ActionModel {
 	return am.List[name]
+}
+
+func (am *ActionsModel) ID() int64 {
+	return 0
+}
+
+func (am *ActionsModel) CreatedById() *int64 {
+	return am.Created().ById
 }
 
 type SolidActions struct {
@@ -70,4 +80,28 @@ func (s *SolidActions) WithName(name string) Action {
 }
 func (s *SolidActions) Created() Action {
 	return s.WithName("created")
+}
+
+func CreatedById[T ActionsAwareModel](ctx context.Context, instance any) (int64, error) {
+	_, ok := instance.(ActionsAware)
+	if !ok {
+		return 0, nil
+	}
+	modelAware, ok := instance.(ModelAware[T])
+	if !ok {
+		return 0, nil
+	}
+	model, err2 := modelAware.Model(ctx)
+	if err2 != nil {
+		return 0, err2
+	}
+	actionsAwareModel, ok := any(model).(ActionsAwareModel)
+	if !ok {
+		return 0, nil
+	}
+	userId := actionsAwareModel.GetActions().CreatedById()
+	if userId == nil {
+		return 0, nil
+	}
+	return *userId, nil
 }

@@ -24,13 +24,17 @@ func (pg *PgMessages) Add(ctx context.Context, recipientId int64, value string) 
 	return pg.AddFromModel(ctx, &messages.MessageModel{Value: value, OwnerId: pg.owner.RelationId, RecipientId: recipientId})
 }
 
+func (pg *PgMessages) AddGenerated(ctx context.Context, recipientId int64, value string) (messages.Message, error) {
+	return pg.AddFromModel(ctx, &messages.MessageModel{ValueGenerated: true, Value: value, OwnerId: pg.owner.RelationId, RecipientId: recipientId})
+}
+
 func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.MessageModel) (messages.Message, error) {
 	if model.OwnerId != pg.owner.RelationId {
 		return nil, errors.New("Owner inside model and messages does not match")
 	}
 	messageId := int64(0)
 	currentUserId := universal.CurrentUserId(ctx)
-	query := fmt.Sprintf("insert into %s (owner_id, recipient_id, action_created_by_id, value) values (@ownerId, @recipientId, @currentUserId, @value) returning id", pg.owner.TableName)
+	query := fmt.Sprintf("insert into %s (owner_id, user_id, action_created_by_id, value, value_generated) values (@ownerId, @recipientId, @currentUserId, @value, @generated) returning id", pg.owner.TableName)
 	row := pg.db.Pool.QueryRow(ctx, query, MessageNamedArgs(model, currentUserId))
 	err := row.Scan(&messageId)
 	if err != nil {
@@ -62,7 +66,7 @@ func (pg *PgMessages) ById(ctx context.Context, id int64) (messages.Message, err
 }
 
 func (pg *PgMessages) ForRecipient(ctx context.Context, recipient universal.Idable) ([]messages.Message, error) {
-	query := fmt.Sprintf(ColumnsSelect()+" from %s where owner_id = @ownerId and recipient_id = @recipientId", pg.owner.TableName)
+	query := fmt.Sprintf(ColumnsSelect()+" from %s where owner_id = @ownerId and user_id = @recipientId", pg.owner.TableName)
 	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"ownerId": pg.owner.RelationId, "recipientId": recipient.ID()})
 	if err != nil {
 		return nil, err
@@ -71,7 +75,7 @@ func (pg *PgMessages) ForRecipient(ctx context.Context, recipient universal.Idab
 }
 
 func (pg *PgMessages) ForRecipientById(ctx context.Context, id int64) ([]messages.Message, error) {
-	query := fmt.Sprintf(ColumnsSelect()+" from %s where owner_id = @ownerId and recipient_id = (select recipient_id from %s where id = @id)", pg.owner.TableName, pg.owner.TableName)
+	query := fmt.Sprintf(ColumnsSelect()+" from %s where owner_id = @ownerId and user_id = (select user_id from %s where id = @id)", pg.owner.TableName, pg.owner.TableName)
 	rows, err := pg.db.Pool.Query(ctx, query, pgx.NamedArgs{"ownerId": pg.owner.RelationId, "id": id})
 	if err != nil {
 		return nil, err
@@ -95,5 +99,6 @@ func MessageNamedArgs(model *messages.MessageModel, currentUserId *int64) pgx.Na
 		"recipientId":   model.RecipientId,
 		"currentUserId": currentUserId,
 		"value":         model.Value,
+		"generated":     model.ValueGenerated,
 	}
 }
