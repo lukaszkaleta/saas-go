@@ -26,8 +26,8 @@ func (pgOffer *PgOffer) Actions() universal.Actions {
 
 func (pgOffer *PgOffer) Accept(ctx context.Context) error {
 	currentUser := user.CurrentUser(ctx)
-	query := "update job_offer set action_accepted_at = now(), action_rejected_at = null, action_rejected_by_id = null, action_accepted_by_id = $1 where id = $2"
-	_, err := pgOffer.db.Pool.Exec(ctx, query, currentUser.Id, pgOffer.Id)
+	query := "update job_offer set action_accepted_at = now(), action_accepted_by_id = @userId where id = @id"
+	_, err := pgOffer.db.Pool.Exec(ctx, query, pgx.NamedArgs{"id": pgOffer.Id, "userId": currentUser.Id})
 	if err != nil {
 		return err
 	}
@@ -36,8 +36,8 @@ func (pgOffer *PgOffer) Accept(ctx context.Context) error {
 
 func (pgOffer *PgOffer) Reject(ctx context.Context) error {
 	currentUser := user.CurrentUser(ctx)
-	query := "update job_offer set action_rejected_at = now(), action_accepted_at = null, action_accepted_by_id = null ,action_rejected_by_id = $1 where id = $2"
-	_, err := pgOffer.db.Pool.Exec(ctx, query, currentUser.Id, pgOffer.Id)
+	query := "update job_offer set action_rejected_at = now(), action_rejected_by_id = @userId where id = @id"
+	_, err := pgOffer.db.Pool.Exec(ctx, query, pgx.NamedArgs{"id": pgOffer.Id, "userId": currentUser.Id})
 	if err != nil {
 		return err
 	}

@@ -19,3 +19,12 @@ type Rejectable interface {
 	Rejecter
 	Rejected() (bool, error)
 }
+
+type Releaser interface {
+	Release(ctx context.Context) error
+}
+
+type Releasable interface {
+	Releaser
+	Released() (bool, error)
+}
