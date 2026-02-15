@@ -145,7 +145,7 @@ func (m *MessagesOfferAcceptor) Accept(ctx context.Context) error {
 	return m.inner.Accept(ctx)
 }
 
-func NewMessagesOfferAcceptor(inner Offer, job Job) universal.Acceptor {
+func NewMessagesOfferAcceptor(job Job, inner Offer) universal.Acceptor {
 	return &MessagesOfferAcceptor{
 		inner: inner,
 		job:   job,
@@ -177,7 +177,7 @@ func (m *MessagesOfferRejecter) Reject(ctx context.Context) error {
 	return m.inner.Reject(ctx)
 }
 
-func NewMessagesOfferRejecter(inner Offer, job Job) universal.Rejecter {
+func NewMessagesOfferRejecter(job Job, inner Offer) universal.Rejecter {
 	return &MessagesOfferRejecter{
 		inner: inner,
 		job:   job,
