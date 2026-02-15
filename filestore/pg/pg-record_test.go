@@ -41,7 +41,11 @@ func TestPgRecord_Update(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	record, err = records.ById(t.Context(), record.Model(t.Context()).Id)
+	model, err := record.Model(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+	record, err = records.ById(t.Context(), model.Id)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,11 +69,18 @@ func TestPgRecord_Model(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	record, err = records.ById(t.Context(), record.Model(t.Context()).Id)
+	r, err := record.Model(t.Context())
 	if err != nil {
 		t.Fatal(err)
 	}
-	model := record.Model(t.Context())
+	record, err = records.ById(t.Context(), r.Id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := record.Model(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
 	Equal[string](t, model.Name.Value, recordModel.Name.Value)
 	Equal[string](t, model.Name.Slug, recordModel.Name.Slug)
 	Equal[string](t, model.Description.Value, recordModel.Description.Value)

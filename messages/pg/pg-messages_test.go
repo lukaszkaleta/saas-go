@@ -52,10 +52,18 @@ func TestPgMessages_Add(t *testing.T) {
 	if newMessage == nil {
 		t.Fatal("newMessage is nil")
 	}
-	if newMessage.Model(ctx).OwnerId != USER_ID {
+	model, err := newMessage.Model(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if model.OwnerId != USER_ID {
 		t.Fatal("Wrong Owner id")
 	}
-	if newMessage.Model(ctx).Value != value {
+	messageModel, err := newMessage.Model(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if messageModel.Value != value {
 		t.Fatal("Wrong value")
 	}
 

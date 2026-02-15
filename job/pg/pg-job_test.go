@@ -82,7 +82,11 @@ func TestPgJob_Status(t *testing.T) {
 		t.Error("job status is not draft")
 	}
 	globalJobs := NewPgGlobalJobs(db)
-	jobById, err := globalJobs.ById(t.Context(), newJob.Model().Id)
+	model, err := newJob.Model(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+	jobById, err := globalJobs.ById(t.Context(), model.Id)
 	if err != nil {
 		t.Error(err)
 	}

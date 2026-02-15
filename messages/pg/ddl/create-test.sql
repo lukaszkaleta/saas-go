@@ -10,6 +10,7 @@ CREATE TABLE message (
   user_id bigint not null references users,
   owner_id bigint not null references users,
   value TEXT NOT NULL,
+  value_generated bool NOT NULL default false,
   action_created_by_id bigint not null references users(id),
   action_created_at timestamp not null default now(),
   action_read_by_id bigint references users(id),
