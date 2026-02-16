@@ -125,7 +125,7 @@ func (s *SolidOffer) Actions() universal.Actions {
 }
 
 //
-// When accepting offer
+// When accepting offer we need to send a message
 //
 
 type MessagesOfferAcceptor struct {
@@ -145,8 +145,36 @@ func (m *MessagesOfferAcceptor) Accept(ctx context.Context) error {
 	return m.inner.Accept(ctx)
 }
 
+//
+// When accepting offer job will be moved to Occupied state
+//
+
 func NewMessagesOfferAcceptor(job Job, inner Offer) universal.Acceptor {
 	return &MessagesOfferAcceptor{
+		inner: inner,
+		job:   job,
+	}
+}
+
+type ApproveOfferAcceptor struct {
+	inner Offer
+	job   Job
+}
+
+func (m *ApproveOfferAcceptor) Accept(ctx context.Context) error {
+	err := m.inner.Accept(ctx)
+	if err != nil {
+		return err
+	}
+	err = m.job.State().Change(ctx, JobOccupied)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func NewApproveOfferAcceptor(job Job, inner Offer) universal.Acceptor {
+	return &ApproveOfferAcceptor{
 		inner: inner,
 		job:   job,
 	}

@@ -93,6 +93,24 @@ func (pg *PgMessages) Acknowledge(ctx context.Context) error {
 	return nil
 }
 
+func (pg *PgMessages) LastQuestions(ctx context.Context) ([]messages.Message, error) {
+	sqlTemplate := `
+with my_jobs as (
+    select
+        *,
+        rank() over (partition by owner_id order by action_created_at desc)
+    from job_message
+        where owner_id = @ownerId
+)
+` + ColumnsSelect() + ` from my_jobs where rank = 1
+`
+	rows, err := pg.db.Pool.Query(ctx, sqlTemplate, pgx.NamedArgs{"ownerId": pg.owner.RelationId})
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectRows(rows, MapMessage(pg.db, pg.owner))
+}
+
 func MessageNamedArgs(model *messages.MessageModel, currentUserId *int64) pgx.NamedArgs {
 	return pgx.NamedArgs{
 		"ownerId":       model.OwnerId,
