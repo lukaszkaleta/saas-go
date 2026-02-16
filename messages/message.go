@@ -25,7 +25,7 @@ func EmptyModel() *MessageModel {
 	return EmptyOwnerModel(0)
 }
 
-func (m *MessageModel) ID() int64 {
+func (m MessageModel) ID() int64 {
 	return m.Id
 }
 
