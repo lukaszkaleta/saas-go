@@ -29,7 +29,7 @@ func (m MessageModel) ID() int64 {
 	return m.Id
 }
 
-func (m *MessageModel) GetActions() *universal.ActionsModel {
+func (m MessageModel) GetActions() *universal.ActionsModel {
 	return m.Actions
 }
 
