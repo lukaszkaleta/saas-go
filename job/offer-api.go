@@ -157,7 +157,7 @@ func NewMessagesOfferAcceptor(job Job, inner Offer) universal.Acceptor {
 }
 
 type ApproveOfferAcceptor struct {
-	inner Offer
+	inner universal.Acceptor
 	job   Job
 }
 
@@ -173,7 +173,7 @@ func (m *ApproveOfferAcceptor) Accept(ctx context.Context) error {
 	return nil
 }
 
-func NewApproveOfferAcceptor(job Job, inner Offer) universal.Acceptor {
+func NewApproveOfferAcceptor(job Job, inner universal.Acceptor) universal.Acceptor {
 	return &ApproveOfferAcceptor{
 		inner: inner,
 		job:   job,
