@@ -114,11 +114,11 @@ func CreatedByIdFromModel(model ActionsAwareModel) int64 {
 	return *userId
 }
 
-func CreatedByIdFromModels(models []ActionsAwareModel) ([]int64, error) {
+func CreatedByIdFromModels(models []ActionsAwareModel) []int64 {
 	ids := make([]int64, len(models))
 	for i, model := range models {
 		id := CreatedByIdFromModel(model)
 		ids[i] = id
 	}
-	return ids, nil
+	return ids
 }
