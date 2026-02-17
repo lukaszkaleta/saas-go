@@ -4,15 +4,15 @@ go 1.25.0
 
 require (
 	github.com/jackc/pgx/v5 v5.8.0
-	github.com/lukaszkaleta/saas-go/database/pg v0.2.223
-	github.com/lukaszkaleta/saas-go/filestore v0.2.223
+	github.com/lukaszkaleta/saas-go/database/pg v0.2.224
+	github.com/lukaszkaleta/saas-go/filestore v0.2.224
 	github.com/lukaszkaleta/saas-go/filestore/pg v0.2.63
 	github.com/lukaszkaleta/saas-go/job v0.2.63
-	github.com/lukaszkaleta/saas-go/messages v0.2.223
-	github.com/lukaszkaleta/saas-go/messages/pg v0.2.223
-	github.com/lukaszkaleta/saas-go/universal v0.2.223
-	github.com/lukaszkaleta/saas-go/universal/pg v0.2.223
-	github.com/lukaszkaleta/saas-go/user v0.2.223
+	github.com/lukaszkaleta/saas-go/messages v0.2.224
+	github.com/lukaszkaleta/saas-go/messages/pg v0.2.224
+	github.com/lukaszkaleta/saas-go/universal v0.2.224
+	github.com/lukaszkaleta/saas-go/universal/pg v0.2.224
+	github.com/lukaszkaleta/saas-go/user v0.2.224
 )
 
 require (
