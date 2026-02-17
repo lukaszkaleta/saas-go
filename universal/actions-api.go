@@ -118,16 +118,16 @@ func CreatedByIds[T ActionsAwareModel](ctx context.Context, instance []any) ([]i
 	return ids, nil
 }
 
-func CreatedByIdFromModel(model ActionsAwareModel) int64 {
+func CreatedByIdFromModel[T ActionsAwareModel](model T) *int64 {
 	userId := model.GetActions().CreatedById()
 	if userId == nil {
-		return 0
+		return nil
 	}
-	return *userId
+	return userId
 }
 
-func CreatedByIdFromModels(models []*ActionsAwareModel) []int64 {
-	ids := make([]int64, len(models))
+func CreatedByIdFromModels[T ActionsAwareModel](models []*T) []*int64 {
+	ids := make([]*int64, len(models))
 	for i, model := range models {
 		id := CreatedByIdFromModel(*model)
 		ids[i] = id
