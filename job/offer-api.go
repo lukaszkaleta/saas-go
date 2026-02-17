@@ -134,11 +134,12 @@ type MessagesOfferAcceptor struct {
 }
 
 func (m *MessagesOfferAcceptor) Accept(ctx context.Context) error {
-	userId, err := universal.CreatedById[JobModel](ctx, m.job)
+	// Check who created offer
+	userId, err := universal.CreatedById[OfferModel](ctx, m.inner)
 	if err != nil {
 		return err
 	}
-	_, err = m.job.Messages().Add(ctx, userId, "Offer accepted")
+	_, err = m.job.Messages().AddGenerated(ctx, userId, "Offer accepted")
 	if err != nil {
 		return err
 	}
@@ -191,13 +192,12 @@ type MessagesOfferRejecter struct {
 
 func (m *MessagesOfferRejecter) Reject(ctx context.Context) error {
 	// Check who created offer
-	offerModel, err := m.inner.Model(ctx)
+	userId, err := universal.CreatedById[OfferModel](ctx, m.inner)
 	if err != nil {
 		return err
 	}
-	userId := offerModel.Actions.CreatedById()
 	// Add message that offer is rejected
-	_, err = m.job.Messages().Add(ctx, *userId, "Offer rejected")
+	_, err = m.job.Messages().AddGenerated(ctx, userId, "Offer rejected")
 	if err != nil {
 		return err
 	}
