@@ -73,7 +73,7 @@ func (pgJob *PgJob) State() universal.State {
 	return pgUniversal.NewPgTimestampState(
 		pgJob.db,
 		pgJob.tableEntity(),
-		job.JobStatuses())
+		job.Statuses())
 }
 
 func (pgJob *PgJob) Actions() universal.Actions {
@@ -137,7 +137,6 @@ func MapJobModel(row pgx.CollectableRow) (*job.JobModel, error) {
 		&jobModel.Price.Value,
 		&jobModel.Price.Currency,
 		&jobModel.Rating,
-		&jobModel.State.Draft,
 		&nullTimePublished,
 		&nullTimeOccupied,
 		&nullTimeClosed,
@@ -170,7 +169,6 @@ func JobColumns() []string {
 		"price_value",
 		"price_currency",
 		"rating",
-		"status_draft",
 		"status_published",
 		"status_occupied",
 		"status_closed",
@@ -252,7 +250,6 @@ func MapSearchJob() pgx.RowToFunc[*job.JobSearchOutput] {
 			&jobModel.Price.Value,
 			&jobModel.Price.Currency,
 			&jobModel.Rating,
-			&jobModel.State.Draft,
 			&nullTimePublished,
 			&nullTimeOccupied,
 			&nullTimeClosed,

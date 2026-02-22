@@ -14,7 +14,7 @@ type PgQuestionInbox struct {
 	owner pg.RelationEntity
 }
 
-func NewPgInbox(db *pg.PgDb, owner pg.RelationEntity) messages.Inbox {
+func NewPgQuestionInbox(db *pg.PgDb, owner pg.RelationEntity) universal.Inbox[messages.Message] {
 	return PgQuestionInbox{db: db, owner: owner}
 }
 

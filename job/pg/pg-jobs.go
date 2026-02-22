@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -69,7 +68,7 @@ func (pgJobs *PgJobs) Add(ctx context.Context, model *job.JobModel) (job.Job, er
 			Address:     model.Address,
 			Price:       &universal.PriceModel{},
 			Rating:      model.Rating,
-			State:       job.JobStatus{Draft: time.Now()},
+			State:       job.JobStatus{},
 			Actions:     universal.CreatedNowActions(ctx),
 		},
 		&pgJob), nil

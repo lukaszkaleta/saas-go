@@ -26,7 +26,6 @@ type Job interface {
 }
 
 type JobStatus struct {
-	Draft     time.Time `json:"draft"`
 	Published time.Time `json:"published"`
 	Occupied  time.Time `json:"occupied"`
 	Closed    time.Time `json:"closed"`
@@ -42,18 +41,17 @@ func (o *JobStatus) Current() string {
 	if !o.Published.IsZero() {
 		return JobPublished
 	}
-	return JobDraft
+	return ""
 }
 
 const (
-	JobDraft     string = "draft"
 	JobPublished string = "published"
 	JobOccupied  string = "occupied"
 	JobClosed    string = "closed"
 )
 
-func JobStatuses() []string {
-	return []string{JobDraft, JobPublished, JobOccupied, JobClosed}
+func Statuses() []string {
+	return []string{JobPublished, JobOccupied, JobClosed}
 }
 
 func PublicStatuses() []string {
@@ -173,7 +171,7 @@ func (solidJob *SolidJob) FileSystem() filestore.FileSystem {
 }
 
 func (solidJob *SolidJob) State() universal.State {
-	available := JobStatuses()
+	available := Statuses()
 	current := solidJob.model.State.Current()
 	if solidJob.Job != nil {
 		return universal.NewSolidState(

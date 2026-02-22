@@ -14,7 +14,6 @@ CREATE TABLE job (
   price_value int not null default 0,
   price_currency text not null default 'NOK',
   rating int not null default 10,
-  status_draft timestamp not null default now(),
   status_published timestamp,
   status_occupied timestamp,
   status_closed timestamp,
@@ -78,3 +77,14 @@ CREATE TABLE job_message_filesystem (
 );
 CREATE UNIQUE INDEX job_message_filesystem_uidx ON job_message_filesystem USING btree (job_message_id, filesystem_id);
 CREATE INDEX job_message_filesystem_job_idx ON job_message_filesystem USING btree (job_message_id);
+
+CREATE TABLE task (
+  id bigint not null primary key default nextval('job_sequence'),
+  job_id bigint not null references job,
+  user_id bigint not null references users,
+  action_created_by_id bigint not null references users,
+  action_created_at timestamp not null default now(),
+);
+CREATE INDEX message_job_idx ON job_message USING btree (owner_id);
+CREATE INDEX message_action_created_by_idx ON job_message USING btree (action_created_by_id);
+CREATE INDEX message_user_idx ON job_message USING btree (user_id);

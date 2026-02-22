@@ -78,9 +78,6 @@ func TestPgJob_Status(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	if job.JobDraft != newJob.State().Name(t.Context()) {
-		t.Error("job status is not draft")
-	}
 	globalJobs := NewPgGlobalJobs(db)
 	model, err := newJob.Model(t.Context())
 	if err != nil {
@@ -92,8 +89,5 @@ func TestPgJob_Status(t *testing.T) {
 	}
 	if jobById == nil {
 		t.Error("job by id should not be nil")
-	}
-	if job.JobDraft != jobById.State().Name(t.Context()) {
-		t.Error("job status is not draft")
 	}
 }
