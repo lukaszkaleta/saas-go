@@ -13,12 +13,12 @@ import (
 
 type Job interface {
 	universal.Idable
+	filestore.FileSystemAware
 	Model(ctx context.Context) (*JobModel, error)
 	Address() universal.Address
 	Position() universal.Position
 	Price() universal.Price
 	Description() universal.Description
-	FileSystem() filestore.FileSystem
 	State() universal.State
 	Actions() universal.Actions
 	Offers() Offers

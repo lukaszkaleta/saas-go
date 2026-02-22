@@ -41,7 +41,7 @@ func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.MessageM
 		return nil, err
 	}
 	return &PgMessage{
-		Db:    pg.db,
+		db:    pg.db,
 		Id:    messageId,
 		Owner: pg.owner,
 	}, nil

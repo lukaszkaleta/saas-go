@@ -17,6 +17,10 @@ type FileSystem interface {
 	CheckExistence(ctx context.Context) (int64, error)
 }
 
+type FileSystemAware interface {
+	FileSystem() FileSystem
+}
+
 // Builder
 
 // Model

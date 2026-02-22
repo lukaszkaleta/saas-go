@@ -1,0 +1,60 @@
+package pg
+
+import (
+	"context"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/lukaszkaleta/saas-go/database/pg"
+	"github.com/lukaszkaleta/saas-go/messages"
+	"github.com/lukaszkaleta/saas-go/universal"
+)
+
+type PgAnswerInbox struct {
+	db    *pg.PgDb
+	owner pg.RelationEntity
+}
+
+func NewPgAnswerInbox(db *pg.PgDb, owner pg.RelationEntity) messages.Inbox {
+	return PgAnswerInbox{db: db, owner: owner}
+}
+
+func (pg PgAnswerInbox) Last(ctx context.Context) ([]messages.Message, error) {
+	currentUserId := universal.CurrentUserId(ctx)
+	sqlTemplate := `
+with my_tasks as (
+    select
+        *,
+        rank() over (partition by owner_id order by action_created_at desc)
+    from job_message
+        where user_id = @currentUserId
+)
+` + ColumnsSelect() + ` from my_tasks where rank = 1
+`
+	rows, err := pg.db.Pool.Query(ctx, sqlTemplate, pgx.NamedArgs{"currentUserId": currentUserId})
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectRows(rows, MapMessage(pg.db, pg.owner))
+}
+
+func (pg PgAnswerInbox) CountUnread(ctx context.Context) (int, error) {
+	currentUserId := universal.CurrentUserId(ctx)
+	sqlTemplate := `
+with my_tasks as (
+    select
+        *,
+        rank() over (partition by owner_id order by action_created_at desc)
+    from job_message
+        where user_id = @currentUserId
+		and action_read_by_id is null
+)
+select count(*) from my_tasks where rank = 1
+`
+	row := pg.db.Pool.QueryRow(ctx, sqlTemplate, pgx.NamedArgs{"currentUserId": currentUserId})
+	var count int
+	err := row.Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}

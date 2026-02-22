@@ -3,11 +3,13 @@ package messages
 import (
 	"context"
 
+	"github.com/lukaszkaleta/saas-go/filestore"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type Message interface {
 	universal.Idable
+	filestore.FileSystemAware
 	Model(ctx context.Context) (*MessageModel, error)
 	Acknowledge(ctx context.Context) error
 }
@@ -64,6 +66,10 @@ func NewSolidMessage(model *MessageModel, message Message, id int64) Message {
 		model:   model,
 		message: message,
 	}
+}
+
+func (m *SolidMessage) FileSystem() filestore.FileSystem {
+	return m.message.FileSystem()
 }
 
 func (m *SolidMessage) Model(ctx context.Context) (*MessageModel, error) {

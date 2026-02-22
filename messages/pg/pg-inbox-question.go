@@ -9,16 +9,16 @@ import (
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
-type PgInbox struct {
+type PgQuestionInbox struct {
 	db    *pg.PgDb
 	owner pg.RelationEntity
 }
 
 func NewPgInbox(db *pg.PgDb, owner pg.RelationEntity) messages.Inbox {
-	return PgInbox{db: db, owner: owner}
+	return PgQuestionInbox{db: db, owner: owner}
 }
 
-func (pg PgInbox) LastQuestions(ctx context.Context) ([]messages.Message, error) {
+func (pg PgQuestionInbox) Last(ctx context.Context) ([]messages.Message, error) {
 	currentUserId := universal.CurrentUserId(ctx)
 	sqlTemplate := `
 with my_jobs as (
@@ -37,7 +37,7 @@ with my_jobs as (
 	return pgx.CollectRows(rows, MapMessage(pg.db, pg.owner))
 }
 
-func (pg PgInbox) CountUnreadQuestions(ctx context.Context) (int, error) {
+func (pg PgQuestionInbox) CountUnread(ctx context.Context) (int, error) {
 	currentUserId := universal.CurrentUserId(ctx)
 	sqlTemplate := `
 with my_jobs as (
@@ -50,47 +50,6 @@ with my_jobs as (
 		and action_read_by_id is null
 )
 select count(*) from my_jobs where rank = 1
-`
-	row := pg.db.Pool.QueryRow(ctx, sqlTemplate, pgx.NamedArgs{"currentUserId": currentUserId})
-	var count int
-	err := row.Scan(&count)
-	if err != nil {
-		return 0, err
-	}
-	return count, nil
-}
-
-func (pg PgInbox) LastAnswers(ctx context.Context) ([]messages.Message, error) {
-	currentUserId := universal.CurrentUserId(ctx)
-	sqlTemplate := `
-with my_tasks as (
-    select
-        *,
-        rank() over (partition by owner_id order by action_created_at desc)
-    from job_message
-        where user_id = @currentUserId
-)
-` + ColumnsSelect() + ` from my_tasks where rank = 1
-`
-	rows, err := pg.db.Pool.Query(ctx, sqlTemplate, pgx.NamedArgs{"currentUserId": currentUserId})
-	if err != nil {
-		return nil, err
-	}
-	return pgx.CollectRows(rows, MapMessage(pg.db, pg.owner))
-}
-
-func (pg PgInbox) CountUnreadAnswers(ctx context.Context) (int, error) {
-	currentUserId := universal.CurrentUserId(ctx)
-	sqlTemplate := `
-with my_tasks as (
-    select
-        *,
-        rank() over (partition by owner_id order by action_created_at desc)
-    from job_message
-        where user_id = @currentUserId
-		and action_read_by_id is null
-)
-select count(*) from my_tasks where rank = 1
 `
 	row := pg.db.Pool.QueryRow(ctx, sqlTemplate, pgx.NamedArgs{"currentUserId": currentUserId})
 	var count int
