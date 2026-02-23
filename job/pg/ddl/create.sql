@@ -81,10 +81,26 @@ CREATE INDEX job_message_filesystem_job_idx ON job_message_filesystem USING btre
 CREATE TABLE task (
   id bigint not null primary key default nextval('job_sequence'),
   job_id bigint not null references job,
+  offer_id bigint not null references job_offer,
   user_id bigint not null references users,
+  summary_value text not null default '',
+  summary_image_url text not null default '',
   action_created_by_id bigint not null references users,
   action_created_at timestamp not null default now(),
+  action_finished_by_id bigint not null references users,
+  action_finished_at timestamp not null default now(),
+  action_pay_by_id bigint not null references users,
+  action_pay_at timestamp not null default now(),
 );
-CREATE INDEX message_job_idx ON job_message USING btree (owner_id);
-CREATE INDEX message_action_created_by_idx ON job_message USING btree (action_created_by_id);
-CREATE INDEX message_user_idx ON job_message USING btree (user_id);
+CREATE INDEX task_job_idx ON task USING btree (job_id);
+CREATE INDEX task_offer_idx ON task USING btree (offer_id);
+CREATE INDEX task_action_created_by_idx ON task USING btree (action_created_by_id);
+CREATE INDEX task_user_idx ON task USING btree (user_id);
+
+CREATE TABLE task_filesystem (
+  task_id bigint not null references task,
+  filesystem_id bigint not null references filestore_filesystem
+);
+CREATE UNIQUE INDEX task_filesystem_uidx ON task_filesystem USING btree (task_id, filesystem_id);
+CREATE INDEX task_filesystem_task_idx ON task_filesystem USING btree (task_id);
+

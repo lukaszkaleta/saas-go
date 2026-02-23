@@ -14,10 +14,10 @@ import (
 
 type PgJobs struct {
 	db  *pg.PgDb
-	Ids []int
+	Ids []int64
 }
 
-func NewPgJobs(db *pg.PgDb, ids ...int) job.Jobs {
+func NewPgJobs(db *pg.PgDb, ids ...int64) job.Jobs {
 	return &PgJobs{db: db, Ids: ids}
 }
 

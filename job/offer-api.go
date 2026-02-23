@@ -174,8 +174,29 @@ func (m *ApproveOfferAcceptor) Accept(ctx context.Context) error {
 	return nil
 }
 
-func NewApproveOfferAcceptor(job Job, inner universal.Acceptor) universal.Acceptor {
-	return &ApproveOfferAcceptor{
+type TaskOnOfferAccept struct {
+	inner Offer
+	job   Job
+}
+
+func (m *TaskOnOfferAccept) Accept(ctx context.Context) error {
+	err := m.inner.Accept(ctx)
+	if err != nil {
+		return err
+	}
+	userId, err := universal.CreatedById[OfferModel](ctx, m.inner)
+	if err != nil {
+		return err
+	}
+
+	err = m.job.MakeTask(ctx, userId, m.inner.ID())
+	if err != nil {
+		return err
+	}
+}
+
+func NewTaskOnOfferAccept(job Job, inner Offer) universal.Acceptor {
+	return &TaskOnOfferAccept{
 		inner: inner,
 		job:   job,
 	}

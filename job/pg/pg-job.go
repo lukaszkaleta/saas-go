@@ -91,6 +91,15 @@ func (pgJob *PgJob) Messages() messages.Messages {
 	)
 }
 
+func (pgJob *PgJob) MakeTask(ctx context.Context, userId int64, offerId int64) error {
+	model := &job.TaskModel{UserId: userId, JobId: pgJob.Id, OfferId: offerId}
+	_, err := NewPgTasks(pgJob.db, userId).Create(ctx, model)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (pgJob *PgJob) tableEntity() pg.TableEntity {
 	return pgJob.db.TableEntity("job", pgJob.Id)
 }
