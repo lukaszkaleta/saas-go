@@ -201,6 +201,6 @@ func (solidJob *SolidJob) Messages() messages.Messages {
 	return solidJob.Job.Messages()
 }
 
-func (solidJob *SolidJob) MakeTask(ctx context.Context, userId int64) error {
-	return solidJob.Job.MakeTask(ctx, userId)
+func (solidJob *SolidJob) MakeTask(ctx context.Context, userId int64, offerId int64) error {
+	return solidJob.Job.MakeTask(ctx, userId, offerId)
 }

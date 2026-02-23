@@ -193,6 +193,8 @@ func (m *TaskOnOfferAccept) Accept(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
 }
 
 func NewTaskOnOfferAccept(job Job, inner Offer) universal.Acceptor {
