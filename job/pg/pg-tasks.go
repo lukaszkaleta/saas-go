@@ -18,6 +18,24 @@ func CurrentUserTasks(db *pg.PgDb, ctx context.Context) job.Tasks {
 	return &PgTasks{db: db, UserId: *universal.CurrentUserId(ctx)}
 }
 
+func (pgTasks *PgTasks) ByJobId(ctx context.Context, jobId int64) (job.Task, error) {
+	query := "select * from task where user_id = @userId and job_id = @jobId"
+	rows, err := pgTasks.db.Pool.Query(ctx, query, pgx.NamedArgs{"userId": pgTasks.UserId, "jobId": jobId})
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectOneRow(rows, MapTask(pgTasks.db))
+}
+
+func (pgTasks *PgTasks) Current(ctx context.Context) ([]job.Task, error) {
+	query := "select * from task where user_id = @userId and action_pay_at is null"
+	rows, err := pgTasks.db.Pool.Query(ctx, query, pgx.NamedArgs{"userId": pgTasks.UserId})
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectRows(rows, MapTask(pgTasks.db))
+}
+
 func (pgTasks *PgTasks) Archived(ctx context.Context) ([]job.Task, error) {
 	query := "select * from task where user_id = @userId and action_finished_at is not null and action_pay_at is not null"
 	rows, err := pgTasks.db.Pool.Query(ctx, query, pgx.NamedArgs{"userId": pgTasks.UserId})

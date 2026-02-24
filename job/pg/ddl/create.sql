@@ -85,10 +85,13 @@ CREATE TABLE task (
   user_id bigint not null references users,
   summary_value text not null default '',
   summary_image_url text not null default '',
+  -- when offer is accepted
   action_created_by_id bigint not null references users,
   action_created_at timestamp not null default now(),
+  -- when user finish working on it
   action_finished_by_id bigint not null references users,
   action_finished_at timestamp not null default now(),
+  -- when payment is done.
   action_pay_by_id bigint not null references users,
   action_pay_at timestamp not null default now(),
 );
