@@ -50,8 +50,8 @@ func (pgTasks *PgTasks) Earnings(ctx context.Context) (map[string]universal.Pric
 		SELECT
 			CASE
 				WHEN t.action_pay_at IS NOT NULL THEN 'completed'
-				WHEN t.action_finished_at IS NOT NULL THEN 'awaiting_payment'
-				WHEN t.action_created_at IS NOT NULL THEN 'in_progress'
+				WHEN t.action_finished_at IS NOT NULL THEN 'awaitingPayment'
+				WHEN t.action_created_at IS NOT NULL THEN 'inProgress'
 				ELSE 'unknown'
 				END AS task_status,
 			SUM(o.price_value) AS total_amount,
