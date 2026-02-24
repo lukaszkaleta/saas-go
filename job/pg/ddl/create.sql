@@ -72,7 +72,7 @@ CREATE INDEX message_action_created_by_idx ON job_message USING btree (action_cr
 CREATE INDEX message_user_idx ON job_message USING btree (user_id);
 
 CREATE TABLE job_message_filesystem (
-  message_id bigint not null references job,
+  job_message_id bigint not null references job_message,
   filesystem_id bigint not null references filestore_filesystem
 );
 CREATE UNIQUE INDEX job_message_filesystem_uidx ON job_message_filesystem USING btree (job_message_id, filesystem_id);
