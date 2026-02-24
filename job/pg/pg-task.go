@@ -51,7 +51,7 @@ func (p *PgTask) Model(ctx context.Context) (*job.TaskModel, error) {
 	return pgx.CollectOneRow(rows, MapTaskModel)
 }
 
-func (p *PgTask) Description() universal.Description {
+func (p *PgTask) Summary() universal.Description {
 	return pgUniversal.NewPgDescription(
 		p.db,
 		p.tableEntity(),

@@ -11,17 +11,17 @@ type Task interface {
 	universal.Idable
 	filestore.FileSystemAware
 	Model(ctx context.Context) (*TaskModel, error)
-	Description() universal.Description
+	Summary() universal.Description
 	Job(ctx context.Context) (Job, error)
 }
 
 type TaskModel struct {
-	Id          int64                       `json:"id"`
-	JobId       int64                       `json:"jobId"`
-	UserId      int64                       `json:"userId"`
-	OfferId     int64                       `json:"offerId"`
-	Description *universal.DescriptionModel `json:"description"`
-	Actions     *universal.ActionsModel     `json:"actions"`
+	Id      int64                       `json:"id"`
+	JobId   int64                       `json:"jobId"`
+	UserId  int64                       `json:"userId"`
+	OfferId int64                       `json:"offerId"`
+	Summary *universal.DescriptionModel `json:"summary"`
+	Actions *universal.ActionsModel     `json:"actions"`
 }
 
 // Solid
@@ -48,14 +48,14 @@ func (s *SolidTask) Model(ctx context.Context) (*TaskModel, error) {
 	return s.model, nil
 }
 
-func (s *SolidTask) Description() universal.Description {
+func (s *SolidTask) Summary() universal.Description {
 	if s.Task != nil {
 		return universal.NewSolidDescription(
-			s.model.Description,
-			s.Task.Description(),
+			s.model.Summary,
+			s.Task.Summary(),
 		)
 	}
-	return universal.NewSolidDescription(s.model.Description, nil)
+	return universal.NewSolidDescription(s.model.Summary, nil)
 }
 
 func (s *SolidTask) FileSystem() filestore.FileSystem {
