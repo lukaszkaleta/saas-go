@@ -18,6 +18,15 @@ type PgTask struct {
 	Id int64
 }
 
+func (p *PgTask) Job(ctx context.Context) (job.Job, error) {
+	query := "select * from job where id = (select job_id from task where id = @id)"
+	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": p.Id})
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectOneRow(rows, MapJob(p.db))
+}
+
 func (p *PgTask) ID() int64 {
 	return p.Id
 }

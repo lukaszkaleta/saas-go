@@ -12,6 +12,7 @@ type Task interface {
 	filestore.FileSystemAware
 	Model(ctx context.Context) (*TaskModel, error)
 	Description() universal.Description
+	Job(ctx context.Context) (Job, error)
 }
 
 type TaskModel struct {
@@ -59,4 +60,8 @@ func (s *SolidTask) Description() universal.Description {
 
 func (s *SolidTask) FileSystem() filestore.FileSystem {
 	return s.Task.FileSystem()
+}
+
+func (s *SolidTask) Job(ctx context.Context) (Job, error) {
+	return s.Task.Job(ctx)
 }
