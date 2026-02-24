@@ -36,13 +36,54 @@ func (pgTasks *PgTasks) Current(ctx context.Context) ([]job.Task, error) {
 	return pgx.CollectRows(rows, MapTask(pgTasks.db))
 }
 
-func (pgTasks *PgTasks) Archived(ctx context.Context) ([]job.Task, error) {
+func (pgTasks *PgTasks) Completed(ctx context.Context) ([]job.Task, error) {
 	query := "select * from task where user_id = @userId and action_finished_at is not null and action_pay_at is not null"
 	rows, err := pgTasks.db.Pool.Query(ctx, query, pgx.NamedArgs{"userId": pgTasks.UserId})
 	if err != nil {
 		return nil, err
 	}
 	return pgx.CollectRows(rows, MapTask(pgTasks.db))
+}
+
+func (pgTasks *PgTasks) Earnings(ctx context.Context) (map[string]universal.Price, error) {
+	query := `
+		SELECT
+			CASE
+				WHEN t.action_pay_at IS NOT NULL THEN 'completed'
+				WHEN t.action_finished_at IS NOT NULL THEN 'awaiting_payment'
+				WHEN t.action_created_at IS NOT NULL THEN 'in_progress'
+				ELSE 'unknown'
+				END AS task_status,
+			SUM(o.price_value) AS total_amount,
+			o.price_currency
+		FROM task t
+				 JOIN job_offer o ON o.id = t.offer_id
+		WHERE t.user_id = @userId
+		GROUP BY
+			task_status,
+			o.price_currency;
+`
+	rows, err := pgTasks.db.Pool.Query(ctx, query, pgx.NamedArgs{"userId": pgTasks.UserId})
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	earnings := make(map[string]universal.Price)
+	for rows.Next() {
+		var status string
+		var amount int
+		var currency string
+		err := rows.Scan(&status, &amount, &currency)
+		if err != nil {
+			return nil, err
+		}
+		earnings[status] = universal.PriceFromModel(&universal.PriceModel{
+			Value:    amount,
+			Currency: currency,
+		})
+	}
+	return earnings, nil
 }
 
 func (pgTasks *PgTasks) WaitingForPayment(ctx context.Context) ([]job.Task, error) {
