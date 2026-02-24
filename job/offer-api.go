@@ -174,8 +174,8 @@ func (m *ApproveOfferAcceptor) Accept(ctx context.Context) error {
 	return nil
 }
 
-func NewApproveOfferAcceptor(job Job, inner universal.Acceptor) ApproveOfferAcceptor {
-	return ApproveOfferAcceptor{job: job, inner: inner}
+func NewApproveOfferAcceptor(job Job, inner universal.Acceptor) universal.Acceptor {
+	return &ApproveOfferAcceptor{job: job, inner: inner}
 }
 
 //
