@@ -129,7 +129,7 @@ func (s *SolidOffer) Actions() universal.Actions {
 //
 
 type MessagesOfferAcceptor struct {
-	inner Offer
+	inner universal.Acceptor
 	job   Job
 }
 
@@ -146,16 +146,16 @@ func (m *MessagesOfferAcceptor) Accept(ctx context.Context) error {
 	return m.inner.Accept(ctx)
 }
 
-//
-// When accepting offer job will be moved to Occupied state
-//
-
-func NewMessagesOfferAcceptor(job Job, inner Offer) universal.Acceptor {
+func NewMessagesOfferAcceptor(job Job, inner universal.Acceptor) universal.Acceptor {
 	return &MessagesOfferAcceptor{
 		inner: inner,
 		job:   job,
 	}
 }
+
+//
+// When accepting offer job will be moved to Occupied state
+//
 
 type ApproveOfferAcceptor struct {
 	inner universal.Acceptor
@@ -174,9 +174,18 @@ func (m *ApproveOfferAcceptor) Accept(ctx context.Context) error {
 	return nil
 }
 
+func NewApproveOfferAcceptor(job Job, inner universal.Acceptor) ApproveOfferAcceptor {
+	return ApproveOfferAcceptor{job: job, inner: inner}
+}
+
+//
+// When accepting offer we will create a task for user who created offer.
+//
+
 type TaskOnOfferAccept struct {
-	inner Offer
-	job   Job
+	inner   universal.Acceptor
+	offerId int64
+	job     Job
 }
 
 func (m *TaskOnOfferAccept) Accept(ctx context.Context) error {
@@ -189,23 +198,24 @@ func (m *TaskOnOfferAccept) Accept(ctx context.Context) error {
 		return err
 	}
 
-	err = m.job.MakeTask(ctx, userId, m.inner.ID())
+	err = m.job.MakeTask(ctx, userId, m.offerId)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return m.inner.Accept(ctx)
 }
 
-func NewTaskOnOfferAccept(job Job, inner Offer) universal.Acceptor {
+func NewTaskOnOfferAccept(job Job, offerId int64, inner universal.Acceptor) universal.Acceptor {
 	return &TaskOnOfferAccept{
-		inner: inner,
-		job:   job,
+		inner:   inner,
+		offerId: offerId,
+		job:     job,
 	}
 }
 
 //
-// When rejecting offer
+// When rejecting offer we need to generate message
 //
 
 type MessagesOfferRejecter struct {
