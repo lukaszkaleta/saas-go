@@ -45,7 +45,7 @@ func (pgTasks *PgTasks) Completed(ctx context.Context) ([]job.Task, error) {
 	return pgx.CollectRows(rows, MapTask(pgTasks.db))
 }
 
-func (pgTasks *PgTasks) Earnings(ctx context.Context) (map[string]universal.Price, error) {
+func (pgTasks *PgTasks) Earnings(ctx context.Context) (map[string]universal.PriceModel, error) {
 	query := `
 		SELECT
 			CASE
@@ -69,7 +69,7 @@ func (pgTasks *PgTasks) Earnings(ctx context.Context) (map[string]universal.Pric
 	}
 	defer rows.Close()
 
-	earnings := make(map[string]universal.Price)
+	earnings := make(map[string]*universal.PriceModel)
 	for rows.Next() {
 		var status string
 		var amount int
@@ -78,10 +78,10 @@ func (pgTasks *PgTasks) Earnings(ctx context.Context) (map[string]universal.Pric
 		if err != nil {
 			return nil, err
 		}
-		earnings[status] = universal.PriceFromModel(&universal.PriceModel{
+		earnings[status] = &universal.PriceModel{
 			Value:    amount,
 			Currency: currency,
-		})
+		}
 	}
 	return earnings, nil
 }

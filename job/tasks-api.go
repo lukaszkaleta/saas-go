@@ -13,5 +13,5 @@ type Tasks interface {
 	InProgress(ctx context.Context) ([]Task, error)
 	Completed(ctx context.Context) ([]Task, error)
 	WaitingForPayment(ctx context.Context) ([]Task, error)
-	Earnings(ctx context.Context) (map[string]universal.Price, error)
+	Earnings(ctx context.Context) (map[string]*universal.PriceModel, error)
 }
