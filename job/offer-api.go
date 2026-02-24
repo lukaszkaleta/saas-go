@@ -193,12 +193,7 @@ func (m *TaskOnOfferAccept) Accept(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	userId, err := universal.CreatedById[OfferModel](ctx, m.inner)
-	if err != nil {
-		return err
-	}
-
-	err = m.job.MakeTask(ctx, userId, m.offerId)
+	err = m.job.MakeTask(ctx, m.offerId)
 	if err != nil {
 		return err
 	}

@@ -91,9 +91,17 @@ func (pgJob *PgJob) Messages() messages.Messages {
 	)
 }
 
-func (pgJob *PgJob) MakeTask(ctx context.Context, userId int64, offerId int64) error {
-	model := &job.TaskModel{UserId: userId, JobId: pgJob.Id, OfferId: offerId}
-	_, err := NewPgTasks(pgJob.db, userId).Create(ctx, model)
+func (pgJob *PgJob) MakeTask(ctx context.Context, offerId int64) error {
+	offer, err := pgJob.Offers().ById(ctx, offerId)
+	if err != nil {
+		return err
+	}
+	userId, err := universal.CreatedById[job.OfferModel](ctx, offer)
+	if err != nil {
+		return err
+	}
+	model := &job.TaskModel{UserId: userId, JobId: pgJob.Id, OfferId: offer.ID()}
+	_, err = NewPgTasks(pgJob.db, userId).Create(ctx, model)
 	if err != nil {
 		return err
 	}

@@ -23,7 +23,7 @@ type Job interface {
 	Actions() universal.Actions
 	Offers() Offers
 	Messages() messages.Messages
-	MakeTask(ctx context.Context, userId int64, offerId int64) error
+	MakeTask(ctx context.Context, offerId int64) error
 }
 
 type JobStatus struct {
@@ -201,6 +201,6 @@ func (solidJob *SolidJob) Messages() messages.Messages {
 	return solidJob.Job.Messages()
 }
 
-func (solidJob *SolidJob) MakeTask(ctx context.Context, userId int64, offerId int64) error {
-	return solidJob.Job.MakeTask(ctx, userId, offerId)
+func (solidJob *SolidJob) MakeTask(ctx context.Context, offerId int64) error {
+	return solidJob.Job.MakeTask(ctx, offerId)
 }
