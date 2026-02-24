@@ -89,11 +89,11 @@ CREATE TABLE task (
   action_created_by_id bigint not null references users,
   action_created_at timestamp not null default now(),
   -- when user finish working on it
-  action_finished_by_id bigint not null references users,
-  action_finished_at timestamp not null default now(),
+  action_finished_by_id bigint references users,
+  action_finished_at timestamp,
   -- when payment is done.
-  action_pay_by_id bigint not null references users,
-  action_pay_at timestamp not null default now()
+  action_pay_by_id bigint references users,
+  action_pay_at timestamp
 );
 CREATE INDEX task_job_idx ON task USING btree (job_id);
 CREATE INDEX task_offer_idx ON task USING btree (offer_id);
