@@ -52,6 +52,10 @@ type UserModel struct {
 	Settings *UserSettingsModel      `json:"settings"`
 }
 
+func (u UserModel) ID() int64 {
+	return u.Id
+}
+
 func NewUserModel() *UserModel {
 	return &UserModel{
 		Id:       0,
