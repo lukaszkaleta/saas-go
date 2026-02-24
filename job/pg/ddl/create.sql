@@ -93,7 +93,7 @@ CREATE TABLE task (
   action_finished_at timestamp not null default now(),
   -- when payment is done.
   action_pay_by_id bigint not null references users,
-  action_pay_at timestamp not null default now(),
+  action_pay_at timestamp not null default now()
 );
 CREATE INDEX task_job_idx ON task USING btree (job_id);
 CREATE INDEX task_offer_idx ON task USING btree (offer_id);
