@@ -15,7 +15,7 @@ type PgTasks struct {
 }
 
 func (pgTasks *PgTasks) ById(ctx context.Context, id int64) (job.Task, error) {
-	query := "select * from task where id = @idId"
+	query := "select * from task where id = @id"
 	rows, err := pgTasks.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": id})
 	if err != nil {
 		return nil, err
