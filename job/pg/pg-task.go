@@ -19,7 +19,7 @@ type PgTask struct {
 }
 
 func (p *PgTask) Job(ctx context.Context) (job.Job, error) {
-	query := "select * from job where id = (select job_id from task where id = @id)"
+	query := JobSelect() + " where id = (select job_id from task where id = @id)"
 	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": p.Id})
 	if err != nil {
 		return nil, err
