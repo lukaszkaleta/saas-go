@@ -45,7 +45,7 @@ func (pgTasks *PgTasks) Completed(ctx context.Context) ([]job.Task, error) {
 	return pgx.CollectRows(rows, MapTask(pgTasks.db))
 }
 
-func (pgTasks *PgTasks) Earnings(ctx context.Context) (map[string]universal.PriceModel, error) {
+func (pgTasks *PgTasks) Earnings(ctx context.Context) (map[string]*universal.PriceModel, error) {
 	query := `
 		SELECT
 			CASE
