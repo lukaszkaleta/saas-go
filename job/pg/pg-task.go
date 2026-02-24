@@ -79,8 +79,8 @@ func MapTask(db *pg.PgDb) pgx.RowToFunc[job.Task] {
 
 func MapTaskModel(row pgx.CollectableRow) (*job.TaskModel, error) {
 	m := &job.TaskModel{
-		Description: universal.EmptyDescriptionModel(),
-		Actions:     universal.EmptyActionsModel(),
+		Summary: universal.EmptyDescriptionModel(),
+		Actions: universal.EmptyActionsModel(),
 	}
 	created := universal.EmptyCreatedActionModel()
 	finished := universal.EmptyActionModel("finished")
@@ -90,8 +90,8 @@ func MapTaskModel(row pgx.CollectableRow) (*job.TaskModel, error) {
 		&m.JobId,
 		&m.OfferId,
 		&m.UserId,
-		&m.Description.Value,
-		&m.Description.ImageUrl,
+		&m.Summary.Value,
+		&m.Summary.ImageUrl,
 		&created.ById,
 		&created.MadeAt,
 		&finished.ById,
