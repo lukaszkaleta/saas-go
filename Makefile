@@ -1,4 +1,4 @@
-VERSION := v0.2.249
+VERSION := v0.2.250
 tags:
 	git add .
 	git commit -m 'incremental version ...'
@@ -38,6 +38,7 @@ reset_build:
 	cd user/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd payment && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd payment/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd payment/integration/stripe && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../../..
 
 
 build:
@@ -46,6 +47,7 @@ build:
 	cd universal/pg && go build && cd ../..
 	cd filestore && go build && cd ..
 	cd filestore/pg && go mod tidy && go build && cd ../..
+	cd filestore/integration/aws-s3 && go mod tidy && go build && cd ../../..
 	cd messages && go build && cd ..
 	cd messages/pg && go mod tidy && go build && cd ../..
 	cd category && go build && cd ..
@@ -56,6 +58,7 @@ build:
 	cd user/pg && go build && cd ../..
 	cd payment && go build && cd ../..
 	cd payment/pg && go build && cd ../..
+	cd payment/integration/stripe && go build && cd ../../..
 
 test:
 	cd universal && go test && cd ..
@@ -73,4 +76,5 @@ test:
 	cd user/pg && go test && cd ../..
 	cd payment && go test && cd ../..
 	cd payment/pg && go test && cd ../..
+	cd payment/integration/stripe && go test && cd ../../..
 

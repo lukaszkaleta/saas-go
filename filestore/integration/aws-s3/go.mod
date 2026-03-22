@@ -7,7 +7,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.7
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.95.1
 	github.com/aws/smithy-go v1.24.0
-	github.com/lukaszkaleta/saas-go/filestore v0.2.249
+	github.com/lukaszkaleta/saas-go/filestore v0.2.250
+	github.com/lukaszkaleta/saas-go/universal v0.2.250
 )
 
 require (
@@ -26,8 +27,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.30.9 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.13 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.6 // indirect
-	github.com/lukaszkaleta/saas-go/universal v0.2.249 // indirect
 )
 
 replace github.com/lukaszkaleta/saas-go/filestore => ../../../filestore
+
 replace github.com/lukaszkaleta/saas-go/universal => ../../../universal

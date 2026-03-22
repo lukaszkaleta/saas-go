@@ -1,0 +1,4 @@
+github.com/lukaszkaleta/saas-go/payment v0.2.250 h1:k9OHXhkwgZMqdOE2Tl3JQDeK6WS+BZVPQ8nwDsE2bmE=
+github.com/lukaszkaleta/saas-go/payment v0.2.250/go.mod h1:jhS+naEODWjlSA5hanj/XxiqKHz2R2qvu3ZjOIa42q0=
+github.com/lukaszkaleta/saas-go/universal v0.2.250 h1:p6colzH8FUb546F3ObYoL9lhxdQne+M/uWCAu4syXMg=
+github.com/lukaszkaleta/saas-go/universal v0.2.250/go.mod h1:q05edpDLcZXSHhuZ3j17Ya6FjsFXr4dqEZ1JZUZGXpk=
