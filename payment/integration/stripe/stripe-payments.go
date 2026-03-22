@@ -12,6 +12,10 @@ type StripePayments struct {
 	payments payment.Payments
 }
 
+func NewStripePayments(payments payment.Payments) *StripePayments {
+	return &StripePayments{payments: payments}
+}
+
 func (s StripePayments) Create(ctx context.Context) (payment.Intent, error) {
 	intent, err := s.createInternalIntent(ctx)
 	if err != nil {
