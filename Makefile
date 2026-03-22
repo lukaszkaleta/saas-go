@@ -1,4 +1,4 @@
-VERSION := v0.2.247
+VERSION := v0.2.248
 tags:
 	git add .
 	git commit -m 'incremental version ...'
@@ -11,6 +11,9 @@ tags:
 	git tag "filestore/integration/aws-s3/${VERSION}"
 	git tag "messages/${VERSION}"
 	git tag "messages/pg/${VERSION}"
+	git tag "payment/${VERSION}"
+	git tag "payment/pg/${VERSION}"
+	git tag "payment/integration/stripe/${VERSION}"
 	git tag "category/${VERSION}"
 	git tag "category/pg/${VERSION}"
 	git tag "job/${VERSION}"
@@ -33,6 +36,9 @@ reset_build:
 	cd job/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd user && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
 	cd user/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd payment && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd payment/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
+
 
 build:
 	cd universal && go build && cd ..
@@ -48,6 +54,8 @@ build:
 	cd job/pg && go build && cd ../..
 	cd user && go build && cd ..
 	cd user/pg && go build && cd ../..
+	cd payment && go build && cd ../..
+	cd payment/pg && go build && cd ../..
 
 test:
 	cd universal && go test && cd ..
@@ -63,4 +71,6 @@ test:
 	cd job/pg && go test && cd ../..
 	cd user && go test && cd ..
 	cd user/pg && go test && cd ../..
+	cd payment && go test && cd ../..
+	cd payment/pg && go test && cd ../..
 

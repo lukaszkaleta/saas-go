@@ -33,6 +33,15 @@ func (pgOffers *PgOffers) Waiting(ctx context.Context) ([]job.Offer, error) {
 	return pgx.CollectRows(rows, MapOffer(pgOffers.db))
 }
 
+func (pgOffers *PgOffers) Accepted(ctx context.Context) (job.Offer, error) {
+	query := "select * from job_offer where job_id = $1 and action_accepted_at is not null"
+	rows, err := pgOffers.db.Pool.Query(ctx, query, pgOffers.JobId)
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectOneRow(rows, MapOffer(pgOffers.db))
+}
+
 func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.Offer, error) {
 	offerId := int64(0)
 	user := user.CurrentUser(ctx)

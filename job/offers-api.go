@@ -21,6 +21,8 @@ type Offers interface {
 
 	ById(ctx context.Context, id int64) (Offer, error)
 	FromUser(ctx context.Context, user universal.Idable) (Offer, error)
+
+	Accepted(ctx context.Context) (Offer, error)
 }
 
 // No offers implementation
@@ -40,6 +42,9 @@ func (n NoOffers) Waiting(ctx context.Context) ([]Offer, error) {
 }
 
 func (n NoOffers) Make(ctx context.Context, model *OfferModel) (Offer, error) {
+	return nil, nil
+}
+func (n NoOffers) Accepted(ctx context.Context) (Offer, error) {
 	return nil, nil
 }
 

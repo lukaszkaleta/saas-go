@@ -1,0 +1,1 @@
+module github.com/lukaszkaleta/saas-go/payment/integration/vipps

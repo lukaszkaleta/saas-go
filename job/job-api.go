@@ -6,6 +6,7 @@ import (
 
 	"github.com/lukaszkaleta/saas-go/filestore"
 	"github.com/lukaszkaleta/saas-go/messages"
+	"github.com/lukaszkaleta/saas-go/payment"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
@@ -24,6 +25,7 @@ type Job interface {
 	Offers() Offers
 	Messages() messages.Messages
 	MakeTask(ctx context.Context, offerId int64) error
+	Payments() payment.Payments
 }
 
 type JobStatus struct {
@@ -199,6 +201,13 @@ func (solidJob *SolidJob) Messages() messages.Messages {
 		return nil
 	}
 	return solidJob.Job.Messages()
+}
+
+func (solidJob *SolidJob) Payments() payment.Payments {
+	if solidJob.Job == nil {
+		return nil
+	}
+	return solidJob.Job.Payments()
 }
 
 func (solidJob *SolidJob) MakeTask(ctx context.Context, offerId int64) error {
