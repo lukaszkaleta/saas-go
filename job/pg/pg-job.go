@@ -12,6 +12,8 @@ import (
 	"github.com/lukaszkaleta/saas-go/job"
 	"github.com/lukaszkaleta/saas-go/messages"
 	pgMessages "github.com/lukaszkaleta/saas-go/messages/pg"
+	"github.com/lukaszkaleta/saas-go/payment"
+	pgPayment "github.com/lukaszkaleta/saas-go/payment/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
 	pgUniversal "github.com/lukaszkaleta/saas-go/universal/pg"
 )
@@ -89,6 +91,10 @@ func (pgJob *PgJob) Messages() messages.Messages {
 		pgJob.db,
 		pg.RelationEntity{TableName: "job_message", ColumnName: "job_id", RelationId: pgJob.Id},
 	)
+}
+
+func (pgJob *PgJob) Payments() payment.Payments {
+	return pgPayment.NewPgPayments(pgJob.db, pgJob)
 }
 
 func (pgJob *PgJob) MakeTask(ctx context.Context, offerId int64) error {

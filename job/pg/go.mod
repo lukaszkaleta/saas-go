@@ -4,18 +4,21 @@ go 1.25.0
 
 require (
 	github.com/jackc/pgx/v5 v5.8.0
-	github.com/lukaszkaleta/saas-go/database/pg v0.2.248
-	github.com/lukaszkaleta/saas-go/filestore v0.2.248
-	github.com/lukaszkaleta/saas-go/filestore/pg v0.2.248
-	github.com/lukaszkaleta/saas-go/job v0.2.63
-	github.com/lukaszkaleta/saas-go/messages v0.2.248
-	github.com/lukaszkaleta/saas-go/messages/pg v0.2.248
-	github.com/lukaszkaleta/saas-go/universal v0.2.248
-	github.com/lukaszkaleta/saas-go/universal/pg v0.2.248
-	github.com/lukaszkaleta/saas-go/user v0.2.248
+	github.com/lukaszkaleta/saas-go/database/pg v0.2.249
+	github.com/lukaszkaleta/saas-go/filestore v0.2.249
+	github.com/lukaszkaleta/saas-go/filestore/pg v0.2.249
+	github.com/lukaszkaleta/saas-go/job v0.2.249
+	github.com/lukaszkaleta/saas-go/messages v0.2.249
+	github.com/lukaszkaleta/saas-go/messages/pg v0.2.249
+	github.com/lukaszkaleta/saas-go/payment v0.2.249
+	github.com/lukaszkaleta/saas-go/payment/pg v0.2.249
+	github.com/lukaszkaleta/saas-go/universal v0.2.249
+	github.com/lukaszkaleta/saas-go/universal/pg v0.2.249
+	github.com/lukaszkaleta/saas-go/user v0.2.249
 )
 
 require (
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
@@ -40,3 +43,5 @@ replace github.com/lukaszkaleta/saas-go/messages => ../../messages
 replace github.com/lukaszkaleta/saas-go/messages/pg => ../../messages/pg
 
 replace github.com/lukaszkaleta/saas-go/filestore/pg => ../../filestore/pg
+
+replace github.com/lukaszkaleta/saas-go/payment => ../../payment
