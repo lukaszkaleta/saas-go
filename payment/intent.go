@@ -9,6 +9,7 @@ import (
 type Intent interface {
 	universal.Idable
 	Model(ctx context.Context) (*IntentModel, error)
+	UpdateStripe(ctx context.Context, id string, secret string) error
 }
 
 type IntentModel struct {
@@ -39,6 +40,17 @@ type SolidIntent struct {
 	Id     int64
 	model  *IntentModel
 	intent Intent
+}
+
+func (m *SolidIntent) UpdateStripe(ctx context.Context, id string, secret string) error {
+	if m.model != nil {
+		m.model.StripePaymentIntentId = id
+		m.model.StripeClientSecret = secret
+	}
+	if m.intent != nil {
+		return m.intent.UpdateStripe(ctx, id, secret)
+	}
+	return nil
 }
 
 func NewSolidIntent(model *IntentModel, intent Intent, id int64) Intent {
