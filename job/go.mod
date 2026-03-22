@@ -2,13 +2,13 @@ module github.com/lukaszkaleta/saas-go/job
 
 go 1.25.0
 
-require github.com/lukaszkaleta/saas-go/universal v0.2.250
+require github.com/lukaszkaleta/saas-go/universal v0.2.251
 
-require github.com/lukaszkaleta/saas-go/filestore v0.2.250
+require github.com/lukaszkaleta/saas-go/filestore v0.2.251
 
-require github.com/lukaszkaleta/saas-go/messages v0.2.250
+require github.com/lukaszkaleta/saas-go/messages v0.2.251
 
-require github.com/lukaszkaleta/saas-go/payment v0.2.250
+require github.com/lukaszkaleta/saas-go/payment v0.2.251
 
 replace github.com/lukaszkaleta/saas-go => ../
 
