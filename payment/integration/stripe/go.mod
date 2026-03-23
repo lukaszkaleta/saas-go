@@ -3,11 +3,11 @@ module github.com/lukaszkaleta/saas-go/payment/integration/stripe
 go 1.25.0
 
 require (
-	github.com/lukaszkaleta/saas-go/payment v0.2.254
+	github.com/lukaszkaleta/saas-go/payment v0.2.255
 	github.com/stripe/stripe-go/v84 v84.4.1
 )
 
-require github.com/lukaszkaleta/saas-go/universal v0.2.254 // indirect
+require github.com/lukaszkaleta/saas-go/universal v0.2.255 // indirect
 
 replace github.com/lukaszkaleta/saas-go/payment => ../../../payment
 
