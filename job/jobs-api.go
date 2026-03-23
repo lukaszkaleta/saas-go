@@ -11,6 +11,7 @@ type Jobs interface {
 	universal.Idables[Job]
 	Add(ctx context.Context, model *JobModel) (Job, error)
 	List(ctx context.Context) ([]Job, error)
+	IdsWithFinishedTasks(ctx context.Context, jobIds []int64) ([]int64, error)
 }
 
 func JobModels(ctx context.Context, jobs []Job) []*JobModel {

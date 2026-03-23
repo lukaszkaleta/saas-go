@@ -128,3 +128,21 @@ func (p PgRelationJobs) List(ctx context.Context) ([]job.Job, error) {
 	}
 	return pgx.CollectRows(rows, MapJob(p.db))
 }
+
+func (pgJobs *PgJobs) Tasks(ctx context.Context, jobIds []int64) ([]job.Task, error) {
+	query := "select * from task where job_id = any(@ids)"
+	rows, err := pgJobs.db.Pool.Query(ctx, query, pgx.NamedArgs{"ids": jobIds})
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectRows(rows, MapTask(pgJobs.db))
+}
+
+func (pgJobs *PgJobs) IdsWithFinishedTasks(ctx context.Context, jobIds []int64) ([]int64, error) {
+	query := "select job_id from task where job_id = any(@ids) and action_finished_at is not null"
+	rows, err := pgJobs.db.Pool.Query(ctx, query, pgx.NamedArgs{"ids": jobIds})
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectRows(rows, pgx.RowTo[int64])
+}
