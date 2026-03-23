@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"time"
 
 	"github.com/lukaszkaleta/saas-go/filestore"
 	"github.com/lukaszkaleta/saas-go/universal"
@@ -10,9 +11,11 @@ import (
 type Task interface {
 	universal.Idable
 	filestore.FileSystemAware
+	universal.ActionsAware
 	Model(ctx context.Context) (*TaskModel, error)
 	Summary() universal.Description
 	Job(ctx context.Context) (Job, error)
+	Finish(ctx context.Context) error
 }
 
 type TaskModel struct {
@@ -22,6 +25,10 @@ type TaskModel struct {
 	OfferId int64                       `json:"offerId"`
 	Summary *universal.DescriptionModel `json:"summary"`
 	Actions *universal.ActionsModel     `json:"actions"`
+}
+
+func (m TaskModel) GetActions() *universal.ActionsModel {
+	return m.Actions
 }
 
 // Solid
@@ -64,4 +71,26 @@ func (s *SolidTask) FileSystem() filestore.FileSystem {
 
 func (s *SolidTask) Job(ctx context.Context) (Job, error) {
 	return s.Task.Job(ctx)
+}
+
+func (s *SolidTask) Finish(ctx context.Context) error {
+	err := s.Task.Finish(ctx)
+	if err != nil {
+		return err
+	}
+	model, err := s.Model(ctx)
+	if err != nil {
+		return err
+	}
+	finishedAction := model.Actions.WithName("finished")
+	if finishedAction != nil {
+		now := time.Now()
+		finishedAction.MadeAt = &now
+		finishedAction.ById = universal.CurrentUserId(ctx)
+	}
+	return nil
+}
+
+func (s *SolidTask) Actions() universal.Actions {
+	return s.Task.Actions()
 }

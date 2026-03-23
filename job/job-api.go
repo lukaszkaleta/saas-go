@@ -15,13 +15,13 @@ import (
 type Job interface {
 	universal.Idable
 	filestore.FileSystemAware
+	universal.ActionsAware
 	Model(ctx context.Context) (*JobModel, error)
 	Address() universal.Address
 	Position() universal.Position
 	Price() universal.Price
 	Description() universal.Description
 	State() universal.State
-	Actions() universal.Actions
 	Offers() Offers
 	Messages() messages.Messages
 	MakeTask(ctx context.Context, offerId int64) error

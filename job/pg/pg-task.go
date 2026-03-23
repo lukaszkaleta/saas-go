@@ -60,6 +60,16 @@ func (p *PgTask) Summary() universal.Description {
 	)
 }
 
+func (p *PgTask) Finish(ctx context.Context) error {
+	query := "update task set action_finished_at = now(), action_finished_by_id = @userId where id = @id"
+	_, err := p.db.Pool.Exec(ctx, query, pgx.NamedArgs{"userId": universal.CurrentUserId(ctx), "id": p.Id})
+	return err
+}
+
+func (p *PgTask) Actions() universal.Actions {
+	return pgUniversal.NewPgActions(p.db, p.tableEntity())
+}
+
 func (p *PgTask) tableEntity() pg.TableEntity {
 	return p.db.TableEntity("task", p.Id)
 }
