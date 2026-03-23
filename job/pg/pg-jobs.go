@@ -17,7 +17,7 @@ type PgJobs struct {
 	Ids []int64
 }
 
-func NewPgJobs(db *pg.PgDb, ids ...int64) job.Jobs {
+func NewPgJobs(db *pg.PgDb, ids []int64) job.Jobs {
 	return &PgJobs{db: db, Ids: ids}
 }
 
