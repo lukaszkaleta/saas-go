@@ -44,7 +44,15 @@ func (pgOffers *PgOffers) Accepted(ctx context.Context) (job.Offer, error) {
 
 func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.Offer, error) {
 	offerId := int64(0)
-	user := user.CurrentUser(ctx)
+	currentUser := user.CurrentUser(ctx)
+
+	waitingOffer, err := pgOffers.waitingOfferFromUser(ctx, currentUser)
+	if err != nil {
+		return nil, err
+	}
+	if waitingOffer != nil {
+		return waitingOffer, nil
+	}
 
 	query := "INSERT INTO job_offer (job_id, price_value, price_currency, description_value, action_created_by_id) VALUES( $1, $2, $3, $4, $5 ) returning id"
 	row := pgOffers.db.Pool.QueryRow(
@@ -54,9 +62,9 @@ func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.
 		model.Price.Value,
 		model.Price.Currency,
 		model.Description.Value,
-		user.Id,
+		currentUser.Id,
 	)
-	err := row.Scan(&offerId)
+	err = row.Scan(&offerId)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +73,7 @@ func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.
 		Id: offerId,
 	}
 	actionsList := make(map[string]*universal.ActionModel)
-	actionsList[job.Created] = universal.NowActionModelForUser(job.Created, &user.Id)
+	actionsList[job.Created] = universal.NowActionModelForUser(job.Created, &currentUser.Id)
 
 	actions := universal.ActionsModel{List: actionsList}
 	offerModel := job.OfferModel{
@@ -87,4 +95,20 @@ func (pgOffers *PgOffers) FromUser(ctx context.Context, user universal.Idable) (
 		return nil, err
 	}
 	return pgx.CollectOneRow(rows, MapOffer(pgOffers.db))
+}
+
+func (pgOffers *PgOffers) waitingOfferFromUser(ctx context.Context, user *user.UserModel) (job.Offer, error) {
+	query := "select * from job_offer where job_id = @jobId and action_accepted_at is null and action_rejected_at is null and action_created_by_id = @userId limit 1"
+	rows, err := pgOffers.db.Pool.Query(ctx, query, pgx.NamedArgs{"jobId": pgOffers.JobId, "userId": user.ID()})
+	if err != nil {
+		return nil, err
+	}
+	offers, err := pgx.CollectRows(rows, MapOffer(pgOffers.db))
+	if err != nil {
+		return nil, err
+	}
+	if len(offers) == 0 {
+		return nil, nil
+	}
+	return offers[0], nil
 }
