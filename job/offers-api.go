@@ -86,3 +86,18 @@ func (m MessagesOfferMaker) Make(ctx context.Context, model *OfferModel) (Offer,
 	}
 	return offer, nil
 }
+
+func ModelsAndOwners(ctx context.Context, list []Offer) ([]*OfferModel, []int64) {
+	models := make([]*OfferModel, len(list))
+	ownerIds := make([]int64, len(list))
+	for i, msg := range list {
+		model, err := msg.Model(ctx)
+		if err != nil {
+			panic(err)
+		}
+		models[i] = model
+		id := model.Actions.CreatedById()
+		ownerIds[i] = *id
+	}
+	return models, ownerIds
+}
