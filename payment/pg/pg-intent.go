@@ -33,7 +33,7 @@ func (p *PgIntent) ID() int64 {
 func (p *PgIntent) MarkSucceeded(ctx context.Context) error {
 	query := `
 		UPDATE pay_payment_intent 
-		SET status = 'SUCCEEDED', action_updated_at = now()
+		SET status = 'SUCCEEDED', action_updated_at = now(), action_updated_by_id = action_created_by_id
 		WHERE reference = @reference
 	`
 	_, err := p.db.Pool.Exec(ctx, query, pgx.NamedArgs{"reference": p.reference})
@@ -43,7 +43,7 @@ func (p *PgIntent) MarkSucceeded(ctx context.Context) error {
 func (p *PgIntent) MarkFailed(ctx context.Context) error {
 	query := `
 		UPDATE pay_payment_intent 
-		SET status = 'FAILED', action_updated_at = now()
+		SET status = 'FAILED', action_updated_at = now(), action_updated_by_id = action_created_by_id
 		WHERE reference = @reference
 	`
 	_, err := p.db.Pool.Exec(ctx, query, pgx.NamedArgs{"reference": p.reference})
