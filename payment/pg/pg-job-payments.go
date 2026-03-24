@@ -42,7 +42,11 @@ func (p PgPayments) Create(ctx context.Context, offerId int64) (payment.Intent, 
 		return nil, ErrInvalidAmount
 	}
 	payeeId := offerModel.Actions.CreatedById()
-	payerId := p.job.Actions().Created().Model().ById
+	model, err := p.job.Model(ctx)
+	if err != nil {
+		return nil, err
+	}
+	payerId := model.Actions.CreatedById()
 
 	const query = `
 		INSERT INTO pay_payment_intent (
