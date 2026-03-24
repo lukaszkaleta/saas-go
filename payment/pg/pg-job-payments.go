@@ -9,6 +9,7 @@ import (
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/job"
 	"github.com/lukaszkaleta/saas-go/payment"
+	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 var ErrInvalidAmount = errors.New("invalid amount")
@@ -42,11 +43,7 @@ func (p PgPayments) Create(ctx context.Context, offerId int64) (payment.Intent, 
 		return nil, ErrInvalidAmount
 	}
 	payeeId := offerModel.Actions.CreatedById()
-	model, err := p.job.Model(ctx)
-	if err != nil {
-		return nil, err
-	}
-	payerId := model.Actions.CreatedById()
+	payerId := universal.CurrentUserId(ctx)
 
 	const query = `
 		INSERT INTO pay_payment_intent (
