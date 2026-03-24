@@ -10,6 +10,8 @@ type Intent interface {
 	universal.Idable
 	Model(ctx context.Context) (*IntentModel, error)
 	UpdateStripe(ctx context.Context, id string, secret string) error
+	MarkSucceeded(ctx context.Context) error
+	MarkFailed(ctx context.Context) error
 }
 
 type IntentModel struct {
@@ -49,6 +51,26 @@ func (m *SolidIntent) UpdateStripe(ctx context.Context, id string, secret string
 	}
 	if m.intent != nil {
 		return m.intent.UpdateStripe(ctx, id, secret)
+	}
+	return nil
+}
+
+func (m *SolidIntent) MarkSucceeded(ctx context.Context) error {
+	if m.model != nil {
+		m.model.Status = "SUCCEEDED"
+	}
+	if m.intent != nil {
+		return m.intent.MarkSucceeded(ctx)
+	}
+	return nil
+}
+
+func (m *SolidIntent) MarkFailed(ctx context.Context) error {
+	if m.model != nil {
+		m.model.Status = "FAILED"
+	}
+	if m.intent != nil {
+		return m.intent.MarkFailed(ctx)
 	}
 	return nil
 }

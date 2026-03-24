@@ -26,8 +26,28 @@ func (p *PgIntent) UpdateStripe(ctx context.Context, id string, secret string) e
 	return err
 }
 
-func (p PgIntent) ID() int64 {
+func (p *PgIntent) ID() int64 {
 	return p.id
+}
+
+func (p *PgIntent) MarkSucceeded(ctx context.Context) error {
+	query := `
+		UPDATE pay_payment_intent 
+		SET status = 'SUCCEEDED', action_updated_at = now()
+		WHERE reference = @reference
+	`
+	_, err := p.db.Pool.Exec(ctx, query, pgx.NamedArgs{"reference": p.reference})
+	return err
+}
+
+func (p *PgIntent) MarkFailed(ctx context.Context) error {
+	query := `
+		UPDATE pay_payment_intent 
+		SET status = 'FAILED', action_updated_at = now()
+		WHERE reference = @reference
+	`
+	_, err := p.db.Pool.Exec(ctx, query, pgx.NamedArgs{"reference": p.reference})
+	return err
 }
 
 func (p *PgIntent) Model(ctx context.Context) (*payment.IntentModel, error) {
