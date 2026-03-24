@@ -21,9 +21,9 @@ func NewPgState(db *pgdb.PgDb, te pgdb.TableEntity, stateColumn string) universa
 
 // Name queries the current state value from the database.
 // If the DB is unavailable or the query fails, it returns an empty string.
-func (p *PgState) Name(ctx context.Context) string {
+func (p *PgState) Name(ctx context.Context) (string, error) {
 	if p == nil || p.Db == nil || p.Db.Pool == nil {
-		return ""
+		return "", nil
 	}
 	col := p.StateColumn
 	if col == "" {
@@ -32,9 +32,9 @@ func (p *PgState) Name(ctx context.Context) string {
 	query := fmt.Sprintf("select %s from %s where id = $1", col, p.TableEntity.Name)
 	var val string
 	if err := p.Db.Pool.QueryRow(ctx, query, p.TableEntity.Id).Scan(&val); err != nil {
-		return ""
+		return "", err
 	}
-	return val
+	return val, nil
 }
 
 // Change updates the state column in the backing table.
@@ -64,12 +64,12 @@ func NewPgTimestampState(db *pgdb.PgDb, te pgdb.TableEntity, stateColumns []stri
 
 // Name queries the current state value from the database.
 // If the DB is unavailable or the query fails, it returns an empty string.
-func (p *PgTimestampState) Name(ctx context.Context) string {
+func (p *PgTimestampState) Name(ctx context.Context) (string, error) {
 	if p == nil || p.Db == nil || p.Db.Pool == nil {
-		return ""
+		return "", nil
 	}
 	if len(p.StateColumns) == 0 {
-		return ""
+		return "", nil
 	}
 
 	columns := []string{}
@@ -88,7 +88,7 @@ func (p *PgTimestampState) Name(ctx context.Context) string {
 	}
 	// Scan the selected timestamp columns
 	if err := row.Scan(timestamps...); err != nil {
-		return ""
+		return "", err
 	}
 	// Iterate over timestamps to find the last non-null value
 	lastIdx := -1
@@ -98,14 +98,14 @@ func (p *PgTimestampState) Name(ctx context.Context) string {
 		}
 	}
 	if lastIdx == -1 {
-		return ""
+		return "", nil
 	}
 	// Derive state name from column name, e.g., "state_active" -> "active"
 	colName := p.StateColumns[lastIdx]
 	if strings.HasPrefix(colName, "status_") {
-		return strings.TrimPrefix(colName, "status_")
+		return strings.TrimPrefix(colName, "status_"), nil
 	}
-	return colName
+	return colName, nil
 }
 
 // Change updates the state column in the backing table.

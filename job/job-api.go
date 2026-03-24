@@ -16,6 +16,7 @@ type Job interface {
 	universal.Idable
 	filestore.FileSystemAware
 	universal.ActionsAware
+	universal.Closable
 	Model(ctx context.Context) (*JobModel, error)
 	Address() universal.Address
 	Position() universal.Position
@@ -212,4 +213,12 @@ func (solidJob *SolidJob) Payments() payment.Payments {
 
 func (solidJob *SolidJob) MakeTask(ctx context.Context, offerId int64) error {
 	return solidJob.Job.MakeTask(ctx, offerId)
+}
+
+func (solidJob *SolidJob) Close(ctx context.Context) error {
+	return solidJob.Job.Close(ctx)
+}
+
+func (solidJob *SolidJob) Closed(ctx context.Context) (bool, error) {
+	return solidJob.Job.Closed(ctx)
 }

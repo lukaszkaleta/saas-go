@@ -6,7 +6,7 @@ import (
 )
 
 type State interface {
-	Name(ctx context.Context) string
+	Name(ctx context.Context) (string, error)
 	Change(ctx context.Context, newState string) error
 }
 type SolidState struct {
@@ -23,8 +23,8 @@ func NewSolidState(current string, available []string, state State) *SolidState 
 	}
 }
 
-func (s *SolidState) Name(ctx context.Context) string {
-	return s.Current
+func (s *SolidState) Name(ctx context.Context) (string, error) {
+	return s.Current, nil
 }
 
 func (s *SolidState) Change(ctx context.Context, newState string) error {

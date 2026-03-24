@@ -28,3 +28,12 @@ type Releasable interface {
 	Releaser
 	Released() (bool, error)
 }
+
+type Closer interface {
+	Close(ctx context.Context) error
+}
+
+type Closable interface {
+	Closer
+	Closed(ctx context.Context) (bool, error)
+}

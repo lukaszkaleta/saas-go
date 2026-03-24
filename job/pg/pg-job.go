@@ -114,6 +114,38 @@ func (pgJob *PgJob) MakeTask(ctx context.Context, offerId int64) error {
 	return nil
 }
 
+func (pgJob *PgJob) Close(ctx context.Context) error {
+	err := pgJob.State().Change(ctx, job.JobClosed)
+	if err != nil {
+		return err
+	}
+	acceptedOffer, err := pgJob.Offers().Accepted(ctx)
+	if err != nil {
+		return err
+	}
+	userId, err := universal.CreatedById[job.OfferModel](ctx, acceptedOffer)
+	if err != nil {
+		return err
+	}
+	task, err := NewPgTasks(pgJob.db, userId).ByJobId(ctx, pgJob.Id)
+	if err != nil {
+		return err
+	}
+	err = task.Finish(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (pgJob *PgJob) Closed(ctx context.Context) (bool, error) {
+	name, err := pgJob.State().Name(ctx)
+	if err != nil {
+		return false, err
+	}
+	return name == "closed", nil
+}
+
 func (pgJob *PgJob) tableEntity() pg.TableEntity {
 	return pgJob.db.TableEntity("job", pgJob.Id)
 }
