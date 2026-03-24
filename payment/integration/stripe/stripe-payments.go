@@ -16,8 +16,8 @@ func NewStripePayments(payments payment.Payments) *StripePayments {
 	return &StripePayments{payments: payments}
 }
 
-func (s StripePayments) Create(ctx context.Context) (payment.Intent, error) {
-	intent, err := s.createInternalIntent(ctx)
+func (s StripePayments) Create(ctx context.Context, id int64) (payment.Intent, error) {
+	intent, err := s.createInternalIntent(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -35,8 +35,8 @@ func (s StripePayments) Search() payment.Search {
 	panic("implement me")
 }
 
-func (s StripePayments) createInternalIntent(ctx context.Context) (payment.Intent, error) {
-	return s.payments.Create(ctx)
+func (s StripePayments) createInternalIntent(ctx context.Context, id int64) (payment.Intent, error) {
+	return s.payments.Create(ctx, id)
 }
 
 func (s StripePayments) createStripePaymentIntent(ctx context.Context, internalIntent payment.Intent) (stripeID string, clientSecret string, err error) {

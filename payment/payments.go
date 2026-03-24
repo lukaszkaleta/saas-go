@@ -3,6 +3,6 @@ package payment
 import "context"
 
 type Payments interface {
-	Create(ctx context.Context) (Intent, error)
+	Create(ctx context.Context, id int64) (Intent, error)
 	Search() Search
 }

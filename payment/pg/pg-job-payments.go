@@ -23,10 +23,10 @@ func NewPgPayments(db *pg.PgDb, job job.Job) payment.Payments {
 	return &PgPayments{db: db, job: job}
 }
 
-func (p PgPayments) Create(ctx context.Context) (payment.Intent, error) {
+func (p PgPayments) Create(ctx context.Context, offerId int64) (payment.Intent, error) {
 
 	ref := uuid.NewString()
-	accepted, err := p.job.Offers().Accepted(ctx)
+	accepted, err := p.job.Offers().ById(ctx, offerId)
 	if err != nil {
 		return nil, err
 	}
