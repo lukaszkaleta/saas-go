@@ -89,11 +89,12 @@ func (s *StripeSessionPayments) createStripeSession(ctx context.Context, interna
 
 		SuccessURL: stripe.String(s.successUrl),
 		CancelURL:  stripe.String(s.failureUrl),
-	}
 
-	//params.AddHeader("Vipps-Preview", "v1")
-	params.Params.Headers = http.Header{
-		"Vipps-Preview": []string{"v1"},
+		Params: stripe.Params{
+			Headers: http.Header{
+				"Vipps-Preview": []string{"v1"},
+			},
+		},
 	}
 
 	stripeSession, err := session.New(params)
