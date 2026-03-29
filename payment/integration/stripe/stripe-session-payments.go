@@ -64,6 +64,8 @@ func (s *StripeSessionPayments) createStripeSession(ctx context.Context, interna
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
 
 		PaymentMethodTypes: stripe.StringSlice([]string{
+			"card",
+			"mobilepay",
 			"vipps", // enable if available
 		}),
 
