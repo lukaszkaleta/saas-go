@@ -18,7 +18,7 @@ type StripeSessionPayments struct {
 	failureUrl string
 }
 
-func NewStripeCheckoutPayments(payments payment.Payments, successUrl string, failureUrl string) payment.Payments {
+func NewStripeSessionPayments(payments payment.Payments, successUrl string, failureUrl string) payment.Payments {
 	return &StripeSessionPayments{payments: payments, successUrl: successUrl, failureUrl: failureUrl}
 }
 
