@@ -47,6 +47,10 @@ func (s *StripeSessionPayments) createInternalSession(ctx context.Context, id in
 
 func (s *StripeSessionPayments) createStripeSession(ctx context.Context, internalIntent payment.Intent) (stripeId string, stripeUrl string, err error) {
 
+	stripe.DefaultLeveledLogger = &stripe.LeveledLogger{
+		Level: stripe.LevelDebug,
+	}
+
 	internalIntentModel, err := internalIntent.Model(ctx)
 	if err != nil {
 		return
