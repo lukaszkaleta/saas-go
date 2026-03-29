@@ -3,6 +3,7 @@ package stripe
 import (
 	"context"
 	"log/slog"
+	"strings"
 
 	"github.com/lukaszkaleta/saas-go/payment"
 	"github.com/stripe/stripe-go/v84"
@@ -51,8 +52,8 @@ func (s StripePayments) createStripePaymentIntent(ctx context.Context, internalI
 	ref := internalIntentModel.Reference
 
 	sAmount := stripe.Int64(amount)
-	sCurrency := stripe.String(currency)
-	slog.Info("Payment to stripe: ", "ammount", sAmount, "currency", sCurrency)
+	sCurrency := stripe.String(strings.ToLower(currency))
+	slog.Info("Payment to stripe: ", "amount", sAmount, "currency", sCurrency)
 	params := &stripe.PaymentIntentParams{
 		Amount:   sAmount,
 		Currency: sCurrency,
