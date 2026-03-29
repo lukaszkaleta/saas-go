@@ -9,9 +9,12 @@ import (
 type Intent interface {
 	universal.Idable
 	Model(ctx context.Context) (*IntentModel, error)
-	UpdateStripe(ctx context.Context, id string, secret string) error
+
 	MarkSucceeded(ctx context.Context) error
 	MarkFailed(ctx context.Context) error
+
+	UpdateStripeIntent(ctx context.Context, id string, secret string) error
+	UpdateStripeSession(ctx context.Context, id string, url string) error
 }
 
 type IntentModel struct {
@@ -19,6 +22,7 @@ type IntentModel struct {
 	Reference             string                  `json:"reference"`
 	StripePaymentIntentId string                  `json:"stripePaymentIntentId,omitzero"`
 	StripeClientSecret    string                  `json:"stripeClientSecret,omitzero"`
+	StripeSessionUrl      string                  `json:"stripeSessionUrl,omitzero"`
 	JobId                 int64                   `json:"jobId"`
 	PayerId               int64                   `json:"payerId"`
 	PayeeId               int64                   `json:"payeeId"`
@@ -44,13 +48,24 @@ type SolidIntent struct {
 	intent Intent
 }
 
-func (m *SolidIntent) UpdateStripe(ctx context.Context, id string, secret string) error {
+func (m *SolidIntent) UpdateStripeIntent(ctx context.Context, id string, secret string) error {
 	if m.model != nil {
 		m.model.StripePaymentIntentId = id
 		m.model.StripeClientSecret = secret
 	}
 	if m.intent != nil {
-		return m.intent.UpdateStripe(ctx, id, secret)
+		return m.intent.UpdateStripeIntent(ctx, id, secret)
+	}
+	return nil
+}
+
+func (m *SolidIntent) UpdateStripeSession(ctx context.Context, id string, url string) error {
+	if m.model != nil {
+		m.model.StripePaymentIntentId = id
+		m.model.StripeSessionUrl = url
+	}
+	if m.intent != nil {
+		return m.intent.UpdateStripeSession(ctx, id, url)
 	}
 	return nil
 }

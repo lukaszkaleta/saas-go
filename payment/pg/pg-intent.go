@@ -16,13 +16,23 @@ type PgIntent struct {
 	reference string
 }
 
-func (p *PgIntent) UpdateStripe(ctx context.Context, id string, secret string) error {
+func (p *PgIntent) UpdateStripeIntent(ctx context.Context, id string, secret string) error {
 	query := `
 		UPDATE pay_payment_intent 
 		SET stripe_payment_intent_id = @id, stripe_client_secret = @secret
 		WHERE reference = @reference
 	`
 	_, err := p.db.Pool.Exec(ctx, query, pgx.NamedArgs{"id": id, "secret": secret, "reference": p.reference})
+	return err
+}
+
+func (p *PgIntent) UpdateStripeSession(ctx context.Context, id string, url string) error {
+	query := `
+		UPDATE pay_payment_intent 
+		SET stripe_payment_intent_id = @id, stripe_session_url = @url
+		WHERE reference = @reference
+	`
+	_, err := p.db.Pool.Exec(ctx, query, pgx.NamedArgs{"id": id, "url": url, "reference": p.reference})
 	return err
 }
 

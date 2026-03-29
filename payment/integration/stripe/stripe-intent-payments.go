@@ -10,15 +10,15 @@ import (
 	"github.com/stripe/stripe-go/v84/paymentintent"
 )
 
-type StripePayments struct {
+type StripeIntentPayments struct {
 	payments payment.Payments
 }
 
-func NewStripePayments(payments payment.Payments) *StripePayments {
-	return &StripePayments{payments: payments}
+func NewStripeIntentPayments(payments payment.Payments) payment.Payments {
+	return &StripeIntentPayments{payments: payments}
 }
 
-func (s StripePayments) Create(ctx context.Context, id int64) (payment.Intent, error) {
+func (s StripeIntentPayments) Create(ctx context.Context, id int64) (payment.Intent, error) {
 	intent, err := s.createInternalIntent(ctx, id)
 	if err != nil {
 		return nil, err
@@ -32,16 +32,15 @@ func (s StripePayments) Create(ctx context.Context, id int64) (payment.Intent, e
 	return s.enrichIntent(ctx, intent, stripeId, clientSecret)
 }
 
-func (s StripePayments) Search() payment.Search {
-	//TODO implement me
-	panic("implement me")
+func (s StripeIntentPayments) Search() payment.Search {
+	return s.payments.Search()
 }
 
-func (s StripePayments) createInternalIntent(ctx context.Context, id int64) (payment.Intent, error) {
+func (s StripeIntentPayments) createInternalIntent(ctx context.Context, id int64) (payment.Intent, error) {
 	return s.payments.Create(ctx, id)
 }
 
-func (s StripePayments) createStripePaymentIntent(ctx context.Context, internalIntent payment.Intent) (stripeID string, clientSecret string, err error) {
+func (s StripeIntentPayments) createStripePaymentIntent(ctx context.Context, internalIntent payment.Intent) (stripeID string, clientSecret string, err error) {
 
 	internalIntentModel, err := internalIntent.Model(ctx)
 	if err != nil {
@@ -72,16 +71,17 @@ func (s StripePayments) createStripePaymentIntent(ctx context.Context, internalI
 		return "", "", err
 	}
 
+	slog.Info("Payment to stripe created: ", "client secret", pi.ClientSecret)
 	return pi.ID, pi.ClientSecret, nil
 }
 
-func (s StripePayments) enrichIntent(
+func (s StripeIntentPayments) enrichIntent(
 	ctx context.Context,
 	intent payment.Intent,
 	paymentId string,
 	clientSecret string,
 ) (payment.Intent, error) {
-	err := intent.UpdateStripe(ctx, paymentId, clientSecret)
+	err := intent.UpdateStripeIntent(ctx, paymentId, clientSecret)
 	if err != nil {
 		return nil, err
 	}
