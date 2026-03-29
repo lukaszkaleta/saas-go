@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"log/slog"
-	"net/http"
 	"strconv"
 	"strings"
 
@@ -92,7 +91,7 @@ func (s *StripeSessionPayments) createStripeSession(ctx context.Context, interna
 	stripeSession, err := session.New(params)
 	if err != nil {
 		log.Println("stripe error:", err)
-		return "", err
+		return "", "", err
 	}
 
 	slog.Info("Session in stripe created: ", "url", stripeSession.URL)
