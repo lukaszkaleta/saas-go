@@ -70,7 +70,7 @@ func (s *StripeSessionPayments) createStripeSession(ctx context.Context, interna
 		PaymentMethodTypes: stripe.StringSlice([]string{
 			"card",
 			"mobilepay",
-			"vipps", // enable if available
+			//"vipps", // enable if available
 		}),
 
 		Metadata: map[string]string{
