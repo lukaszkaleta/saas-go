@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/lukaszkaleta/saas-go/payment"
-	"github.com/stripe/stripe-go/v84"
-	"github.com/stripe/stripe-go/v84/checkout/session"
+	"github.com/stripe/stripe-go/v85"
+	"github.com/stripe/stripe-go/v85/checkout/session"
 )
 
 type StripeSessionPayments struct {
