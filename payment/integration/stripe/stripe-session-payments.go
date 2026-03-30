@@ -83,7 +83,7 @@ func (s *StripeSessionPayments) createStripeSession(ctx context.Context, interna
 		CancelURL:  stripe.String(s.failureUrl),
 		Params: stripe.Params{
 			Headers: http.Header{
-				"vipps-preview": []string{"v1"},
+				"vipps_preview": []string{"v1"},
 			},
 		},
 	}
