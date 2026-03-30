@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/lukaszkaleta/saas-go/payment"
-	"github.com/stripe/stripe-go/v84"
-	"github.com/stripe/stripe-go/v84/checkout/session"
+	"github.com/stripe/stripe-go/v85"
+	"github.com/stripe/stripe-go/v85/checkout/session"
 )
 
 type StripeSessionPayments struct {
@@ -60,6 +60,10 @@ func (s *StripeSessionPayments) createStripeSession(ctx context.Context, interna
 	sCurrency := stripe.String(strings.ToLower(currency))
 	slog.Info("Payment to stripe: ", "amount", sAmount, "currency", sCurrency)
 
+	err = stripe.AddBetaVersion("vipps_preview", "v1")
+	if err != nil {
+		return "", "", err
+	}
 	params := &stripe.CheckoutSessionParams{
 		Mode:               stripe.String(string(stripe.CheckoutSessionModePayment)),
 		PaymentMethodTypes: stripe.StringSlice(s.paymentMethods),
@@ -87,6 +91,7 @@ func (s *StripeSessionPayments) createStripeSession(ctx context.Context, interna
 			},
 		},
 	}
+	params.AddExtra("payment_method_data[type]", "vipps")
 
 	stripeSession, err := session.New(params)
 	if err != nil {
