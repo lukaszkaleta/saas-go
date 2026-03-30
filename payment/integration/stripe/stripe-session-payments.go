@@ -60,10 +60,6 @@ func (s *StripeSessionPayments) createStripeSession(ctx context.Context, interna
 	sCurrency := stripe.String(strings.ToLower(currency))
 	slog.Info("Payment to stripe: ", "amount", sAmount, "currency", sCurrency)
 
-	err = stripe.AddBetaVersion("vipps_preview", "v1")
-	if err != nil {
-		return "", "", err
-	}
 	params := &stripe.CheckoutSessionParams{
 		Mode:               stripe.String(string(stripe.CheckoutSessionModePayment)),
 		PaymentMethodTypes: stripe.StringSlice(s.paymentMethods),
