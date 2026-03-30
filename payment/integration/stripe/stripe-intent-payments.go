@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/lukaszkaleta/saas-go/payment"
-	"github.com/stripe/stripe-go/v85"
-	"github.com/stripe/stripe-go/v85/paymentintent"
+	"github.com/stripe/stripe-go/v84"
+	"github.com/stripe/stripe-go/v84/paymentintent"
 )
 
 type StripeIntentPayments struct {
