@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/lukaszkaleta/saas-go/payment v0.2.284
-	github.com/stripe/stripe-go/v85 v85.0.0
+	github.com/stripe/stripe-go/v85 v84.4.1
 )
 
 require github.com/lukaszkaleta/saas-go/universal v0.2.284 // indirect
