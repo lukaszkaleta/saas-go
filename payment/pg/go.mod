@@ -2,7 +2,7 @@ module github.com/lukaszkaleta/saas-go/payment/pg
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/jackc/pgx/v5 v5.8.0
+	github.com/jackc/pgx/v5 v5.9.1
 	github.com/lukaszkaleta/saas-go/database/pg v0.2.289
 	github.com/lukaszkaleta/saas-go/job v0.2.289
 	github.com/lukaszkaleta/saas-go/payment v0.2.289
@@ -29,8 +29,8 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/lukaszkaleta/saas-go/filestore v0.2.289 // indirect
 	github.com/lukaszkaleta/saas-go/messages v0.2.289 // indirect
-	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/text v0.33.0 // indirect
+	golang.org/x/sync v0.20.0 // indirect
+	golang.org/x/text v0.35.0 // indirect
 )
 
 go 1.25.0
