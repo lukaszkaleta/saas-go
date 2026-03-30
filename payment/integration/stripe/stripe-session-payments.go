@@ -96,7 +96,7 @@ func (s *StripeSessionPayments) createStripeSession(ctx context.Context, interna
 
 		Params: stripe.Params{
 			Headers: http.Header{
-				"Vipps-Preview": []string{"v1"},
+				"vipps-Preview": []string{"v1"},
 			},
 		},
 	}
