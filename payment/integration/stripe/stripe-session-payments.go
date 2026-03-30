@@ -14,13 +14,14 @@ import (
 )
 
 type StripeSessionPayments struct {
-	payments   payment.Payments
-	successUrl string
-	failureUrl string
+	payments       payment.Payments
+	successUrl     string
+	failureUrl     string
+	paymentMethods []string
 }
 
-func NewStripeSessionPayments(payments payment.Payments, successUrl string, failureUrl string) payment.Payments {
-	return &StripeSessionPayments{payments: payments, successUrl: successUrl, failureUrl: failureUrl}
+func NewStripeSessionPayments(payments payment.Payments, successUrl string, failureUrl string, paymentMethods []string) payment.Payments {
+	return &StripeSessionPayments{payments: payments, successUrl: successUrl, failureUrl: failureUrl, paymentMethods: paymentMethods}
 }
 
 func (s *StripeSessionPayments) Create(ctx context.Context, id int64) (payment.Intent, error) {
@@ -46,11 +47,6 @@ func (s *StripeSessionPayments) createInternalSession(ctx context.Context, id in
 }
 
 func (s *StripeSessionPayments) createStripeSession(ctx context.Context, internalIntent payment.Intent) (stripeId string, stripeUrl string, err error) {
-
-	stripe.DefaultLeveledLogger = &stripe.LeveledLogger{
-		Level: stripe.LevelDebug,
-	}
-
 	internalIntentModel, err := internalIntent.Model(ctx)
 	if err != nil {
 		return
@@ -65,19 +61,12 @@ func (s *StripeSessionPayments) createStripeSession(ctx context.Context, interna
 	slog.Info("Payment to stripe: ", "amount", sAmount, "currency", sCurrency)
 
 	params := &stripe.CheckoutSessionParams{
-		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
-
-		PaymentMethodTypes: stripe.StringSlice([]string{
-			"card",
-			"mobilepay",
-			//"vipps", // enable if available
-		}),
-
+		Mode:               stripe.String(string(stripe.CheckoutSessionModePayment)),
+		PaymentMethodTypes: stripe.StringSlice(s.paymentMethods),
 		Metadata: map[string]string{
 			"payment_id": ref,
 			"job_id":     strconv.FormatInt(jobId, 10),
 		},
-
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
 				Quantity: stripe.Int64(1),
@@ -90,13 +79,11 @@ func (s *StripeSessionPayments) createStripeSession(ctx context.Context, interna
 				},
 			},
 		},
-
 		SuccessURL: stripe.String(s.successUrl),
 		CancelURL:  stripe.String(s.failureUrl),
-
 		Params: stripe.Params{
 			Headers: http.Header{
-				"vipps-Preview": []string{"v1"},
+				"vipps-preview": []string{"v1"},
 			},
 		},
 	}
