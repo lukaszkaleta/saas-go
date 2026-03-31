@@ -43,7 +43,7 @@ func (s *PgRatings) ById(ctx context.Context, id int64) (universal.Rating, error
 func (s *PgRatings) Average(ctx context.Context) (int, error) {
 	query := fmt.Sprintf("select avg(score) from %s where %s_id = $1", s.ratingTable(), s.ownerTable.Name)
 	var avg *float64
-	err := s.Db.Pool.QueryRow(context.Background(), query, s.ownerTable.Id).Scan(&avg)
+	err := s.Db.Pool.QueryRow(ctx, query, s.ownerTable.Id).Scan(&avg)
 	if err != nil {
 		return 0, err
 	}

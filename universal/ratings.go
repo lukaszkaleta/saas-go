@@ -22,19 +22,19 @@ type SolidRatings struct {
 	ratings Ratings
 }
 
-func (s SolidRatings) Add(r *RatingModel) (Rating, error) {
-	return nil, nil
+func (s SolidRatings) Add(ctx context.Context, r *RatingModel) (Rating, error) {
+	return s.ratings.Add(ctx, r)
 }
 
-func (s SolidRatings) ById(id int64) (Rating, error) {
-	return s.ratings.ById(id)
+func (s SolidRatings) ById(ctx context.Context, id int64) (Rating, error) {
+	return s.ratings.ById(ctx, id)
 }
 
-func (s SolidRatings) Average() (int, error) {
+func (s SolidRatings) Average(ctx context.Context) (int, error) {
 	if s.ratings == nil {
 		return 0, nil
 	}
-	return s.ratings.Average()
+	return s.ratings.Average(ctx)
 }
 
 // Dummy
@@ -42,14 +42,14 @@ func (s SolidRatings) Average() (int, error) {
 type DummyRatings struct {
 }
 
-func (dummy DummyRatings) Add(r *RatingModel) (Rating, error) {
+func (dummy DummyRatings) Add(ctx context.Context, r *RatingModel) (Rating, error) {
 	return nil, nil
 }
 
-func (dummy DummyRatings) ById(id int64) (Rating, error) {
+func (dummy DummyRatings) ById(ctx context.Context, id int64) (Rating, error) {
 	return DummyRating{}, nil
 }
 
-func (dummy DummyRatings) Average() (int, error) {
+func (dummy DummyRatings) Average(ctx context.Context) (int, error) {
 	return 0, nil
 }
