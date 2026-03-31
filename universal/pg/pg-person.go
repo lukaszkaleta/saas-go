@@ -26,6 +26,15 @@ func (pgPerson *PgPerson) Update(ctx context.Context, model *universal.PersonMod
 	return nil
 }
 
+func (pgPerson *PgPerson) UpdateAverageRating(ctx context.Context, score int) error {
+	query := fmt.Sprintf("update %s set ratings_average = $1 where id = $5", pgPerson.TableEntity.Name)
+	_, err := pgPerson.Db.Pool.Exec(ctx, query, score, pgPerson.TableEntity.Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (pgPerson *PgPerson) Model(_ context.Context) *universal.PersonModel {
 	return &universal.PersonModel{}
 }

@@ -82,6 +82,7 @@ func MapUserModel(row pgx.CollectableRow) (*user.UserModel, error) {
 		&userModel.Settings.Radar.Perimeter,
 		&userModel.Settings.Radar.Position.Lat,
 		&userModel.Settings.Radar.Position.Lon,
+		&userModel.Person.AverageRating,
 	)
 	if err != nil {
 		return nil, err

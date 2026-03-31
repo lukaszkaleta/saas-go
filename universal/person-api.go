@@ -7,8 +7,8 @@ type Person interface {
 	Idable
 	Model(ctx context.Context) *PersonModel
 	Update(ctx context.Context, person *PersonModel) error
+	UpdateAverageRating(ctx context.Context, score int) error
 	Avatar(ctx context.Context) Description
-	Ratings() Ratings
 }
 
 // Builders
@@ -30,6 +30,11 @@ func (model *PersonModel) Change(newModel *PersonModel) {
 	model.LastName = newModel.LastName
 	model.Email = newModel.Email
 	model.Phone = newModel.Phone
+	model.ChangeAverageRating(newModel.AverageRating)
+}
+
+func (model *PersonModel) ChangeAverageRating(score int) {
+	model.AverageRating = score
 }
 
 func (model *PersonModel) ID() int64 {
@@ -42,7 +47,7 @@ func EmptyPersonModel() *PersonModel {
 		LastName:      "",
 		Email:         "",
 		Phone:         "",
-		AverageRating: 10,
+		AverageRating: 5,
 		Avatar:        EmptyDescriptionModel(),
 	}
 }
@@ -72,19 +77,20 @@ func (p SolidPerson) Update(ctx context.Context, newModel *PersonModel) error {
 	return p.person.Update(ctx, newModel)
 }
 
+func (p SolidPerson) UpdateAverageRating(ctx context.Context, score int) error {
+	p.model.ChangeAverageRating(score)
+	if p.person == nil {
+		return nil
+	}
+	return p.person.UpdateAverageRating(ctx, score)
+}
+
 func (p SolidPerson) Model(ctx context.Context) *PersonModel {
 	return p.model
 }
 
 func (p SolidPerson) ID() int64 {
 	return p.model.Id
-}
-
-func (p SolidPerson) Ratings() Ratings {
-	if p.person == nil {
-		return DummyRatings{}
-	}
-	return p.person.Ratings()
 }
 
 func (p SolidPerson) Avatar(ctx context.Context) Description {

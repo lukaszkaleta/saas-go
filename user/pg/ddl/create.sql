@@ -14,7 +14,8 @@ create table if not exists users (
     avatar_description_image_url text not null default '',
     settings_radar_perimeter int not null default 10000,
     settings_radar_position_latitude double precision not null default 0,
-    settings_radar_position_longitude double precision not null default 0
+    settings_radar_position_longitude double precision not null default 0,
+    ratings_average int not null default -1
 );
 
 create table if not exists user_filesystem (
