@@ -17,6 +17,7 @@ type User interface {
 	Address() universal.Address
 	Settings() UserSettings
 	FileSystem(name string) (filestore.FileSystem, error)
+	Rated() universal.Rated
 	Archive() error
 }
 
@@ -122,6 +123,13 @@ func (u SolidUser) Settings() UserSettings {
 
 func (u SolidUser) Account() Account {
 	return u.user.Account()
+}
+
+func (u SolidUser) Rated() universal.Rated {
+	if u.user != nil {
+		return u.user.Rated()
+	}
+	return universal.DummyRatings{}
 }
 
 func (u SolidUser) FileSystem(name string) (filestore.FileSystem, error) {

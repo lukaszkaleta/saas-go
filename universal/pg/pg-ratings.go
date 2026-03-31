@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
@@ -44,6 +45,60 @@ func (s *PgRatings) Average(ctx context.Context) (int, error) {
 	query := fmt.Sprintf("select avg(score) from %s where %s_id = $1", s.ratingTable(), s.ownerTable.Name)
 	var avg *float64
 	err := s.Db.Pool.QueryRow(ctx, query, s.ownerTable.Id).Scan(&avg)
+	if err != nil {
+		return 0, err
+	}
+	if avg == nil {
+		return 0, nil
+	}
+	return int(*avg), nil
+}
+
+func (s *PgRatings) AllModels(ctx context.Context) ([]*universal.RatingModel, error) {
+	// Map subjectId to the owner table's foreign key column, e.g., job_id
+	subjectColumn := s.ownerTable.Name + "_id"
+	query := fmt.Sprintf("select id, reviewee_id, score, review_text, review_image_url, action_created_at, action_created_by_id, %s from %s where %s = $1", subjectColumn, s.ratingTable(), subjectColumn)
+
+	rows, err := s.Db.Pool.Query(ctx, query, s.ownerTable.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return pgx.CollectRows(rows, MapRatingModel)
+}
+
+type PgRated struct {
+	db            *pg.PgDb
+	revieweeId    int64
+	tableName     string
+	subjectColumn string
+}
+
+func NewPgRated(db *pg.PgDb, revieweeId int64, tableName string) universal.Rated {
+	subjectColumn := tableName[:len(tableName)-len("_rating")] + "_id"
+	return &PgRated{
+		db:            db,
+		revieweeId:    revieweeId,
+		tableName:     tableName,
+		subjectColumn: subjectColumn,
+	}
+}
+
+func (s *PgRated) AllModels(ctx context.Context) ([]*universal.RatingModel, error) {
+	query := fmt.Sprintf("select id, reviewee_id, score, review_text, review_image_url, action_created_at, action_created_by_id, %s from %s where reviewee_id = $1", s.subjectColumn, s.tableName)
+
+	rows, err := s.db.Pool.Query(ctx, query, s.revieweeId)
+	if err != nil {
+		return nil, err
+	}
+
+	return pgx.CollectRows(rows, MapRatingModel)
+}
+
+func (s *PgRated) Average(ctx context.Context) (int, error) {
+	query := fmt.Sprintf("select avg(score) from %s where reviewee_id = $1", s.tableName)
+	var avg *float64
+	err := s.db.Pool.QueryRow(ctx, query, s.revieweeId).Scan(&avg)
 	if err != nil {
 		return 0, err
 	}

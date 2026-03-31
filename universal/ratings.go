@@ -4,10 +4,15 @@ import "context"
 
 // API
 
+type Rated interface {
+	Average(ctx context.Context) (int, error)
+	AllModels(ctx context.Context) ([]*RatingModel, error)
+}
+
 type Ratings interface {
 	ById(ctx context.Context, id int64) (Rating, error)
 	Add(ctx context.Context, model *RatingModel) (Rating, error)
-	Average(ctx context.Context) (int, error)
+	Rated
 }
 
 // Builders
@@ -37,6 +42,13 @@ func (s SolidRatings) Average(ctx context.Context) (int, error) {
 	return s.ratings.Average(ctx)
 }
 
+func (s SolidRatings) AllModels(ctx context.Context) ([]*RatingModel, error) {
+	if s.ratings == nil {
+		return nil, nil
+	}
+	return s.ratings.AllModels(ctx)
+}
+
 // Dummy
 
 type DummyRatings struct {
@@ -52,4 +64,8 @@ func (dummy DummyRatings) ById(ctx context.Context, id int64) (Rating, error) {
 
 func (dummy DummyRatings) Average(ctx context.Context) (int, error) {
 	return 0, nil
+}
+
+func (dummy DummyRatings) AllModels(ctx context.Context) ([]*RatingModel, error) {
+	return nil, nil
 }

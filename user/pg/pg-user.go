@@ -41,6 +41,10 @@ func (pgUser PgUser) Account() user.Account {
 	return NewPgAccount(pgUser.Db, pgUser.Id)
 }
 
+func (pgUser PgUser) Rated() universal.Rated {
+	return unversalPg.NewPgRated(pgUser.Db, pgUser.Id, "job_rating")
+}
+
 func (pgUser PgUser) Archive() error {
 	return nil
 }
