@@ -18,7 +18,7 @@ func NewPgUserSearch(db *pg.PgDb) user.UserSearch {
 }
 
 func (s *PgUserSearch) ByPhone(ctx context.Context, phone string) (user.User, error) {
-	query := "select * from users where person_phone = @phone"
+	query := UserSelect() + " where person_phone = @phone"
 	rows, err := s.Db.Pool.Query(ctx, query, pgx.NamedArgs{"phone": phone})
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func (s *PgUserSearch) ByPhone(ctx context.Context, phone string) (user.User, er
 }
 
 func (s *PgUserSearch) ModelsByIds(ctx context.Context, ids []*int64) ([]*user.UserModel, error) {
-	query := "select * from users where id = any(@ids)"
+	query := UserSelect() + " where id = any(@ids)"
 	rows, err := s.Db.Pool.Query(ctx, query, pgx.NamedArgs{"ids": ids})
 	if err != nil {
 		return nil, err

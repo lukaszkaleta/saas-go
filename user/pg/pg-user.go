@@ -2,6 +2,7 @@ package pguser
 
 import (
 	"context"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -89,4 +90,38 @@ func MapUserModel(row pgx.CollectableRow) (*user.UserModel, error) {
 	}
 	userModel.Person.Id = userModel.Id
 	return userModel, nil
+}
+
+func UserColumns() []string {
+	return []string{
+		"id",
+		"account_token",
+		"person_first_name",
+		"person_last_name",
+		"person_email",
+		"person_phone",
+		"address_line_1",
+		"address_line_2",
+		"address_city",
+		"address_postal_code",
+		"address_district",
+		"avatar_description_value",
+		"avatar_description_image_url",
+		"settings_radar_perimeter",
+		"settings_radar_position_latitude",
+		"settings_radar_position_longitude",
+		"ratings_average",
+	}
+}
+
+func UserColumnString() string {
+	return strings.Join(UserColumns(), ",")
+}
+
+func UserColumnsSelect() string {
+	return "select " + UserColumnString()
+}
+
+func UserSelect() string {
+	return UserColumnsSelect() + " from users "
 }

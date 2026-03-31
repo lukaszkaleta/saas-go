@@ -48,7 +48,7 @@ func (pgUsers *PgUsers) Add(ctx context.Context, model *universal.PersonModel) (
 }
 
 func (pgUsers *PgUsers) ById(ctx context.Context, id int64) (user.User, error) {
-	sql := "select * from users where id = @id"
+	sql := UserSelect() + " where id = @id"
 	rows, err := pgUsers.Db.Pool.Query(ctx, sql, pgx.NamedArgs{"id": id})
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (pgUsers *PgUsers) ById(ctx context.Context, id int64) (user.User, error) {
 }
 
 func (pgUsers *PgUsers) ListAll(ctx context.Context) ([]user.User, error) {
-	query := "select * from users"
+	query := UserSelect()
 	rows, err := pgUsers.Db.Pool.Query(ctx, query)
 	if err != nil {
 		return nil, err
