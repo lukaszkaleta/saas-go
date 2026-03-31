@@ -67,12 +67,12 @@ type SolidActions struct {
 	model   *ActionsModel
 }
 
-func (s *SolidActions) List() map[string]*Action {
-	return s.actions.List()
+func (s *SolidActions) Model(ctx context.Context) (*ActionsModel, error) {
+	return s.model, nil
 }
 
-func (s *SolidActions) Model() *ActionsModel {
-	return s.model
+func (s *SolidActions) List() map[string]*Action {
+	return s.actions.List()
 }
 
 func (s *SolidActions) WithName(name string) Action {

@@ -1,27 +1,40 @@
 package universal
 
+import "context"
+
 // API
 type Rating interface {
-	Model() *RatingModel
-	Update(rating *RatingModel) error
+	Idable
+	ActionsAware
+	RevieweeId(ctx context.Context) int64
+	SubjectId(ctx context.Context) int64
+	Model(ctx context.Context) *RatingModel
+	Update(ctx context.Context, rating *RatingModel) error
 }
 
 // Model
 
 type RatingModel struct {
-	Description *DescriptionModel `json:"description"`
-	Score       int               `json:"score"`
+	Id         int64             `json:"id"`
+	RevieweeId int64             `json:"revieweeId"`
+	SubjectId  int64             `json:"subjectId"`
+	Review     *DescriptionModel `json:"review"`
+	Score      int               `json:"score"`
+	Actions    *ActionsModel     `json:"actions"`
 }
 
 func (m *RatingModel) Change(newModel *RatingModel) {
 	m.Score = newModel.Score
-	m.Description = newModel.Description
+	m.Review = newModel.Review
 }
 
 func EmptyRatingModel() *RatingModel {
 	return &RatingModel{
-		Description: EmptyDescriptionModel(),
-		Score:       0,
+		Review:     EmptyDescriptionModel(),
+		Score:      0,
+		RevieweeId: 0,
+		SubjectId:  0,
+		Actions:    EmptyActionsModel(),
 	}
 }
 
@@ -33,6 +46,22 @@ type SolidRating struct {
 	rating Rating
 }
 
+func (s *SolidRating) ID() int64 {
+	return s.Id
+}
+
+func (s *SolidRating) Actions() Actions {
+	return s.rating.Actions()
+}
+
+func (s *SolidRating) RevieweeId(ctx context.Context) int64 {
+	return s.model.RevieweeId
+}
+
+func (s *SolidRating) SubjectId(ctx context.Context) int64 {
+	return s.model.SubjectId
+}
+
 func NewSolidRating(ratingModel *RatingModel, rating Rating, id int64) Rating {
 	return &SolidRating{
 		model:  ratingModel,
@@ -41,12 +70,15 @@ func NewSolidRating(ratingModel *RatingModel, rating Rating, id int64) Rating {
 	}
 }
 
-func (s *SolidRating) Model() *RatingModel {
+func (s *SolidRating) Model(ctx context.Context) *RatingModel {
 	return s.model
 }
 
-func (s *SolidRating) Update(newModel *RatingModel) error {
+func (s *SolidRating) Update(ctx context.Context, newModel *RatingModel) error {
 	s.model.Change(newModel)
+	if s.rating != nil {
+		return s.rating.Update(ctx, newModel)
+	}
 	return nil
 }
 
@@ -55,10 +87,26 @@ func (s *SolidRating) Update(newModel *RatingModel) error {
 type DummyRating struct {
 }
 
-func (d DummyRating) Model() *RatingModel {
+func (d DummyRating) ID() int64 {
+	return 0
+}
+
+func (d DummyRating) Actions() Actions {
+	return &SolidActions{}
+}
+
+func (d DummyRating) RevieweeId(ctx context.Context) int64 {
+	return 0
+}
+
+func (d DummyRating) SubjectId(ctx context.Context) int64 {
+	return 0
+}
+
+func (d DummyRating) Model(ctx context.Context) *RatingModel {
 	return EmptyRatingModel()
 }
 
-func (d DummyRating) Update(rating *RatingModel) error {
+func (d DummyRating) Update(ctx context.Context, rating *RatingModel) error {
 	return nil
 }

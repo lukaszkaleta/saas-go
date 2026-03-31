@@ -27,6 +27,7 @@ type Job interface {
 	Messages() messages.Messages
 	MakeTask(ctx context.Context, offerId int64) error
 	Payments() payment.Payments
+	Ratings() universal.Ratings
 }
 
 type JobStatus struct {
@@ -209,6 +210,13 @@ func (solidJob *SolidJob) Payments() payment.Payments {
 		return nil
 	}
 	return solidJob.Job.Payments()
+}
+
+func (solidJob *SolidJob) Ratings() universal.Ratings {
+	if solidJob.Job == nil {
+		return universal.DummyRatings{}
+	}
+	return universal.NewSolidRatings(solidJob.Job.Ratings())
 }
 
 func (solidJob *SolidJob) MakeTask(ctx context.Context, offerId int64) error {

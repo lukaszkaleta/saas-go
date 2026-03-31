@@ -1,11 +1,13 @@
 package universal
 
+import "context"
+
 // API
 
 type Ratings interface {
-	ById(id int64) (Rating, error)
-	Add(model *RatingModel) (Rating, error)
-	Average() (int, error)
+	ById(ctx context.Context, id int64) (Rating, error)
+	Add(ctx context.Context, model *RatingModel) (Rating, error)
+	Average(ctx context.Context) (int, error)
 }
 
 // Builders

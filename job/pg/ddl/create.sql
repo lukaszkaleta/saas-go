@@ -107,3 +107,17 @@ CREATE TABLE task_filesystem (
 CREATE UNIQUE INDEX task_filesystem_uidx ON task_filesystem USING btree (task_id, filesystem_id);
 CREATE INDEX task_filesystem_task_idx ON task_filesystem USING btree (task_id);
 
+CREATE TABLE job_rating (
+    id BIGSERIAL PRIMARY KEY,
+    job_id BIGINT NOT NULL REFERENCES job(id) ON DELETE CASCADE,
+    reviewee_id BIGINT NOT NULL REFERENCES users(id),
+    score INT NOT NULL CHECK (score BETWEEN 1 AND 5),
+    review_text TEXT,
+    review_image_url TEXT,
+    action_created_at TIMESTAMP DEFAULT NOW(),
+    action_created_by_id BIGINT NOT NULL REFERENCES users(id),
+    -- prevent duplicate ratings per job per reviewer
+    UNIQUE (job_id, action_created_by_id),
+    -- prevent self-rating
+    CHECK (action_created_by_id <> reviewee_id)
+);

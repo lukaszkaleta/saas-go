@@ -97,6 +97,10 @@ func (pgJob *PgJob) Payments() payment.Payments {
 	return pgPayment.NewPgPayments(pgJob.db, pgJob)
 }
 
+func (pgJob *PgJob) Ratings() universal.Ratings {
+	return pgUniversal.NewPgRatings(pgJob.db, pgJob.tableEntity())
+}
+
 func (pgJob *PgJob) MakeTask(ctx context.Context, offerId int64) error {
 	offer, err := pgJob.Offers().ById(ctx, offerId)
 	if err != nil {
