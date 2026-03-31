@@ -23,16 +23,22 @@ func (pgRating *PgRating) Actions() universal.Actions {
 }
 
 func (pgRating *PgRating) RevieweeId(ctx context.Context) int64 {
-	model := pgRating.Model(ctx)
+	model, err := pgRating.Model(ctx)
+	if err != nil {
+		return 0
+	}
 	return model.RevieweeId
 }
 
 func (pgRating *PgRating) SubjectId(ctx context.Context) int64 {
-	model := pgRating.Model(ctx)
+	model, err := pgRating.Model(ctx)
+	if err != nil {
+		return 0
+	}
 	return model.SubjectId
 }
 
-func (pgRating *PgRating) Model(ctx context.Context) *universal.RatingModel {
+func (pgRating *PgRating) Model(ctx context.Context) (*universal.RatingModel, error) {
 	query := fmt.Sprintf("select reviewee_id, score, review_text, review_image_url from %s where id = $1", pgRating.tableEntity.Name)
 	var model universal.RatingModel
 	model.Review = &universal.DescriptionModel{}
@@ -44,7 +50,7 @@ func (pgRating *PgRating) Model(ctx context.Context) *universal.RatingModel {
 		&model.Review.ImageUrl,
 	)
 	if err != nil {
-		return universal.EmptyRatingModel()
+		return universal.EmptyRatingModel(), nil
 	}
 	model.Id = pgRating.tableEntity.Id
 
@@ -67,7 +73,7 @@ func (pgRating *PgRating) Model(ctx context.Context) *universal.RatingModel {
 	actions, _ := pgRating.Actions().Model(ctx)
 	model.Actions = actions
 
-	return &model
+	return &model, nil
 }
 
 func (pgRating *PgRating) Update(ctx context.Context, rating *universal.RatingModel) error {

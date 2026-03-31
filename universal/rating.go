@@ -8,7 +8,7 @@ type Rating interface {
 	ActionsAware
 	RevieweeId(ctx context.Context) int64
 	SubjectId(ctx context.Context) int64
-	Model(ctx context.Context) *RatingModel
+	Model(ctx context.Context) (*RatingModel, error)
 	Update(ctx context.Context, rating *RatingModel) error
 }
 
@@ -70,8 +70,8 @@ func NewSolidRating(ratingModel *RatingModel, rating Rating, id int64) Rating {
 	}
 }
 
-func (s *SolidRating) Model(ctx context.Context) *RatingModel {
-	return s.model
+func (s *SolidRating) Model(ctx context.Context) (*RatingModel, error) {
+	return s.model, nil
 }
 
 func (s *SolidRating) Update(ctx context.Context, newModel *RatingModel) error {
@@ -103,8 +103,8 @@ func (d DummyRating) SubjectId(ctx context.Context) int64 {
 	return 0
 }
 
-func (d DummyRating) Model(ctx context.Context) *RatingModel {
-	return EmptyRatingModel()
+func (d DummyRating) Model(ctx context.Context) (*RatingModel, error) {
+	return EmptyRatingModel(), nil
 }
 
 func (d DummyRating) Update(ctx context.Context, rating *RatingModel) error {
