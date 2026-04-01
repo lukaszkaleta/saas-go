@@ -5,7 +5,7 @@ CREATE TABLE pay_payment_intent (
   reference TEXT NOT NULL UNIQUE,
   stripe_payment_intent_id TEXT UNIQUE,
   stripe_client_secret TEXT,
-  stripe_session_id TEXT,
+  stripe_session_url TEXT,
   job_id BIGINT NOT NULL,
   payer_id BIGINT NOT NULL,
   payee_id BIGINT NOT NULL CHECK (
