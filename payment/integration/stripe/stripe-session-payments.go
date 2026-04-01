@@ -87,7 +87,7 @@ func (s *StripeSessionPayments) createStripeSession(ctx context.Context, interna
 			},
 		},
 	}
-	params.AddExtra("payment_method_data[type]", "vipps")
+	//params.AddExtra("payment_method_data[type]", "vipps")
 
 	stripeSession, err := session.New(params)
 	if err != nil {
