@@ -121,3 +121,23 @@ CREATE TABLE job_rating (
     -- prevent self-rating
     CHECK (action_created_by_id <> reviewee_id)
 );
+
+CREATE TABLE if not exists task_documentation_entry
+(
+    id bigserial primary key,
+    task_id bigint not null references task(id) on delete cascade,
+    summary_value text not null default '',
+    summary_image_url text not null default '',
+    action_created_by_id bigint not null references users,
+    action_created_at timestamp not null default now()
+);
+CREATE INDEX if not exists task_doc_entry_task_idx ON task_documentation_entry using btree (task_id);
+CREATE INDEX if not exists task_doc_entry_created_idx ON task_documentation_entry using btree (action_created_at desc);
+
+CREATE TABLE if not exists task_documentation_entry_filesystem
+(
+    entry_id bigint not null references task_documentation_entry(id) on delete cascade,
+    filesystem_id bigint not null references filestore_filesystem(id) on delete cascade
+);
+CREATE UNIQUE INDEX if not exists task_doc_entry_fs_uidx ON task_documentation_entry_filesystem using btree (entry_id, filesystem_id);
+CREATE INDEX if not exists task_doc_entry_fs_entry_idx ON task_documentation_entry_filesystem using btree (entry_id);

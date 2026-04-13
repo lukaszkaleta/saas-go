@@ -1,3 +1,5 @@
+drop table if exists task_documentation_entry_filesystem;
+drop table if exists task_documentation_entry;
 drop table if exists task_filesystem;
 drop table if exists task;
 drop table if exists job_filesystem;
