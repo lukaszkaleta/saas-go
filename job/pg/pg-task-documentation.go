@@ -60,7 +60,7 @@ func (pg *PgTaskDocumentation) EntriesModels(ctx context.Context) ([]job.TaskDoc
 func (pg *PgTaskDocumentation) assertAccess(ctx context.Context) (int64, error) {
 	currentUser := universal.CurrentUserId(ctx)
 	if currentUser == nil || *currentUser <= 0 {
-		return 0, ErrTaskDocumentationMissingUser
+		return 0, job.ErrTaskDocumentationMissingUser
 	}
 	var taskUserId int64
 	var jobId int64
@@ -74,18 +74,12 @@ func (pg *PgTaskDocumentation) assertAccess(ctx context.Context) (int64, error) 
 	err := pg.db.Pool.QueryRow(ctx, query, pgx.NamedArgs{"taskId": pg.taskId}).Scan(&taskUserId, &jobId, &jobOwnerId)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return 0, ErrTaskDocumentationTaskNotFound
+			return 0, job.ErrTaskDocumentationTaskNotFound
 		}
 		return 0, err
 	}
 	if *currentUser != taskUserId && *currentUser != jobOwnerId {
-		return 0, ErrTaskDocumentationAccessDenied
+		return 0, job.ErrTaskDocumentationAccessDenied
 	}
 	return jobId, nil
 }
-
-var (
-	ErrTaskDocumentationTaskNotFound = errors.New("task not found")
-	ErrTaskDocumentationAccessDenied = errors.New("access denied")
-	ErrTaskDocumentationMissingUser  = errors.New("missing current user")
-)

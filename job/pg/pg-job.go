@@ -3,6 +3,7 @@ package pgjob
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
@@ -156,6 +157,25 @@ func (pgJob *PgJob) tableEntity() pg.TableEntity {
 
 func (pgJob *PgJob) localizationRelationEntity() pg.TableEntity {
 	return pgJob.db.TableEntity("job", pgJob.Id)
+}
+
+func (pgJob *PgJob) AssertJobOwnerAccess(ctx context.Context) error {
+	currentUser := universal.CurrentUserId(ctx)
+	if currentUser == nil || *currentUser <= 0 {
+		return job.ErrTaskDocumentationMissingUser
+	}
+	ownerId := int64(0)
+	query := "select action_created_by_id from job where id = @jobId"
+	if err := pgJob.db.Pool.QueryRow(ctx, query, pgx.NamedArgs{"jobId": pgJob.Id}).Scan(&ownerId); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return job.ErrTaskDocumentationJobNotFound
+		}
+		return err
+	}
+	if ownerId != *currentUser {
+		return job.ErrTaskDocumentationAccessDenied
+	}
+	return nil
 }
 
 // Mapping Job

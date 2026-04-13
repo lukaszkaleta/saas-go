@@ -28,6 +28,7 @@ type Job interface {
 	MakeTask(ctx context.Context, offerId int64) error
 	Payments() payment.Payments
 	Ratings() universal.Ratings
+	AssertJobOwnerAccess(ctx context.Context) error
 }
 
 type JobStatus struct {
@@ -114,6 +115,22 @@ type SolidJob struct {
 	Id    int64
 	model *JobModel
 	Job   Job
+}
+
+func (solidJob *SolidJob) AssertJobOwnerAccess(ctx context.Context) error {
+	currentUser := universal.CurrentUserId(ctx)
+	if currentUser == nil || *currentUser <= 0 {
+		return ErrTaskDocumentationMissingUser
+	}
+	model, err := solidJob.Model(ctx)
+	if err != nil {
+		return err
+	}
+	ownerId := model.Actions.CreatedById()
+	if ownerId == nil || currentUser == nil || *ownerId != *currentUser {
+		return ErrTaskDocumentationAccessDenied
+	}
+	return nil
 }
 
 func NewSolidJob(model *JobModel, Job Job) Job {
