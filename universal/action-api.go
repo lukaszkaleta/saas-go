@@ -1,7 +1,6 @@
 package universal
 
 import (
-	"context"
 	"time"
 )
 
@@ -52,8 +51,4 @@ type SolidAction struct {
 
 func (action *SolidAction) Model() *ActionModel {
 	return action.model
-}
-
-func CurrentUserId(ctx context.Context) *int64 {
-	return ctx.Value("current-user-id").(*int64)
 }

@@ -7,6 +7,7 @@ type Categories interface {
 	AllLocalized(ctx context.Context, country string, language string) ([]*CategoryModel, error)
 	ById(ctx context.Context, id int64) (Category, error)
 	ByIds(ctx context.Context, id []int64) ([]*CategoryModel, error)
+	ByIdsLocalized(ctx context.Context, ids []int64) ([]*CategoryModel, error)
 }
 
 func Models(ctx context.Context, Categories []Category) []*CategoryModel {

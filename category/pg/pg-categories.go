@@ -13,7 +13,7 @@ type PgCategories struct {
 	Db *pg.PgDb
 }
 
-func NewPgCategories(db *pg.PgDb) *PgCategories {
+func NewPgCategories(db *pg.PgDb) category.Categories {
 	return &PgCategories{Db: db}
 }
 
@@ -61,17 +61,18 @@ func (pgCategories *PgCategories) AddWithParent(ctx context.Context, parent cate
 }
 
 func (pgCategories *PgCategories) AllLocalized(ctx context.Context, country string, language string) ([]*category.CategoryModel, error) {
-	query := "select category_id, (select c.parent_category_id from category c where category_id = id) as parent_category_id, translation_value, translation_slug from category_localization where country = $1 and language = $2"
-	rows, err := pgCategories.Db.Pool.Query(ctx, query, country, language)
+	query := "select category_id, (select c.parent_category_id from category c where category_id = id) as parent_category_id, translation_value, translation_slug from category_localization where language = $1"
+	rows, err := pgCategories.Db.Pool.Query(ctx, query, language)
 	if err != nil {
 		return nil, err
 	}
 	return pgx.CollectRows(rows, MapCategoryModels())
 }
 
-func (pgCategories *PgCategories) ByIdsLocalized(ctx context.Context, ids []int64, country string, language string) ([]*category.CategoryModel, error) {
-	query := "select category_id, (select c.parent_category_id from category c where category_id = id) as parent_category_id, translation_value, translation_slug from category_localization where category_id = any($1) and country = $2 and language = $3"
-	rows, err := pgCategories.Db.Pool.Query(ctx, query, ids, country, language)
+func (pgCategories *PgCategories) ByIdsLocalized(ctx context.Context, ids []int64) ([]*category.CategoryModel, error) {
+	query := "select category_id, (select c.parent_category_id from category c where category_id = id) as parent_category_id, translation_value, translation_slug from category_localization where category_id = any(@ids) and language = @lang"
+	language := universal.GetLanguage(ctx)
+	rows, err := pgCategories.Db.Pool.Query(ctx, query, pgx.NamedArgs{"ids": ids, "lang": language})
 	if err != nil {
 		return nil, err
 	}
