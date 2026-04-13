@@ -16,6 +16,7 @@ type Task interface {
 	Summary() universal.Description
 	Job(ctx context.Context) (Job, error)
 	Finish(ctx context.Context) error
+	Documentation() TaskDocumentation
 }
 
 type TaskModel struct {

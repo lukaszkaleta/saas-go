@@ -16,6 +16,10 @@ type PgTaskDocumentationEntry struct {
 	taskId int64
 }
 
+func NewPgTaskDocumentationEntry(db *pg.PgDb, taskId int64) job.TaskDocumentation {
+	return PgTaskDocumentation{taskId: taskId, db: db}
+}
+
 func (pg *PgTaskDocumentationEntry) ID() int64 {
 	return pg.id
 }
