@@ -69,6 +69,15 @@ func (pgCategories *PgCategories) AllLocalized(ctx context.Context, country stri
 	return pgx.CollectRows(rows, MapCategoryModels())
 }
 
+func (pgCategories *PgCategories) ByIdsLocalized(ctx context.Context, ids []int64, country string, language string) ([]*category.CategoryModel, error) {
+	query := "select category_id, (select c.parent_category_id from category c where category_id = id) as parent_category_id, translation_value, translation_slug from category_localization where category_id = any($1) and country = $2 and language = $3"
+	rows, err := pgCategories.Db.Pool.Query(ctx, query, ids, country, language)
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectRows(rows, MapCategoryModels())
+}
+
 func (pgCategories *PgCategories) ById(ctx context.Context, id int64) (category.Category, error) {
 	query := "select * from category where id = @id"
 	rows, err := pgCategories.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": id})
