@@ -3,10 +3,10 @@ module github.com/lukaszkaleta/saas-go/payment/pg
 require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.9.1
-	github.com/lukaszkaleta/saas-go/database/pg v0.2.300
-	github.com/lukaszkaleta/saas-go/job v0.2.300
-	github.com/lukaszkaleta/saas-go/payment v0.2.300
-	github.com/lukaszkaleta/saas-go/universal v0.2.300
+	github.com/lukaszkaleta/saas-go/database/pg v0.2.301
+	github.com/lukaszkaleta/saas-go/job v0.2.301
+	github.com/lukaszkaleta/saas-go/payment v0.2.301
+	github.com/lukaszkaleta/saas-go/universal v0.2.301
 )
 
 replace github.com/lukaszkaleta/saas-go/database/pg => ../../database/pg
@@ -27,8 +27,8 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
-	github.com/lukaszkaleta/saas-go/filestore v0.2.300 // indirect
-	github.com/lukaszkaleta/saas-go/messages v0.2.300 // indirect
+	github.com/lukaszkaleta/saas-go/filestore v0.2.301 // indirect
+	github.com/lukaszkaleta/saas-go/messages v0.2.301 // indirect
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/text v0.35.0 // indirect
 )
