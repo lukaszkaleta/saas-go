@@ -10,6 +10,7 @@ import (
 type TaskDocumentationEntry interface {
 	universal.ModelAware[TaskDocumentationEntryModel]
 	Images(ctx context.Context) ([]string, error)
+	AddFirstImage(ctx context.Context, firstImageUrl string) error
 }
 
 type TaskDocumentationEntryModel struct {
@@ -47,4 +48,11 @@ func (solidEntry *SolidTaskDocumentationEntry) Images(ctx context.Context) ([]st
 		return solidEntry.taskDocumentationEntry.Images(ctx)
 	}
 	return solidEntry.model.Images, nil
+}
+
+func (solidEntry *SolidTaskDocumentationEntry) AddFirstImage(ctx context.Context, firstImageUrl string) error {
+	if solidEntry.taskDocumentationEntry != nil {
+		return solidEntry.taskDocumentationEntry.AddFirstImage(ctx, firstImageUrl)
+	}
+	return nil
 }

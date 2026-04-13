@@ -95,3 +95,7 @@ func (s *SolidTask) Finish(ctx context.Context) error {
 func (s *SolidTask) Actions() universal.Actions {
 	return s.Task.Actions()
 }
+
+func (s *SolidTask) Documentation() TaskDocumentation {
+	return s.Task.Documentation()
+}

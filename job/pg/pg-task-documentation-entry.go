@@ -16,8 +16,8 @@ type PgTaskDocumentationEntry struct {
 	taskId int64
 }
 
-func NewPgTaskDocumentationEntry(db *pg.PgDb, taskId int64) job.TaskDocumentation {
-	return PgTaskDocumentation{taskId: taskId, db: db}
+func NewPgTaskDocumentationEntry(db *pg.PgDb, taskId int64, id int64) job.TaskDocumentationEntry {
+	return &PgTaskDocumentationEntry{taskId: taskId, db: db, id: id}
 }
 
 func (pg *PgTaskDocumentationEntry) ID() int64 {
@@ -64,6 +64,15 @@ func (pg *PgTaskDocumentationEntry) Images(ctx context.Context) ([]string, error
 	}
 	defer rows.Close()
 	return pgx.CollectRows(rows, pgx.RowTo[string])
+}
+
+func (pg *PgTaskDocumentationEntry) AddFirstImage(ctx context.Context, firstImageUrl string) error {
+	query := "update task_documentation_entry set summary_image_url = @summaryImageUrl where id = @id"
+	_, err := pg.db.Pool.Exec(ctx, query, pgx.NamedArgs{
+		"id":              pg.id,
+		"summaryImageUrl": firstImageUrl,
+	})
+	return err
 }
 
 func MapTaskDocumentationEntry(db *pg.PgDb) pgx.RowToFunc[job.TaskDocumentationEntry] {
