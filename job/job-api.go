@@ -29,6 +29,7 @@ type Job interface {
 	Payments() payment.Payments
 	Ratings() universal.Ratings
 	AssertJobOwnerAccess(ctx context.Context) error
+	PersonModel(ctx context.Context) (*universal.PersonModel, error)
 }
 
 type JobStatus struct {
@@ -246,4 +247,8 @@ func (solidJob *SolidJob) Close(ctx context.Context) error {
 
 func (solidJob *SolidJob) Closed(ctx context.Context) (bool, error) {
 	return solidJob.Job.Closed(ctx)
+}
+
+func (solidJob *SolidJob) PersonModel(ctx context.Context) (*universal.PersonModel, error) {
+	return solidJob.Job.PersonModel(ctx)
 }

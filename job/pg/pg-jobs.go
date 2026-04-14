@@ -2,7 +2,6 @@ package pgjob
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
@@ -75,7 +74,12 @@ func (pgJobs *PgJobs) Add(ctx context.Context, model *job.JobModel) (job.Job, er
 }
 
 func (pgJobs *PgJobs) List(ctx context.Context) ([]job.Job, error) {
-	return nil, errors.New("All jobs can not be listed")
+	query := JobSelect() + "where id = any(@ids)"
+	rows, err := pgJobs.db.Pool.Query(ctx, query, pgx.NamedArgs{"ids": pgJobs.Ids})
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectRows(rows, MapJob(pgJobs.db))
 }
 
 func (pgJobs *PgJobs) Tasks(ctx context.Context, jobIds []int64) ([]job.Task, error) {

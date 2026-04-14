@@ -21,12 +21,13 @@ type JobSearchRanking struct {
 	Rank     *float64 `json:"rank"`
 }
 
-type JobSearchOutput struct {
-	Model   *JobModel         `json:"job"`
-	Ranking *JobSearchRanking `json:"ranking"`
-	Paging  *JobSearchPaging  `json:"paging"`
+type JobSearchResult struct {
+	Model   *JobModel              `json:"job"`
+	Person  *universal.PersonModel `json:"person"`
+	Ranking *JobSearchRanking      `json:"ranking"`
+	Paging  *JobSearchPaging       `json:"paging"`
 }
 
-func (jobSearchOutput JobSearchOutput) ID() int64 {
+func (jobSearchOutput JobSearchResult) ID() int64 {
 	return jobSearchOutput.Model.Id
 }

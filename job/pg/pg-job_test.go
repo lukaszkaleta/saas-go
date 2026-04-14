@@ -8,6 +8,7 @@ import (
 	"github.com/lukaszkaleta/saas-go/job"
 	"github.com/lukaszkaleta/saas-go/universal"
 	"github.com/lukaszkaleta/saas-go/user"
+	pguser "github.com/lukaszkaleta/saas-go/user/pg"
 )
 
 var JobUser = user.WithId(1)
@@ -78,7 +79,7 @@ func TestPgJob_Status(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	globalJobs := NewPgGlobalJobs(db)
+	globalJobs := NewPgGlobalJobs(db, pguser.NewPgUsers(db).Search())
 	model, err := newJob.Model(t.Context())
 	if err != nil {
 		t.Fatal(err)

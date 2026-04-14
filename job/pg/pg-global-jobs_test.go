@@ -6,6 +6,7 @@ import (
 	"github.com/lukaszkaleta/saas-go/job"
 	"github.com/lukaszkaleta/saas-go/universal"
 	"github.com/lukaszkaleta/saas-go/user"
+	pguser "github.com/lukaszkaleta/saas-go/user/pg"
 )
 
 func TestPgGlobalJobs_ByQuery(t *testing.T) {
@@ -40,7 +41,7 @@ func TestPgGlobalJobs_ByQuery(t *testing.T) {
 		t.Error(err)
 	}
 
-	globalJobs := NewPgGlobalJobs(db)
+	globalJobs := NewPgGlobalJobs(db, pguser.NewPgUsers(db).Search())
 	query := "work"
 	foundJobs, err := globalJobs.ByQuery(ctx, &query)
 	if err != nil {
@@ -102,7 +103,7 @@ func TestPgGlobalJobs_NearBy(t *testing.T) {
 		t.Error(err)
 	}
 
-	globalJobs := NewPgGlobalJobs(db)
+	globalJobs := NewPgGlobalJobs(db, pguser.NewPgUsers(db).Search())
 	foundJobs, err := globalJobs.NearBy(ctx, &universal.RadarModel{Perimeter: 10000, Position: &universal.PositionModel{Lat: 21.6, Lon: 49.7}})
 	if err != nil {
 		t.Fatal(err)
@@ -154,7 +155,7 @@ func TestPgGlobalJobs_Search(t *testing.T) {
 		t.Error(err)
 	}
 
-	globalJobs := NewPgGlobalJobs(db)
+	globalJobs := NewPgGlobalJobs(db, pguser.NewPgUsers(db).Search())
 
 	query := "grass"
 	jsi := &job.JobSearchInput{

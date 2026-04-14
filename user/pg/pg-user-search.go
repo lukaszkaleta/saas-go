@@ -42,6 +42,33 @@ func (s *PgUserSearch) ModelsByIds(ctx context.Context, ids []*int64) ([]*user.U
 	return pgx.CollectRows(rows, MapUserModel)
 }
 
+func (s *PgUserSearch) ModelById(ctx context.Context, id int64) (*user.UserModel, error) {
+	query := UserSelect() + " where id = @id"
+	rows, err := s.Db.Pool.Query(ctx, query, pgx.NamedArgs{"id": id})
+	if err != nil {
+		return nil, err
+	}
+	userModel, err := pgx.CollectOneRow(rows, MapUserModel)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return userModel, nil
+}
+
+func (s *PgUserSearch) PersonModelById(ctx context.Context, id int64) (universal.PersonModel, error) {
+	model, err := s.ModelById(ctx, id)
+	if err != nil {
+		return universal.PersonModel{}, err
+	}
+	if model == nil {
+		return universal.PersonModel{}, nil
+	}
+	return *model.Person, nil
+}
+
 func (s *PgUserSearch) PersonModelsByIds(ctx context.Context, ids []*int64) ([]*universal.PersonModel, error) {
 	userModesl, err := s.ModelsByIds(ctx, ids)
 	if err != nil {

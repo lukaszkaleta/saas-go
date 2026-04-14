@@ -29,21 +29,21 @@ func (g *GlobalJobsLogger) ByIds(ctx context.Context, ids []int64) ([]Job, error
 	return g.next.ByIds(ctx, ids)
 }
 
-func (g *GlobalJobsLogger) NearBy(ctx context.Context, position *universal.RadarModel) ([]*JobSearchOutput, error) {
+func (g *GlobalJobsLogger) NearBy(ctx context.Context, position *universal.RadarModel) ([]*JobSearchResult, error) {
 	defer func(start time.Time) {
 		fmt.Printf("Searching for jobs took %v\n", time.Since(start))
 	}(time.Now())
 	return g.next.NearBy(ctx, position)
 }
 
-func (g *GlobalJobsLogger) ByQuery(ctx context.Context, query *string) ([]*JobSearchOutput, error) {
+func (g *GlobalJobsLogger) ByQuery(ctx context.Context, query *string) ([]*JobSearchResult, error) {
 	defer func(start time.Time) {
 		fmt.Printf("ByQuery for jobs took %v\n", time.Since(start))
 	}(time.Now())
 	return g.next.ByQuery(ctx, query)
 }
 
-func (g *GlobalJobsLogger) Search(ctx context.Context, input *JobSearchInput) ([]*JobSearchOutput, error) {
+func (g *GlobalJobsLogger) Search(ctx context.Context, input *JobSearchInput) ([]*JobSearchResult, error) {
 	defer func(start time.Time) {
 		fmt.Printf("ByQuery for jobs took %v\n", time.Since(start))
 	}(time.Now())

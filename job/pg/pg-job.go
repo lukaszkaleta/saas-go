@@ -151,6 +151,16 @@ func (pgJob *PgJob) Closed(ctx context.Context) (bool, error) {
 	return name == "closed", nil
 }
 
+func (pgJob *PgJob) PersonModel(ctx context.Context) (*universal.PersonModel, error) {
+	query := pgUniversal.PersonColumnsSelectWithPrefix("u") + `
+		from job j
+		join users u on j.action_created_by_id = u.id
+		where j.id = $1`
+
+	rows, _ := pgJob.db.Pool.Query(ctx, query, pgJob.Id)
+	return pgx.CollectOneRow(rows, pgUniversal.MapPersonModel)
+}
+
 func (pgJob *PgJob) tableEntity() pg.TableEntity {
 	return pgJob.db.TableEntity("job", pgJob.Id)
 }
@@ -165,8 +175,8 @@ func (pgJob *PgJob) AssertJobOwnerAccess(ctx context.Context) error {
 		return job.ErrTaskDocumentationMissingUser
 	}
 	ownerId := int64(0)
-	query := "select action_created_by_id from job where id = @jobId"
-	if err := pgJob.db.Pool.QueryRow(ctx, query, pgx.NamedArgs{"jobId": pgJob.Id}).Scan(&ownerId); err != nil {
+	query := "select action_created_by_id from job where id = $1"
+	if err := pgJob.db.Pool.QueryRow(ctx, query, pgJob.Id).Scan(&ownerId); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return job.ErrTaskDocumentationJobNotFound
 		}
@@ -296,8 +306,8 @@ func JobColumnsSelectWithPrefix(prefix string) string {
 
 // Mapping search
 
-func MapSearchJob() pgx.RowToFunc[*job.JobSearchOutput] {
-	return func(row pgx.CollectableRow) (*job.JobSearchOutput, error) {
+func MapSearchJob() pgx.RowToFunc[*job.JobSearchResult] {
+	return func(row pgx.CollectableRow) (*job.JobSearchResult, error) {
 		jobModel := job.EmptyJobModel()
 
 		nullTimePublished := sql.NullTime{}
@@ -310,8 +320,9 @@ func MapSearchJob() pgx.RowToFunc[*job.JobSearchOutput] {
 
 		jobSearchRanking := &job.JobSearchRanking{}
 		jobSearchPaging := &job.JobSearchPaging{}
-		jobSearchOutput := &job.JobSearchOutput{
+		jobSearchOutput := &job.JobSearchResult{
 			Model:   jobModel,
+			Person:  universal.EmptyPersonModel(),
 			Ranking: jobSearchRanking,
 			Paging:  jobSearchPaging,
 		}

@@ -34,7 +34,7 @@ func JobHints(ctx context.Context, jobs []Job) []*JobHint {
 	return hints
 }
 
-func GeoJobs(jobs []*JobSearchOutput) universal.GeoFeatureCollection[JobHint] {
+func GeoJobs(jobs []*JobSearchResult) universal.GeoFeatureCollection[JobHint] {
 	features := make([]universal.GeoFeature[JobHint], 0, len(jobs))
 	for i := range jobs {
 		m := jobs[i]

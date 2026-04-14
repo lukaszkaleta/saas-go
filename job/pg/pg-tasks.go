@@ -7,6 +7,7 @@ import (
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/job"
 	"github.com/lukaszkaleta/saas-go/universal"
+	pguser "github.com/lukaszkaleta/saas-go/user/pg"
 )
 
 type PgTasks struct {
@@ -36,22 +37,81 @@ func (pgTasks *PgTasks) ByJobId(ctx context.Context, jobId int64) (job.Task, err
 	return pgx.CollectOneRow(rows, MapTask(pgTasks.db))
 }
 
-func (pgTasks *PgTasks) Current(ctx context.Context) ([]job.Task, error) {
+func (pgTasks *PgTasks) Current(ctx context.Context) (*job.TasksResult, error) {
 	query := "select * from task where user_id = @userId and action_pay_at is null"
 	rows, err := pgTasks.db.Pool.Query(ctx, query, pgx.NamedArgs{"userId": pgTasks.UserId})
 	if err != nil {
 		return nil, err
 	}
-	return pgx.CollectRows(rows, MapTask(pgTasks.db))
+	tasks, err := pgx.CollectRows(rows, MapTask(pgTasks.db))
+	if err != nil {
+		return nil, err
+	}
+
+	// Read Jobs
+	jobs, err := pgTasks.readJobs(ctx, tasks)
+	if err != nil {
+		return nil, err
+	}
+
+	// Read persons
+	personModels, err := pgTasks.readPersons(ctx, jobs)
+	if err != nil {
+		return nil, err
+	}
+
+	return job.NewTasksResult(tasks, jobs, personModels), nil
 }
 
-func (pgTasks *PgTasks) Completed(ctx context.Context) ([]job.Task, error) {
+func (pgTasks *PgTasks) Completed(ctx context.Context) (*job.TasksResult, error) {
+
+	// Read Tasks
 	query := "select * from task where user_id = @userId and action_finished_at is not null and action_pay_at is not null"
 	rows, err := pgTasks.db.Pool.Query(ctx, query, pgx.NamedArgs{"userId": pgTasks.UserId})
 	if err != nil {
 		return nil, err
 	}
-	return pgx.CollectRows(rows, MapTask(pgTasks.db))
+	tasks, err := pgx.CollectRows(rows, MapTask(pgTasks.db))
+
+	// Read Jobs
+	jobs, err := pgTasks.readJobs(ctx, tasks)
+	if err != nil {
+		return nil, err
+	}
+
+	// Read persons
+	personModels, err := pgTasks.readPersons(ctx, jobs)
+	if err != nil {
+		return nil, err
+	}
+
+	return job.NewTasksResult(tasks, jobs, personModels), nil
+}
+
+func (pgTasks *PgTasks) readPersons(ctx context.Context, jobs []job.Job) ([]*universal.PersonModel, error) {
+	ids := make([]*int64, 0, len(jobs))
+	for _, j := range jobs {
+		model, err := j.Model(ctx)
+		if err != nil {
+			return nil, err
+		}
+		ids = append(ids, model.Actions.CreatedById())
+	}
+	userSearch := pguser.NewPgUserSearch(pgTasks.db)
+	return userSearch.PersonModelsByIds(ctx, ids)
+}
+
+func (pgTasks *PgTasks) readJobs(ctx context.Context, tasks []job.Task) ([]job.Job, error) {
+	jobIds := make([]int64, 0, len(tasks))
+	for _, task := range tasks {
+		model, err := task.Model(ctx)
+		if err != nil {
+			return nil, err
+		}
+		jobIds = append(jobIds, model.JobId)
+	}
+	pgJobs := NewPgJobs(pgTasks.db, jobIds)
+	return pgJobs.List(ctx)
 }
 
 func (pgTasks *PgTasks) Earnings(ctx context.Context) (map[string]*universal.PriceModel, error) {

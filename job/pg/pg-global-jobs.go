@@ -7,17 +7,19 @@ import (
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/job"
 	"github.com/lukaszkaleta/saas-go/universal"
+	"github.com/lukaszkaleta/saas-go/user"
 )
 
 type PgGlobalJobs struct {
-	db *pg.PgDb
+	db         *pg.PgDb
+	userSearch user.UserSearch
 }
 
-func NewPgGlobalJobs(Db *pg.PgDb) job.GlobalJobs {
-	return &PgGlobalJobs{db: Db}
+func NewPgGlobalJobs(Db *pg.PgDb, userSearch user.UserSearch) job.GlobalJobs {
+	return &PgGlobalJobs{db: Db, userSearch: userSearch}
 }
 
-func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input *job.JobSearchInput) ([]*job.JobSearchOutput, error) {
+func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input *job.JobSearchInput) ([]*job.JobSearchResult, error) {
 	if len(*input.Query) <= 2 {
 		return pgGlobalJobs.NearBy(ctx, input.Radar)
 	}
@@ -69,10 +71,10 @@ func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input *job.JobSear
 	if err != nil {
 		return nil, err
 	}
-	return pgx.CollectRows(rows, MapSearchJob())
+	return pgGlobalJobs.jobsWithPersons(ctx, rows)
 }
 
-func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([]*job.JobSearchOutput, error) {
+func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([]*job.JobSearchResult, error) {
 	sql := JobColumnsSelect() + `,
 			0 as distance,
 			ts_rank_cd(search_vector, q) AS rank
@@ -90,12 +92,12 @@ func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([
 	if err != nil {
 		return nil, err
 	}
-	return pgx.CollectRows(rows, MapSearchJob())
+	return pgGlobalJobs.jobsWithPersons(ctx, rows)
 }
 
-func (globalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.RadarModel) ([]*job.JobSearchOutput, error) {
+func (pgGlobalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.RadarModel) ([]*job.JobSearchResult, error) {
 	if radar == nil || radar.Position == nil || radar.Position.Lat == 0 || radar.Position.Lon == 0 {
-		return globalJobs.allActiveSearch(ctx)
+		return pgGlobalJobs.allActiveSearch(ctx)
 	}
 	sql := JobColumnsSelect() + `,
 			earth_distance(earth_point, ll_to_earth(@lat, @lon)) AS distance,
@@ -107,11 +109,11 @@ func (globalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.Rad
 			status_closed is null and 
 			status_occupied is null
 `
-	rows, err := globalJobs.db.Pool.Query(ctx, sql, pgx.NamedArgs{"lat": radar.Position.Lat, "lon": radar.Position.Lon, "perimeter": radar.Perimeter})
+	rows, err := pgGlobalJobs.db.Pool.Query(ctx, sql, pgx.NamedArgs{"lat": radar.Position.Lat, "lon": radar.Position.Lon, "perimeter": radar.Perimeter})
 	if err != nil {
 		return nil, err
 	}
-	return pgx.CollectRows(rows, MapSearchJob())
+	return pgGlobalJobs.jobsWithPersons(ctx, rows)
 }
 
 func (globalJobs *PgGlobalJobs) ActiveById(ctx context.Context, id int64) (job.Job, error) {
@@ -150,11 +152,45 @@ func (globalJobs *PgGlobalJobs) AllActive(ctx context.Context) ([]job.Job, error
 	return pgx.CollectRows(rows, MapJob(globalJobs.db))
 }
 
-func (globalJobs *PgGlobalJobs) allActiveSearch(ctx context.Context) ([]*job.JobSearchOutput, error) {
+func (globalJobs *PgGlobalJobs) allActiveSearch(ctx context.Context) ([]*job.JobSearchResult, error) {
 	query := JobColumnsSelect() + ", 0 as distance, 0 as rank from job where status_published is not null and status_closed is null and status_occupied is null"
 	rows, err := globalJobs.db.Pool.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
-	return pgx.CollectRows(rows, MapSearchJob())
+	return globalJobs.jobsWithPersons(ctx, rows)
+}
+
+func (pgGlobalJobs *PgGlobalJobs) jobsWithPersons(ctx context.Context, rows pgx.Rows) ([]*job.JobSearchResult, error) {
+	collectRows, err := pgx.CollectRows(rows, MapSearchJob())
+	if err != nil {
+		return nil, err
+	}
+
+	jobModels := make([]*job.JobModel, len(collectRows))
+	for i, r := range collectRows {
+		jobModels[i] = r.Model
+	}
+
+	userIds := universal.CreatedByIdFromModels(jobModels)
+	personModels, err := pgGlobalJobs.userSearch.PersonModelsByIds(ctx, userIds)
+	if err != nil {
+		return nil, err
+	}
+
+	personMap := make(map[int64]*universal.PersonModel)
+	for _, p := range personModels {
+		if p != nil {
+			personMap[p.Id] = p
+		}
+	}
+
+	for _, r := range collectRows {
+		creatorId := r.Model.Actions.CreatedById()
+		if creatorId != nil {
+			r.Person = personMap[*creatorId]
+		}
+	}
+
+	return collectRows, nil
 }
