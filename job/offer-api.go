@@ -140,17 +140,17 @@ type FirebasePushAcceptor struct {
 
 func (m *FirebasePushAcceptor) Accept(ctx context.Context) error {
 	// Check who created offer
-	userId, err := universal.CreatedById[OfferModel](ctx, m.inner)
-	if err != nil {
-		return err
-	}
+	//userId, err := universal.CreatedById[OfferModel](ctx, m.inner)
+	//if err != nil {
+	//	return err
+	//}
 
-	u, err := m.users.ById(ctx, userId)
-	if err != nil {
-		return err
-	}
+	//u, err := m.users.ById(ctx, userId)
+	//if err != nil {
+	//	return err
+	//}
 
-	token := u.Account().Model(ctx).FirebaseToken
+	token := "" //u.Account().Model(ctx).FirebaseToken
 	if token != "" {
 		opt := option.WithCredentialsFile(m.jsonPath)
 		app, err := firebase.NewApp(ctx, nil, opt)
