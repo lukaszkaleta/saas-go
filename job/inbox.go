@@ -9,3 +9,7 @@ type JobInbox interface {
 	Messages() universal.Inbox[messages.Message]
 	Offers() universal.Inbox[Offer]
 }
+
+type JobOutbox interface {
+	Offers() universal.Outbox[Offer]
+}

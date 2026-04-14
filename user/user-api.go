@@ -24,7 +24,7 @@ type User interface {
 func WithUser(ctx context.Context, usr User) context.Context {
 	ctx = context.WithValue(ctx, "current-user", usr.Model(ctx))
 	id := usr.ID()
-	return context.WithValue(ctx, "current-user-id", &id)
+	return context.WithValue(ctx, universal.CurrentUserKey, &id)
 }
 
 func CurrentUser(ctx context.Context) *UserModel {

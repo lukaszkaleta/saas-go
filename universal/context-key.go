@@ -5,10 +5,14 @@ import "context"
 type contextKey string
 
 const languageKey contextKey = "language"
-const currentUserKey contextKey = "current-user-id"
+const CurrentUserKey contextKey = "current-user-id"
 
 func CurrentUserId(ctx context.Context) *int64 {
-	return ctx.Value(currentUserKey).(*int64)
+	value := ctx.Value(CurrentUserKey)
+	if value == nil {
+		panic("No current user")
+	}
+	return value.(*int64)
 }
 
 func WithLanguage(ctx context.Context, lang string) context.Context {
