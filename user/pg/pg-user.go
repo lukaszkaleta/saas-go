@@ -73,6 +73,7 @@ func MapUserModel(row pgx.CollectableRow) (*user.UserModel, error) {
 	err := row.Scan(
 		&userModel.Id,
 		&userModel.Account.Token,
+		&userModel.Account.FirebaseToken,
 		&userModel.Person.FirstName,
 		&userModel.Person.LastName,
 		&userModel.Person.Email,
@@ -100,6 +101,7 @@ func UserColumns() []string {
 	return []string{
 		"id",
 		"account_token",
+		"firebase_token",
 		"person_first_name",
 		"person_last_name",
 		"person_email",

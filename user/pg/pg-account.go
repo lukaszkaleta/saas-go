@@ -17,8 +17,8 @@ func NewPgAccount(Db *pg.PgDb, id int64) user.Account {
 }
 
 func (pg *PgAccount) Update(ctx context.Context, model *user.AccountModel) error {
-	query := "update users set account_token = $1 where id = $1"
-	_, err := pg.Db.Pool.Exec(ctx, query, model.Token, pg.Id)
+	query := "update users set account_token = $1, firebase_token = $2 where id = $3"
+	_, err := pg.Db.Pool.Exec(ctx, query, model.Token, model.FirebaseToken, pg.Id)
 	if err != nil {
 		return err
 	}

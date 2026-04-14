@@ -4,7 +4,11 @@ import (
 	"context"
 	"time"
 
+	firebase "firebase.google.com/go/v4"
+	"firebase.google.com/go/v4/messaging"
 	"github.com/lukaszkaleta/saas-go/universal"
+	"github.com/lukaszkaleta/saas-go/user"
+	"google.golang.org/api/option"
 )
 
 type Offer interface {
@@ -127,6 +131,53 @@ func (s *SolidOffer) Actions() universal.Actions {
 //
 // When accepting offer we need to send a message
 //
+
+type FirebasePushAcceptor struct {
+	inner    universal.Acceptor
+	users    user.Users
+	jsonPath string
+}
+
+func (m *FirebasePushAcceptor) Accept(ctx context.Context) error {
+	// Check who created offer
+	userId, err := universal.CreatedById[OfferModel](ctx, m.inner)
+	if err != nil {
+		return err
+	}
+
+	u, err := m.users.ById(ctx, userId)
+	if err != nil {
+		return err
+	}
+
+	token := u.Account().Model(ctx).FirebaseToken
+	if token != "" {
+		opt := option.WithCredentialsFile(m.jsonPath)
+		app, err := firebase.NewApp(ctx, nil, opt)
+		if err == nil {
+			client, err := app.Messaging(ctx)
+			if err == nil {
+				_, _ = client.Send(ctx, &messaging.Message{
+					Token: token,
+					Notification: &messaging.Notification{
+						Title: "Offer accepted",
+						Body:  "Your offer has been accepted!",
+					},
+				})
+			}
+		}
+	}
+
+	return m.inner.Accept(ctx)
+}
+
+func NewFirebasePushAcceptor(users user.Users, jsonPath string, inner universal.Acceptor) universal.Acceptor {
+	return &FirebasePushAcceptor{
+		inner:    inner,
+		users:    users,
+		jsonPath: jsonPath,
+	}
+}
 
 type MessagesOfferAcceptor struct {
 	inner universal.Acceptor

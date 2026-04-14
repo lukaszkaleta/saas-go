@@ -14,16 +14,19 @@ type Account interface {
 // Model
 
 type AccountModel struct {
-	Token string `json:"token"`
+	Token         string `json:"token"`
+	FirebaseToken string `json:"firebaseToken" omitzero:"true"`
 }
 
 func (model *AccountModel) Change(newModel *AccountModel) {
 	model.Token = newModel.Token
+	model.FirebaseToken = newModel.FirebaseToken
 }
 
 func EmptyAccountModel() *AccountModel {
 	return &AccountModel{
-		Token: "",
+		Token:         "",
+		FirebaseToken: "",
 	}
 }
 
