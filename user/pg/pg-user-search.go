@@ -58,15 +58,15 @@ func (s *PgUserSearch) ModelById(ctx context.Context, id int64) (*user.UserModel
 	return userModel, nil
 }
 
-func (s *PgUserSearch) PersonModelById(ctx context.Context, id int64) (universal.PersonModel, error) {
+func (s *PgUserSearch) PersonModelById(ctx context.Context, id int64) (*universal.PersonModel, error) {
 	model, err := s.ModelById(ctx, id)
 	if err != nil {
-		return universal.PersonModel{}, err
+		return nil, err
 	}
 	if model == nil {
-		return universal.PersonModel{}, nil
+		return nil, nil
 	}
-	return *model.Person, nil
+	return model.Person, nil
 }
 
 func (s *PgUserSearch) PersonModelsByIds(ctx context.Context, ids []*int64) ([]*universal.PersonModel, error) {
