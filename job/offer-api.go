@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"log/slog"
 	"strconv"
 	"time"
 
@@ -157,24 +158,35 @@ func (m *FirebasePushAcceptor) Accept(ctx context.Context) error {
 	token := model.FirebaseToken
 	if token != "" {
 		offerModel, err := m.offer.Model(ctx)
-		opt := option.WithCredentialsFile(m.jsonPath)
-		app, err := firebase.NewApp(ctx, nil, opt)
+		var opt option.ClientOption
+		if m.jsonPath != "" {
+			opt = option.WithCredentialsFile(m.jsonPath)
+		} else {
+			opt = option.WithoutAuthentication()
+		}
+		config := &firebase.Config{ProjectID: "naborly-9f7dd"}
+		app, err := firebase.NewApp(ctx, config, opt)
 		dataMap := make(map[string]string)
 		jobId := strconv.FormatInt(offerModel.JobId, 10)
 		offerId := strconv.FormatInt(offerModel.Id, 10)
 		dataMap["link"] = "https://naborly.no/offer/" + string(jobId) + "/" + offerId
 		if err == nil {
 			client, err := app.Messaging(ctx)
-			if err == nil {
-				_, _ = client.Send(ctx, &messaging.Message{
-					Token: token,
-					Notification: &messaging.Notification{
-						Title: "Offer accepted",
-						Body:  "Your offer has been accepted!",
-					},
-					Data: dataMap,
-				})
+			if err != nil {
+				return err
 			}
+			resultName, sendError := client.Send(ctx, &messaging.Message{
+				Token: token,
+				Notification: &messaging.Notification{
+					Title: "Offer accepted",
+					Body:  "Your offer has been accepted!",
+				},
+				Data: dataMap,
+			})
+			if sendError != nil {
+				return sendError
+			}
+			slog.Info(resultName)
 		}
 	}
 
