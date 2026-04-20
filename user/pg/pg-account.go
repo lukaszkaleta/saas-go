@@ -35,6 +35,13 @@ func (pg *PgAccount) UpdatePushNotificationToken(ctx context.Context, token stri
 	return nil
 }
 
-func (pg *PgAccount) Model(ctx context.Context) *user.AccountModel {
-	return &user.AccountModel{}
+func (pg *PgAccount) Model(ctx context.Context) (*user.AccountModel, error) {
+	query := "select account_token, firebase_token from users where id = $1"
+	row := pg.Db.Pool.QueryRow(ctx, query, pg.Id)
+	model := &user.AccountModel{}
+	err := row.Scan(&model.Token, &model.FirebaseToken)
+	if err != nil {
+		return nil, err
+	}
+	return model, nil
 }

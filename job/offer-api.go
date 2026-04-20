@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	firebase "firebase.google.com/go/v4"
@@ -135,25 +136,33 @@ func (s *SolidOffer) Actions() universal.Actions {
 type FirebasePushAcceptor struct {
 	inner    universal.Acceptor
 	users    user.Users
+	offer    Offer
 	jsonPath string
 }
 
 func (m *FirebasePushAcceptor) Accept(ctx context.Context) error {
-	// Check who created offer
-	//userId, err := universal.CreatedById[OfferModel](ctx, m.inner)
-	//if err != nil {
-	//	return err
-	//}
+	userId, err := universal.CreatedById[OfferModel](ctx, m.offer)
+	if err != nil {
+		return err
+	}
+	u, err := m.users.ById(ctx, userId)
+	if err != nil {
+		return err
+	}
 
-	//u, err := m.users.ById(ctx, userId)
-	//if err != nil {
-	//	return err
-	//}
-
-	token := "" //u.Account().Model(ctx).FirebaseToken
+	model, err := u.Account().Model(ctx)
+	if err != nil {
+		return err
+	}
+	token := model.FirebaseToken
 	if token != "" {
+		offerModel, err := m.offer.Model(ctx)
 		opt := option.WithCredentialsFile(m.jsonPath)
 		app, err := firebase.NewApp(ctx, nil, opt)
+		dataMap := make(map[string]string)
+		jobId := strconv.FormatInt(offerModel.JobId, 10)
+		offerId := strconv.FormatInt(offerModel.Id, 10)
+		dataMap["link"] = "https://naborly.no/offer/" + string(jobId) + "/" + offerId
 		if err == nil {
 			client, err := app.Messaging(ctx)
 			if err == nil {
@@ -163,6 +172,7 @@ func (m *FirebasePushAcceptor) Accept(ctx context.Context) error {
 						Title: "Offer accepted",
 						Body:  "Your offer has been accepted!",
 					},
+					Data: dataMap,
 				})
 			}
 		}
@@ -171,11 +181,12 @@ func (m *FirebasePushAcceptor) Accept(ctx context.Context) error {
 	return m.inner.Accept(ctx)
 }
 
-func NewFirebasePushAcceptor(users user.Users, jsonPath string, inner universal.Acceptor) universal.Acceptor {
+func NewFirebasePushAcceptor(users user.Users, jsonPath string, offer Offer, inner universal.Acceptor) universal.Acceptor {
 	return &FirebasePushAcceptor{
 		inner:    inner,
 		users:    users,
 		jsonPath: jsonPath,
+		offer:    offer,
 	}
 }
 

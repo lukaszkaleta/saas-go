@@ -5,7 +5,7 @@ import "context"
 // API
 
 type Account interface {
-	Model(ctx context.Context) *AccountModel
+	Model(ctx context.Context) (*AccountModel, error)
 	Update(ctx context.Context, newModel *AccountModel) error
 	UpdatePushNotificationToken(ctx context.Context, token string) error
 }
@@ -58,6 +58,6 @@ func (addr SolidAccount) UpdatePushNotificationToken(ctx context.Context, token 
 	return addr.Account.UpdatePushNotificationToken(ctx, token)
 }
 
-func (addr SolidAccount) Model(ctx context.Context) *AccountModel {
-	return addr.model
+func (addr SolidAccount) Model(ctx context.Context) (*AccountModel, error) {
+	return addr.model, nil
 }

@@ -1,6 +1,7 @@
 create table if not exists users (
     id serial primary key,
     account_token text not null default '',
+    firebase_token text not null default '',
     person_first_name text not null default '',
     person_last_name text not null default '',
     person_email text not null default '',
