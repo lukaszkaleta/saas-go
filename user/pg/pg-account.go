@@ -3,6 +3,7 @@ package pguser
 import (
 	"context"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/user"
 )
@@ -19,6 +20,15 @@ func NewPgAccount(Db *pg.PgDb, id int64) user.Account {
 func (pg *PgAccount) Update(ctx context.Context, model *user.AccountModel) error {
 	query := "update users set account_token = $1, firebase_token = $2 where id = $3"
 	_, err := pg.Db.Pool.Exec(ctx, query, model.Token, model.FirebaseToken, pg.Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (pg *PgAccount) UpdatePushNotificationToken(ctx context.Context, token string) error {
+	query := "update users set firebase_token = @token where id = @id"
+	_, err := pg.Db.Pool.Exec(ctx, query, pgx.NamedArgs{"token": &token, "id": pg.Id})
 	if err != nil {
 		return err
 	}

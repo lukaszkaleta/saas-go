@@ -7,6 +7,7 @@ import "context"
 type Account interface {
 	Model(ctx context.Context) *AccountModel
 	Update(ctx context.Context, newModel *AccountModel) error
+	UpdatePushNotificationToken(ctx context.Context, token string) error
 }
 
 // Builder
@@ -47,6 +48,14 @@ func (addr SolidAccount) Update(ctx context.Context, newModel *AccountModel) err
 		return nil
 	}
 	return addr.Account.Update(ctx, newModel)
+}
+
+func (addr SolidAccount) UpdatePushNotificationToken(ctx context.Context, token string) error {
+	addr.model.FirebaseToken = token
+	if addr.Account == nil {
+		return nil
+	}
+	return addr.Account.UpdatePushNotificationToken(ctx, token)
 }
 
 func (addr SolidAccount) Model(ctx context.Context) *AccountModel {
