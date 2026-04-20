@@ -4,17 +4,17 @@ go 1.25.0
 
 require (
 	github.com/jackc/pgx/v5 v5.9.1
-	github.com/lukaszkaleta/saas-go/database/pg v0.2.302
-	github.com/lukaszkaleta/saas-go/filestore v0.2.302
-	github.com/lukaszkaleta/saas-go/filestore/pg v0.2.302
-	github.com/lukaszkaleta/saas-go/job v0.2.302
-	github.com/lukaszkaleta/saas-go/messages v0.2.302
-	github.com/lukaszkaleta/saas-go/messages/pg v0.2.302
-	github.com/lukaszkaleta/saas-go/payment v0.2.302
-	github.com/lukaszkaleta/saas-go/payment/pg v0.2.302
-	github.com/lukaszkaleta/saas-go/universal v0.2.302
-	github.com/lukaszkaleta/saas-go/universal/pg v0.2.302
-	github.com/lukaszkaleta/saas-go/user v0.2.302
+	github.com/lukaszkaleta/saas-go/database/pg v0.2.303
+	github.com/lukaszkaleta/saas-go/filestore v0.2.303
+	github.com/lukaszkaleta/saas-go/filestore/pg v0.2.303
+	github.com/lukaszkaleta/saas-go/job v0.2.303
+	github.com/lukaszkaleta/saas-go/messages v0.2.303
+	github.com/lukaszkaleta/saas-go/messages/pg v0.2.303
+	github.com/lukaszkaleta/saas-go/payment v0.2.303
+	github.com/lukaszkaleta/saas-go/payment/pg v0.2.303
+	github.com/lukaszkaleta/saas-go/universal v0.2.303
+	github.com/lukaszkaleta/saas-go/universal/pg v0.2.303
+	github.com/lukaszkaleta/saas-go/user v0.2.303
 )
 
 require (
