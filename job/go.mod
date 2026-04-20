@@ -4,11 +4,11 @@ go 1.25.0
 
 require (
 	firebase.google.com/go/v4 v4.13.0
-	github.com/lukaszkaleta/saas-go/filestore v0.2.305
-	github.com/lukaszkaleta/saas-go/messages v0.2.305
-	github.com/lukaszkaleta/saas-go/payment v0.2.305
-	github.com/lukaszkaleta/saas-go/universal v0.2.305
-	github.com/lukaszkaleta/saas-go/user v0.2.305
+	github.com/lukaszkaleta/saas-go/filestore v0.2.306
+	github.com/lukaszkaleta/saas-go/messages v0.2.306
+	github.com/lukaszkaleta/saas-go/payment v0.2.306
+	github.com/lukaszkaleta/saas-go/universal v0.2.306
+	github.com/lukaszkaleta/saas-go/user v0.2.306
 	google.golang.org/api v0.162.0
 )
 
