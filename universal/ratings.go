@@ -10,8 +10,8 @@ type Rated interface {
 }
 
 type Ratings interface {
+	Adder[*RatingModel, Rating]
 	ById(ctx context.Context, id int64) (Rating, error)
-	Add(ctx context.Context, model *RatingModel) (Rating, error)
 	Rated
 }
 

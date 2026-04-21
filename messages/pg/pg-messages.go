@@ -14,27 +14,18 @@ import (
 type PgMessages struct {
 	db    *pg.PgDb
 	owner pg.RelationEntity
-	adder universal.Adder[*messages.MessageModel, messages.Message]
 }
 
 func NewPgMessages(db *pg.PgDb, owner pg.RelationEntity) messages.Messages {
-	pgMsgs := &PgMessages{db: db, owner: owner}
-	pgMsgs.adder = pgMsgs
-	return pgMsgs
-}
-
-func (pg *PgMessages) WithAdder(adder universal.Adder[*messages.MessageModel, messages.Message]) messages.Messages {
-	pg.adder = adder
-	return pg
+	return &PgMessages{db: db, owner: owner}
 }
 
 func (pg *PgMessages) AddSimple(ctx context.Context, recipientId int64, value string) (messages.Message, error) {
-
-	return pg.adder.Add(ctx, &messages.MessageModel{Value: value, OwnerId: pg.owner.RelationId, RecipientId: recipientId})
+	return pg.Add(ctx, &messages.MessageModel{Value: value, OwnerId: pg.owner.RelationId, RecipientId: recipientId})
 }
 
 func (pg *PgMessages) AddGenerated(ctx context.Context, recipientId int64, value string) (messages.Message, error) {
-	return pg.adder.Add(ctx, &messages.MessageModel{ValueGenerated: true, Value: value, OwnerId: pg.owner.RelationId, RecipientId: recipientId})
+	return pg.Add(ctx, &messages.MessageModel{ValueGenerated: true, Value: value, OwnerId: pg.owner.RelationId, RecipientId: recipientId})
 }
 
 func (pg *PgMessages) Add(ctx context.Context, model *messages.MessageModel) (messages.Message, error) {

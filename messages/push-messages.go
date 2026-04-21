@@ -2,6 +2,7 @@ package messages
 
 import (
 	"context"
+	"log/slog"
 	"strconv"
 
 	"github.com/lukaszkaleta/saas-go/universal"
@@ -22,29 +23,22 @@ func NewPushMessages(messages Messages, users user.Users, sender *universal.Push
 	}
 }
 
-func (a *PushMessages) Add(ctx context.Context, model *MessageModel) (Message, error) {
-	msg, err := a.messages.Add(ctx, model)
-
-	// Do not send push on generated messages
-	if model.ValueGenerated {
-		return msg, err
-	}
-
+func (a *PushMessages) sendPush(ctx context.Context, msg Message) error {
+	model, err := msg.Model(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	recipient, err := a.users.ById(ctx, model.RecipientId)
-
 	if err != nil {
 		// We don't want to fail the message creation if push notification fails to start
-		return msg, nil
+		return err
 	}
 
 	account := recipient.Account()
 	accountModel, err := account.Model(ctx)
 	if err != nil || accountModel.FirebaseToken == "" {
-		return msg, nil
+		return nil
 	}
 
 	body := model.Value
@@ -55,14 +49,18 @@ func (a *PushMessages) Add(ctx context.Context, model *MessageModel) (Message, e
 	jobId := strconv.FormatInt(model.OwnerId, 10)
 	messageId := strconv.FormatInt(msg.ID(), 10)
 	pushMsg := universal.PushMessage{
-		Title: "New Message",
+		Title: user.CurrentUser(ctx).Person.FirstName,
 		Body:  body,
-		Link:  "https://naborly.no/chat" + string(jobId) + "/" + messageId,
+		Link:  "https://naborly.no/chat/" + string(jobId) + "/" + messageId,
 	}
 
 	a.sender.SendAsync(ctx, accountModel.FirebaseToken, pushMsg)
 
-	return msg, nil
+	return nil
+}
+
+func (a *PushMessages) Add(ctx context.Context, model *MessageModel) (Message, error) {
+	return a.messages.Add(ctx, model)
 }
 
 func (a *PushMessages) List(ctx context.Context) ([]Message, error) {
@@ -74,7 +72,12 @@ func (a *PushMessages) ById(ctx context.Context, id int64) (Message, error) {
 }
 
 func (a *PushMessages) AddSimple(ctx context.Context, recipientId int64, value string) (Message, error) {
-	return a.messages.AddSimple(ctx, recipientId, value)
+	msg, err := a.messages.AddSimple(ctx, recipientId, value)
+	pushError := a.sendPush(ctx, msg)
+	if pushError != nil {
+		slog.Error("Can not send push", "Error", pushError.Error())
+	}
+	return msg, err
 }
 
 func (a *PushMessages) AddGenerated(ctx context.Context, recipientId int64, value string) (Message, error) {

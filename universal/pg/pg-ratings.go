@@ -57,7 +57,7 @@ func (s *PgRatings) Average(ctx context.Context) (int, error) {
 func (s *PgRatings) AllModels(ctx context.Context) ([]*universal.RatingModel, error) {
 	// Map subjectId to the owner table's foreign key column, e.g., job_id
 	subjectColumn := s.ownerTable.Name + "_id"
-	query := fmt.Sprintf("select id, reviewee_id, score, review_text, review_image_url, action_created_at, action_created_by_id, %s from %s where %s = $1", subjectColumn, s.ratingTable(), subjectColumn)
+	query := fmt.Sprintf("select id, reviewee_id, score, review_text, review_image_url, action_created_at, action_created_by_id, %s from %s where %s = $1 order by action_created_at desc", subjectColumn, s.ratingTable(), subjectColumn)
 
 	rows, err := s.Db.Pool.Query(ctx, query, s.ownerTable.Id)
 	if err != nil {
@@ -85,7 +85,7 @@ func NewPgRated(db *pg.PgDb, revieweeId int64, tableName string) universal.Rated
 }
 
 func (s *PgRated) AllModels(ctx context.Context) ([]*universal.RatingModel, error) {
-	query := fmt.Sprintf("select id, reviewee_id, score, review_text, review_image_url, action_created_at, action_created_by_id, %s from %s where reviewee_id = $1", s.subjectColumn, s.tableName)
+	query := fmt.Sprintf("select id, reviewee_id, score, review_text, review_image_url, action_created_at, action_created_by_id, %s from %s where reviewee_id = $1 order by action_created_at desc", s.subjectColumn, s.tableName)
 
 	rows, err := s.db.Pool.Query(ctx, query, s.revieweeId)
 	if err != nil {

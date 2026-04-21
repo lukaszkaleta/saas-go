@@ -20,8 +20,9 @@ type Task interface {
 }
 
 type TaskModel struct {
-	Id      int64                       `json:"id"`
-	JobId   int64                       `json:"jobId"`
+	Id    int64 `json:"id"`
+	JobId int64 `json:"jobId"`
+	// UserId is a user who created an offer and now is assigned to this task
 	UserId  int64                       `json:"userId"`
 	OfferId int64                       `json:"offerId"`
 	Summary *universal.DescriptionModel `json:"summary"`
