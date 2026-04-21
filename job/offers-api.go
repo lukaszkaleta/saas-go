@@ -80,7 +80,7 @@ func (m MessagesOfferMaker) Make(ctx context.Context, model *OfferModel) (Offer,
 	if err != nil {
 		return nil, err
 	}
-	_, err = m.job.Messages().AddSimple(ctx, jobCreatedById, message)
+	_, err = m.job.Messages().AddGenerated(ctx, jobCreatedById, message)
 	if err != nil {
 		return nil, err
 	}
