@@ -20,15 +20,15 @@ func NewPgMessages(db *pg.PgDb, owner pg.RelationEntity) messages.Messages {
 	return &PgMessages{db: db, owner: owner}
 }
 
-func (pg *PgMessages) Add(ctx context.Context, recipientId int64, value string) (messages.Message, error) {
-	return pg.AddFromModel(ctx, &messages.MessageModel{Value: value, OwnerId: pg.owner.RelationId, RecipientId: recipientId})
+func (pg *PgMessages) AddSimple(ctx context.Context, recipientId int64, value string) (messages.Message, error) {
+	return pg.Add(ctx, &messages.MessageModel{Value: value, OwnerId: pg.owner.RelationId, RecipientId: recipientId})
 }
 
 func (pg *PgMessages) AddGenerated(ctx context.Context, recipientId int64, value string) (messages.Message, error) {
-	return pg.AddFromModel(ctx, &messages.MessageModel{ValueGenerated: true, Value: value, OwnerId: pg.owner.RelationId, RecipientId: recipientId})
+	return pg.Add(ctx, &messages.MessageModel{ValueGenerated: true, Value: value, OwnerId: pg.owner.RelationId, RecipientId: recipientId})
 }
 
-func (pg *PgMessages) AddFromModel(ctx context.Context, model *messages.MessageModel) (messages.Message, error) {
+func (pg *PgMessages) Add(ctx context.Context, model *messages.MessageModel) (messages.Message, error) {
 	if model.OwnerId != pg.owner.RelationId {
 		return nil, errors.New("Owner inside model and messages does not match")
 	}

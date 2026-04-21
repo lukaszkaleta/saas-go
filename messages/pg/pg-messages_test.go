@@ -45,7 +45,7 @@ func TestPgMessages_Add(t *testing.T) {
 
 	pgMessages := NewPgMessages(db, pg.RelationEntity{TableName: "message", RelationId: USER_ID})
 	value := "test-message"
-	newMessage, err := pgMessages.Add(ctx, USER_ID, value)
+	newMessage, err := pgMessages.AddSimple(ctx, USER_ID, value)
 	if err != nil {
 		t.Fatal(err)
 	}

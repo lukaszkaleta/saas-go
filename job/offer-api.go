@@ -6,11 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	firebase "firebase.google.com/go/v4"
-	"firebase.google.com/go/v4/messaging"
 	"github.com/lukaszkaleta/saas-go/universal"
 	"github.com/lukaszkaleta/saas-go/user"
-	"google.golang.org/api/option"
 )
 
 type Offer interface {
@@ -135,70 +132,57 @@ func (s *SolidOffer) Actions() universal.Actions {
 //
 
 type FirebasePushAcceptor struct {
-	inner    universal.Acceptor
-	users    user.Users
-	offer    Offer
-	jsonPath string
+	inner universal.Acceptor
+	users user.Users
+	offer Offer
 }
 
 func (m *FirebasePushAcceptor) Accept(ctx context.Context) error {
-	userId, err := universal.CreatedById[OfferModel](ctx, m.offer)
+	err := m.inner.Accept(ctx)
 	if err != nil {
 		return err
 	}
+
+	userId, err := universal.CreatedById[OfferModel](ctx, m.offer)
+	if err != nil {
+		// Even if we fail to get userId for push, the main operation succeeded
+		slog.Error("Failed to get creator ID for push notification", "error", err)
+		return nil
+	}
 	u, err := m.users.ById(ctx, userId)
 	if err != nil {
-		return err
+		slog.Error("Failed to get user for push notification", "error", err)
+		return nil
 	}
 
 	model, err := u.Account().Model(ctx)
 	if err != nil {
-		return err
+		slog.Error("Failed to get user model for push notification", "error", err)
+		return nil
 	}
 	token := model.FirebaseToken
 	if token != "" {
 		offerModel, err := m.offer.Model(ctx)
-		var opt option.ClientOption
-		if m.jsonPath != "" {
-			opt = option.WithCredentialsFile(m.jsonPath)
-		} else {
-			opt = option.WithoutAuthentication()
-		}
-		config := &firebase.Config{ProjectID: "naborly-9f7dd"}
-		app, err := firebase.NewApp(ctx, config, opt)
-		dataMap := make(map[string]string)
-		jobId := strconv.FormatInt(offerModel.JobId, 10)
-		offerId := strconv.FormatInt(offerModel.Id, 10)
-		dataMap["link"] = "https://naborly.no/offer/" + string(jobId) + "/" + offerId
 		if err == nil {
-			client, err := app.Messaging(ctx)
-			if err != nil {
-				return err
-			}
-			resultName, sendError := client.Send(ctx, &messaging.Message{
-				Token: token,
-				Notification: &messaging.Notification{
-					Title: "Offer accepted",
-					Body:  "Your offer has been accepted!",
-				},
-				Data: dataMap,
+			jobId := strconv.FormatInt(offerModel.JobId, 10)
+			offerId := strconv.FormatInt(offerModel.Id, 10)
+			sender := universal.PushSender{}
+			sender.SendAsync(ctx, token, universal.PushMessage{
+				Title: "Offer accepted",
+				Body:  "Your offer has been accepted!",
+				Link:  "https://naborly.no/offer/" + string(jobId) + "/" + offerId,
 			})
-			if sendError != nil {
-				return sendError
-			}
-			slog.Info(resultName)
 		}
 	}
 
-	return m.inner.Accept(ctx)
+	return nil
 }
 
-func NewFirebasePushAcceptor(users user.Users, jsonPath string, offer Offer, inner universal.Acceptor) universal.Acceptor {
+func NewFirebasePushAcceptor(users user.Users, offer Offer, inner universal.Acceptor) universal.Acceptor {
 	return &FirebasePushAcceptor{
-		inner:    inner,
-		users:    users,
-		jsonPath: jsonPath,
-		offer:    offer,
+		inner: inner,
+		users: users,
+		offer: offer,
 	}
 }
 
@@ -208,16 +192,23 @@ type MessagesOfferAcceptor struct {
 }
 
 func (m *MessagesOfferAcceptor) Accept(ctx context.Context) error {
+	err := m.inner.Accept(ctx)
+	if err != nil {
+		return err
+	}
+
 	// Check who created offer
 	userId, err := universal.CreatedById[OfferModel](ctx, m.inner)
 	if err != nil {
-		return err
+		slog.Error("Failed to get creator ID for message", "error", err)
+		return nil // Main operation succeeded
 	}
 	_, err = m.job.Messages().AddGenerated(ctx, userId, "Offer accepted")
 	if err != nil {
-		return err
+		slog.Error("Failed to add message", "error", err)
+		return nil // Main operation succeeded
 	}
-	return m.inner.Accept(ctx)
+	return nil
 }
 
 func NewMessagesOfferAcceptor(job Job, inner universal.Acceptor) universal.Acceptor {
@@ -269,10 +260,11 @@ func (m *TaskOnOfferAccept) Accept(ctx context.Context) error {
 	}
 	err = m.job.MakeTask(ctx, m.offerId)
 	if err != nil {
-		return err
+		slog.Error("Failed to make task", "error", err)
+		return nil // Main operation succeeded
 	}
 
-	return m.inner.Accept(ctx)
+	return nil
 }
 
 func NewTaskOnOfferAccept(job Job, offerId int64, inner universal.Acceptor) universal.Acceptor {
@@ -293,18 +285,24 @@ type MessagesOfferRejecter struct {
 }
 
 func (m *MessagesOfferRejecter) Reject(ctx context.Context) error {
+	err := m.inner.Reject(ctx)
+	if err != nil {
+		return err
+	}
+
 	// Check who created offer
 	userId, err := universal.CreatedById[OfferModel](ctx, m.inner)
 	if err != nil {
-		return err
+		slog.Error("Failed to get creator ID for message", "error", err)
+		return nil // Main operation succeeded
 	}
-	// Add message that offer is rejected
+	// AddSimple message that offer is rejected
 	_, err = m.job.Messages().AddGenerated(ctx, userId, "Offer rejected")
 	if err != nil {
-		return err
+		slog.Error("Failed to add message", "error", err)
+		return nil // Main operation succeeded
 	}
-	// Reject offer.
-	return m.inner.Reject(ctx)
+	return nil
 }
 
 func NewMessagesOfferRejecter(job Job, inner Offer) universal.Rejecter {
