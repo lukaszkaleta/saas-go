@@ -34,6 +34,15 @@ func (s *PgRatings) Add(ctx context.Context, r *universal.RatingModel) (universa
 		return nil, err
 	}
 
+	// Update users table with ratings_average selected from all job_ratings as average
+	_, err = s.Db.Pool.Exec(ctx, "UPDATE users SET ratings_average = (SELECT AVG(score) FROM job_rating WHERE reviewee_id = $1) WHERE id = $1", r.RevieweeId)
+	if err != nil {
+		// We might want to log this error, but not fail the whole Add operation?
+		// The requirement doesn't specify error handling, but usually, we should at least try.
+		// For now, let's follow the instruction and add the update.
+		return nil, err
+	}
+
 	return NewPgRating(s.Db, pg.TableEntity{Name: s.ratingTable(), Id: id}), nil
 }
 
