@@ -148,7 +148,39 @@ func (pgJob *PgJob) Closed(ctx context.Context) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return name == "closed", nil
+	return name == job.JobClosed, nil
+}
+
+func (pgJob *PgJob) Cancel(ctx context.Context) error {
+	err := pgJob.State().Change(ctx, job.JobCanceled)
+	if err != nil {
+		return err
+	}
+	acceptedOffer, err := pgJob.Offers().Accepted(ctx)
+	if err != nil {
+		return err
+	}
+	userId, err := universal.CreatedById[job.OfferModel](ctx, acceptedOffer)
+	if err != nil {
+		return err
+	}
+	task, err := NewPgTasks(pgJob.db, userId).ByJobId(ctx, pgJob.Id)
+	if err != nil {
+		return err
+	}
+	err = task.Finish(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (pgJob *PgJob) Canceled(ctx context.Context) (bool, error) {
+	name, err := pgJob.State().Name(ctx)
+	if err != nil {
+		return false, err
+	}
+	return name == job.JobCanceled, nil
 }
 
 func (pgJob *PgJob) PersonModel(ctx context.Context) (*universal.PersonModel, error) {

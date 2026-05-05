@@ -17,6 +17,7 @@ type Job interface {
 	filestore.FileSystemAware
 	universal.ActionsAware
 	universal.Closable
+	universal.Cancelable
 	Model(ctx context.Context) (*JobModel, error)
 	Address() universal.Address
 	Position() universal.Position
@@ -55,6 +56,7 @@ const (
 	JobPublished string = "published"
 	JobOccupied  string = "occupied"
 	JobClosed    string = "closed"
+	JobCanceled  string = "canceled"
 )
 
 func Statuses() []string {
@@ -247,6 +249,14 @@ func (solidJob *SolidJob) Close(ctx context.Context) error {
 
 func (solidJob *SolidJob) Closed(ctx context.Context) (bool, error) {
 	return solidJob.Job.Closed(ctx)
+}
+
+func (solidJob *SolidJob) Cancel(ctx context.Context) error {
+	return solidJob.Job.Cancel(ctx)
+}
+
+func (solidJob *SolidJob) Canceled(ctx context.Context) (bool, error) {
+	return solidJob.Job.Canceled(ctx)
 }
 
 func (solidJob *SolidJob) PersonModel(ctx context.Context) (*universal.PersonModel, error) {

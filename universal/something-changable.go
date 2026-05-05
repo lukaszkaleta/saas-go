@@ -37,3 +37,12 @@ type Closable interface {
 	Closer
 	Closed(ctx context.Context) (bool, error)
 }
+
+type Canceler interface {
+	Cancel(ctx context.Context) error
+}
+
+type Cancelable interface {
+	Canceler
+	Canceled(ctx context.Context) (bool, error)
+}
