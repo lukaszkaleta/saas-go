@@ -17,6 +17,7 @@ CREATE TABLE job (
   status_published timestamp,
   status_occupied timestamp,
   status_closed timestamp,
+  status_canceled timestamp,
   action_created_by_id bigint not null references users,
   action_created_at timestamp not null default now(),
   tags text[]

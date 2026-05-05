@@ -40,6 +40,7 @@ func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input *job.JobSear
 			search_vector @@ q and
 			status_published is not null and 
 			status_closed is null and 
+			status_canceled is null and 
 			status_occupied is null
 		  ORDER BY rank DESC
 		  LIMIT 2000
@@ -54,6 +55,7 @@ func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input *job.JobSear
 			p.earth_point <@ earth_box(ll_to_earth(@lat, @lon), @perimeter) and
 			p.status_published is not null and 
 			p.status_closed is null and 
+			p.status_canceled is null and 
 			p.status_occupied is null
 		ORDER BY
 		  p.rank DESC,
@@ -84,6 +86,7 @@ func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([
 			search_vector @@ q and
 			status_published is not null and 
 			status_closed is null and 
+			status_canceled is null and 
 			status_occupied is null
 		  ORDER BY rank DESC
 		  LIMIT 2000
@@ -107,6 +110,7 @@ func (pgGlobalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.R
 			earth_point <@ earth_box(ll_to_earth(@lat, @lon), @perimeter) and
 			status_published is not null and 
 			status_closed is null and 
+			status_canceled is null and 
 			status_occupied is null
 `
 	rows, err := pgGlobalJobs.db.Pool.Query(ctx, sql, pgx.NamedArgs{"lat": radar.Position.Lat, "lon": radar.Position.Lon, "perimeter": radar.Perimeter})
@@ -117,7 +121,7 @@ func (pgGlobalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.R
 }
 
 func (globalJobs *PgGlobalJobs) ActiveById(ctx context.Context, id int64) (job.Job, error) {
-	query := JobSelect() + "where id = @id and status_published is not null and status_closed is null and status_occupied is null"
+	query := JobSelect() + "where id = @id and status_published is not null and status_closed is null and status_canceled is null and status_occupied is null"
 	rows, err := globalJobs.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": id})
 	if err != nil {
 		return nil, err
@@ -144,7 +148,7 @@ func (globalJobs *PgGlobalJobs) ByIds(ctx context.Context, ids []int64) ([]job.J
 }
 
 func (globalJobs *PgGlobalJobs) AllActive(ctx context.Context) ([]job.Job, error) {
-	query := JobSelect() + " where status_published is not null and status_closed is null and status_occupied is null"
+	query := JobSelect() + " where status_published is not null and status_closed is null and status_canceled is null and status_occupied is null"
 	rows, err := globalJobs.db.Pool.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -153,7 +157,7 @@ func (globalJobs *PgGlobalJobs) AllActive(ctx context.Context) ([]job.Job, error
 }
 
 func (globalJobs *PgGlobalJobs) allActiveSearch(ctx context.Context) ([]*job.JobSearchResult, error) {
-	query := JobColumnsSelect() + ", 0 as distance, 0 as rank from job where status_published is not null and status_closed is null and status_occupied is null"
+	query := JobColumnsSelect() + ", 0 as distance, 0 as rank from job where status_published is not null and status_closed is null and status_canceled is null  and status_occupied is null"
 	rows, err := globalJobs.db.Pool.Query(ctx, query)
 	if err != nil {
 		return nil, err

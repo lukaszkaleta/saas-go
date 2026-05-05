@@ -239,6 +239,7 @@ func MapJobModel(row pgx.CollectableRow) (*job.JobModel, error) {
 	nullTimePublished := sql.NullTime{}
 	nullTimeOccupied := sql.NullTime{}
 	nullTimeClosed := sql.NullTime{}
+	nullTimeCanceled := sql.NullTime{}
 
 	actionCreatedModel := universal.EmptyCreatedActionModel()
 	actions := make(map[string]*universal.ActionModel)
@@ -261,6 +262,7 @@ func MapJobModel(row pgx.CollectableRow) (*job.JobModel, error) {
 		&nullTimePublished,
 		&nullTimeOccupied,
 		&nullTimeClosed,
+		&nullTimeCanceled,
 		&jobModel.Tags,
 		&actionCreatedModel.ById,
 		&actionCreatedModel.MadeAt,
@@ -268,6 +270,7 @@ func MapJobModel(row pgx.CollectableRow) (*job.JobModel, error) {
 	jobModel.State.Published = nullTimePublished.Time
 	jobModel.State.Occupied = nullTimeOccupied.Time
 	jobModel.State.Closed = nullTimeClosed.Time
+	jobModel.State.Canceled = nullTimeCanceled.Time
 	jobModel.Actions = &universal.ActionsModel{List: actions}
 	if err != nil {
 		return nil, err
@@ -293,6 +296,7 @@ func JobColumns() []string {
 		"status_published",
 		"status_occupied",
 		"status_closed",
+		"status_canceled",
 		"tags",
 		"action_created_by_id",
 		"action_created_at",
@@ -345,6 +349,7 @@ func MapSearchJob() pgx.RowToFunc[*job.JobSearchResult] {
 		nullTimePublished := sql.NullTime{}
 		nullTimeOccupied := sql.NullTime{}
 		nullTimeClosed := sql.NullTime{}
+		nullTimeCanceled := sql.NullTime{}
 
 		actionCreated := universal.ActionModel{Name: "created"}
 		actions := make(map[string]*universal.ActionModel)
@@ -375,6 +380,7 @@ func MapSearchJob() pgx.RowToFunc[*job.JobSearchResult] {
 			&nullTimePublished,
 			&nullTimeOccupied,
 			&nullTimeClosed,
+			&nullTimeCanceled,
 			&jobModel.Tags,
 			&actionCreated.ById,
 			&actionCreated.MadeAt,
@@ -385,6 +391,7 @@ func MapSearchJob() pgx.RowToFunc[*job.JobSearchResult] {
 		jobModel.State.Published = nullTimePublished.Time
 		jobModel.State.Occupied = nullTimeOccupied.Time
 		jobModel.State.Closed = nullTimeClosed.Time
+		jobModel.State.Canceled = nullTimeClosed.Time
 		jobModel.Actions = &universal.ActionsModel{List: actions}
 		if err != nil {
 			return nil, err

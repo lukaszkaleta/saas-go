@@ -37,9 +37,13 @@ type JobStatus struct {
 	Published time.Time `json:"published"`
 	Occupied  time.Time `json:"occupied"`
 	Closed    time.Time `json:"closed"`
+	Canceled  time.Time `json:"canceled"`
 }
 
 func (o *JobStatus) Current() string {
+	if !o.Canceled.IsZero() {
+		return JobCanceled
+	}
 	if !o.Closed.IsZero() {
 		return JobClosed
 	}
@@ -60,7 +64,7 @@ const (
 )
 
 func Statuses() []string {
-	return []string{JobPublished, JobOccupied, JobClosed}
+	return []string{JobPublished, JobOccupied, JobClosed, JobCanceled}
 }
 
 func PublicStatuses() []string {
