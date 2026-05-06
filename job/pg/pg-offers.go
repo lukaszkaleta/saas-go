@@ -39,7 +39,14 @@ func (pgOffers *PgOffers) Accepted(ctx context.Context) (job.Offer, error) {
 	if err != nil {
 		return nil, err
 	}
-	return pgx.CollectOneRow(rows, MapOffer(pgOffers.db))
+	collectRows, err := pgx.CollectRows(rows, MapOffer(pgOffers.db))
+	if err != nil {
+		return nil, err
+	}
+	if len(collectRows) == 0 {
+		return nil, nil
+	}
+	return collectRows[0], nil
 }
 
 func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.Offer, error) {

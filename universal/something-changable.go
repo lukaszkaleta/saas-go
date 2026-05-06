@@ -46,3 +46,12 @@ type Cancelable interface {
 	Canceler
 	Canceled(ctx context.Context) (bool, error)
 }
+
+type Publisher interface {
+	Publish(ctx context.Context) error
+}
+
+type Publishable interface {
+	Publisher
+	IsPublic(ctx context.Context) (bool, error)
+}

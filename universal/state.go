@@ -8,6 +8,7 @@ import (
 type State interface {
 	Name(ctx context.Context) (string, error)
 	Change(ctx context.Context, newState string) error
+	ChangeWithClear(ctx context.Context, newState string, clearState string) error
 }
 type SolidState struct {
 	State     State
@@ -33,6 +34,20 @@ func (s *SolidState) Change(ctx context.Context, newState string) error {
 		if a == newState {
 			s.Current = newState
 			return s.State.Change(ctx, newState)
+		}
+	}
+	return fmt.Errorf("state '%s' is not available", newState)
+}
+
+func (s *SolidState) ChangeWithClear(ctx context.Context, newState string, clearState string) error {
+	// ensure the requested state is one of the available states
+	for _, a := range s.Available {
+		if a == newState {
+			s.Current = newState
+			return s.State.ChangeWithClear(ctx, newState, clearState)
+		}
+		if a == clearState {
+
 		}
 	}
 	return fmt.Errorf("state '%s' is not available", newState)

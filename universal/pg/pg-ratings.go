@@ -50,6 +50,18 @@ func (s *PgRatings) ById(ctx context.Context, id int64) (universal.Rating, error
 	return NewPgRating(s.Db, pg.TableEntity{Name: s.ratingTable(), Id: id}), nil
 }
 
+func (s *PgRatings) ModelForUser(ctx context.Context, userId int64) (*universal.RatingModel, error) {
+	subjectColumn := s.ownerTable.Name + "_id"
+	query := fmt.Sprintf("select id, reviewee_id, score, review_text, review_image_url, action_created_at, action_created_by_id, %s from %s where %s = $1 and reviewee_id = $2", subjectColumn, s.ratingTable(), subjectColumn)
+
+	rows, err := s.Db.Pool.Query(ctx, query, s.ownerTable.Id, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return pgx.CollectOneRow(rows, MapRatingModel)
+}
+
 func (s *PgRatings) Average(ctx context.Context) (int, error) {
 	query := fmt.Sprintf("select avg(score) from %s where %s_id = $1", s.ratingTable(), s.ownerTable.Name)
 	var avg *float64

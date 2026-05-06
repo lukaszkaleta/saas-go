@@ -12,6 +12,7 @@ type Rated interface {
 type Ratings interface {
 	Adder[*RatingModel, Rating]
 	ById(ctx context.Context, id int64) (Rating, error)
+	ModelForUser(ctx context.Context, userId int64) (*RatingModel, error)
 	Rated
 }
 
@@ -33,6 +34,10 @@ func (s SolidRatings) Add(ctx context.Context, r *RatingModel) (Rating, error) {
 
 func (s SolidRatings) ById(ctx context.Context, id int64) (Rating, error) {
 	return s.ratings.ById(ctx, id)
+}
+
+func (s SolidRatings) ModelForUser(ctx context.Context, userId int64) (*RatingModel, error) {
+	return s.ratings.ModelForUser(ctx, userId)
 }
 
 func (s SolidRatings) Average(ctx context.Context) (int, error) {
@@ -60,6 +65,10 @@ func (dummy DummyRatings) Add(ctx context.Context, r *RatingModel) (Rating, erro
 
 func (dummy DummyRatings) ById(ctx context.Context, id int64) (Rating, error) {
 	return DummyRating{}, nil
+}
+
+func (dummy DummyRatings) ModelForUser(ctx context.Context, userId int64) (*RatingModel, error) {
+	return nil, nil
 }
 
 func (dummy DummyRatings) Average(ctx context.Context) (int, error) {

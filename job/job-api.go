@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/lukaszkaleta/saas-go/category"
 	"github.com/lukaszkaleta/saas-go/filestore"
 	"github.com/lukaszkaleta/saas-go/messages"
 	"github.com/lukaszkaleta/saas-go/payment"
@@ -18,6 +19,7 @@ type Job interface {
 	universal.ActionsAware
 	universal.Closable
 	universal.Cancelable
+	universal.Publishable
 	Model(ctx context.Context) (*JobModel, error)
 	Address() universal.Address
 	Position() universal.Position
@@ -31,6 +33,7 @@ type Job interface {
 	Ratings() universal.Ratings
 	AssertJobOwnerAccess(ctx context.Context) error
 	PersonModel(ctx context.Context) (*universal.PersonModel, error)
+	UpdateCategory(ctx context.Context, category *category.CategoryModel) error
 }
 
 type JobStatus struct {
@@ -261,6 +264,19 @@ func (solidJob *SolidJob) Cancel(ctx context.Context) error {
 
 func (solidJob *SolidJob) Canceled(ctx context.Context) (bool, error) {
 	return solidJob.Job.Canceled(ctx)
+}
+
+func (solidJob *SolidJob) Publish(ctx context.Context) error {
+	return solidJob.Job.Publish(ctx)
+}
+
+func (solidJob *SolidJob) IsPublic(ctx context.Context) (bool, error) {
+	return solidJob.Job.IsPublic(ctx)
+}
+
+func (solidJob *SolidJob) UpdateCategory(ctx context.Context, category *category.CategoryModel) error {
+
+	return solidJob.Job.UpdateCategory(ctx, category)
 }
 
 func (solidJob *SolidJob) PersonModel(ctx context.Context) (*universal.PersonModel, error) {

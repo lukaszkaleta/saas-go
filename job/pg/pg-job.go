@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/lukaszkaleta/saas-go/category"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/filestore"
 	pgFilestore "github.com/lukaszkaleta/saas-go/filestore/pg"
@@ -160,6 +161,9 @@ func (pgJob *PgJob) Cancel(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	if acceptedOffer == nil {
+		return nil
+	}
 	userId, err := universal.CreatedById[job.OfferModel](ctx, acceptedOffer)
 	if err != nil {
 		return err
@@ -181,6 +185,33 @@ func (pgJob *PgJob) Canceled(ctx context.Context) (bool, error) {
 		return false, err
 	}
 	return name == job.JobCanceled, nil
+}
+
+func (pgJob *PgJob) Publish(ctx context.Context) error {
+	state := pgJob.State()
+	return state.ChangeWithClear(ctx, job.JobPublished, job.JobCanceled)
+}
+
+func (pgJob *PgJob) IsPublic(ctx context.Context) (bool, error) {
+	name, err := pgJob.State().Name(ctx)
+	if err != nil {
+		return false, err
+	}
+	return name == job.JobPublished, nil
+}
+
+func (pgJob *PgJob) UpdateCategory(ctx context.Context, category *category.CategoryModel) error {
+	query := "UPDATE job_category SET category_id = $1 WHERE job_id = $2"
+	res, err := pgJob.db.Pool.Exec(ctx, query, category.Id, pgJob.Id)
+	if err != nil {
+		return err
+	}
+	if res.RowsAffected() == 0 {
+		query = "INSERT INTO job_category (job_id, category_id) VALUES ($1, $2)"
+		_, err = pgJob.db.Pool.Exec(ctx, query, pgJob.Id, category.Id)
+		return err
+	}
+	return nil
 }
 
 func (pgJob *PgJob) PersonModel(ctx context.Context) (*universal.PersonModel, error) {

@@ -51,6 +51,19 @@ func (p *PgState) Change(ctx context.Context, newState string) error {
 	return nil
 }
 
+func (p *PgState) ChangeWithClear(ctx context.Context, newState string, clearState string) error {
+	colNow := p.StateColumn
+	if colNow == "" {
+		colNow = "status"
+	}
+	query := fmt.Sprintf("update %s set %s = $1 where id = $2", p.TableEntity.Name, colNow)
+	_, err := p.Db.Pool.Exec(ctx, query, newState, p.TableEntity.Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 type PgTimestampState struct {
 	Db          *pgdb.PgDb
 	TableEntity pgdb.TableEntity
@@ -113,6 +126,17 @@ func (p *PgTimestampState) Change(ctx context.Context, newState string) error {
 
 	col := "status_" + newState
 	query := fmt.Sprintf("update %s set %s = now() where id = $1", p.TableEntity.Name, col)
+	_, err := p.Db.Pool.Exec(ctx, query, p.TableEntity.Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *PgTimestampState) ChangeWithClear(ctx context.Context, newState string, clearState string) error {
+	colNow := "status_" + newState
+	colClear := "status_" + clearState
+	query := fmt.Sprintf("update %s set %s = now(), %s = null where id = $1", p.TableEntity.Name, colNow, colClear)
 	_, err := p.Db.Pool.Exec(ctx, query, p.TableEntity.Id)
 	if err != nil {
 		return err
