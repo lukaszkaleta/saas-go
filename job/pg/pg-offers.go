@@ -96,12 +96,18 @@ func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.
 }
 
 func (pgOffers *PgOffers) FromUser(ctx context.Context, user universal.Idable) (job.Offer, error) {
-	query := "select * from job_offer where job_id = @jobId and action_created_by_id = @userId order by action_created_at_desc limit 1"
+	query := "select * from job_offer where job_id = @jobId and action_created_by_id = @userId order by action_created_at desc limit 1"
 	rows, err := pgOffers.db.Pool.Query(ctx, query, pgx.NamedArgs{"jobId": pgOffers.JobId, "userId": user.ID()})
 	if err != nil {
 		return nil, err
 	}
 	return pgx.CollectOneRow(rows, MapOffer(pgOffers.db))
+}
+
+func (pgOffers *PgOffers) Delete(ctx context.Context) error {
+	query := "DELETE FROM job_offer WHERE job_id = $1"
+	_, err := pgOffers.db.Pool.Exec(ctx, query, pgOffers.JobId)
+	return err
 }
 
 func (pgOffers *PgOffers) waitingOfferFromUser(ctx context.Context, user *user.UserModel) (job.Offer, error) {

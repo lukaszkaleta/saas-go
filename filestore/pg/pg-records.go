@@ -117,6 +117,31 @@ func (pg *PgRecords) FindByUrl(ctx context.Context, url string) (filestore.Recor
 	return pgx.CollectOneRow(rows, MapRecordFunc(pg.db))
 }
 
+func (pg *PgRecords) Delete(ctx context.Context) error {
+	filesystemId, err := pg.fs.CheckExistence(ctx)
+	if err != nil {
+		return err
+	}
+	if filesystemId <= 0 {
+		return nil
+	}
+
+	// First delete from filesystem_record (the link table) to avoid foreign key violations
+	// when deleting from filestore_record.
+	query := "DELETE FROM filesystem_record WHERE filesystem_id = $1"
+	_, err = pg.db.Pool.Exec(ctx, query, filesystemId)
+	if err != nil {
+		return err
+	}
+
+	// Then delete from filestore_record (records associated with this filesystem)
+	// We might want to only delete records that are NOT associated with other filesystems,
+	// but usually these are specific to the entity.
+	query = "DELETE FROM filestore_record WHERE id NOT IN (SELECT record_id FROM filesystem_record)"
+	_, err = pg.db.Pool.Exec(ctx, query)
+	return err
+}
+
 func RecordNamedArgs(model *filestore.RecordModel) pgx.NamedArgs {
 	return pgx.NamedArgs{
 		"id":                  model.Id,

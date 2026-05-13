@@ -23,6 +23,7 @@ type Offers interface {
 	FromUser(ctx context.Context, user universal.Idable) (Offer, error)
 
 	Accepted(ctx context.Context) (Offer, error)
+	Delete(ctx context.Context) error
 }
 
 // No offers implementation
@@ -46,6 +47,10 @@ func (n NoOffers) Make(ctx context.Context, model *OfferModel) (Offer, error) {
 }
 func (n NoOffers) Accepted(ctx context.Context) (Offer, error) {
 	return nil, nil
+}
+
+func (n NoOffers) Delete(ctx context.Context) error {
+	return nil
 }
 
 type MessagesOfferMaker struct {

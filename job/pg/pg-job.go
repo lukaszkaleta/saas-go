@@ -224,6 +224,26 @@ func (pgJob *PgJob) PersonModel(ctx context.Context) (*universal.PersonModel, er
 	return pgx.CollectOneRow(rows, pgUniversal.MapPersonModel)
 }
 
+func (pgJob *PgJob) Delete(ctx context.Context) error {
+	if err := pgJob.Offers().Delete(ctx); err != nil {
+		return err
+	}
+	if err := pgJob.FileSystem().Delete(ctx); err != nil {
+		return err
+	}
+	if err := pgJob.Messages().Delete(ctx); err != nil {
+		return err
+	}
+	query := "DELETE FROM job_category WHERE job_id = $1"
+	_, err := pgJob.db.Pool.Exec(ctx, query, pgJob.Id)
+	if err != nil {
+		return err
+	}
+	query = "DELETE FROM job WHERE id = $1"
+	_, err = pgJob.db.Pool.Exec(ctx, query, pgJob.Id)
+	return err
+}
+
 func (pgJob *PgJob) tableEntity() pg.TableEntity {
 	return pgJob.db.TableEntity("job", pgJob.Id)
 }

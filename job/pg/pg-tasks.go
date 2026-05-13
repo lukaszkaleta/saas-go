@@ -38,7 +38,7 @@ func (pgTasks *PgTasks) ByJobId(ctx context.Context, jobId int64) (job.Task, err
 }
 
 func (pgTasks *PgTasks) Current(ctx context.Context) (*job.TasksResult, error) {
-	query := "select * from task where user_id = @userId and action_pay_at is null"
+	query := "select * from task where user_id = @userId and action_finished_at is null"
 	rows, err := pgTasks.db.Pool.Query(ctx, query, pgx.NamedArgs{"userId": pgTasks.UserId})
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func (pgTasks *PgTasks) Current(ctx context.Context) (*job.TasksResult, error) {
 func (pgTasks *PgTasks) Completed(ctx context.Context) (*job.TasksResult, error) {
 
 	// Read Tasks
-	query := "select * from task where user_id = @userId and action_finished_at is not null and action_pay_at is not null"
+	query := "select * from task where user_id = @userId and action_finished_at is not null"
 	rows, err := pgTasks.db.Pool.Query(ctx, query, pgx.NamedArgs{"userId": pgTasks.UserId})
 	if err != nil {
 		return nil, err

@@ -27,7 +27,7 @@ func (p *PgFileSystem) ID() int64 {
 }
 
 func (p *PgFileSystem) Model(ctx context.Context) (*filestore.FileSystemModel, error) {
-	query := "select * from filestore_filesystem where id=&id"
+	query := "select * from filestore_filesystem where id=@id"
 	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": p.ID()})
 	if err != nil {
 		return nil, err
@@ -96,6 +96,32 @@ func (p *PgFileSystem) Init(ctx context.Context) (int64, error) {
 
 	p.Id = filesystemId
 	return filesystemId, nil
+}
+
+func (p *PgFileSystem) Delete(ctx context.Context) error {
+	filesystemId, err := p.CheckExistence(ctx)
+	if err != nil {
+		return err
+	}
+	if filesystemId <= 0 {
+		return nil
+	}
+
+	if err := p.Records().Delete(ctx); err != nil {
+		return err
+	}
+
+	// Delete from owner table (e.g. job_filesystem)
+	sql := fmt.Sprintf("delete from %s where filesystem_id = $1", p.Owner.TableName)
+	_, err = p.db.Pool.Exec(ctx, sql, filesystemId)
+	if err != nil {
+		return err
+	}
+
+	// Delete from filestore_filesystem
+	sql = "delete from filestore_filesystem where id = $1"
+	_, err = p.db.Pool.Exec(ctx, sql, filesystemId)
+	return err
 }
 
 func MapFileSystemModel(row pgx.CollectableRow) (*filestore.FileSystemModel, error) {

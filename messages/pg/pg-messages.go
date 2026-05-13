@@ -111,6 +111,12 @@ with my_jobs as (
 	return pgx.CollectRows(rows, MapMessage(pg.db, pg.owner))
 }
 
+func (pg *PgMessages) Delete(ctx context.Context) error {
+	query := fmt.Sprintf("delete from %s where owner_id = $1", pg.owner.TableName)
+	_, err := pg.db.Pool.Exec(ctx, query, pg.owner.RelationId)
+	return err
+}
+
 func MessageNamedArgs(model *messages.MessageModel, currentUserId *int64) pgx.NamedArgs {
 	return pgx.NamedArgs{
 		"ownerId":       model.OwnerId,

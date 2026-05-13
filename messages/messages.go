@@ -17,6 +17,7 @@ type Messages interface {
 	ForRecipientById(ctx context.Context, id int64) ([]Message, error)
 	Acknowledge(ctx context.Context) error
 	LastQuestions(ctx context.Context) ([]Message, error)
+	Delete(ctx context.Context) error
 }
 
 func OwnerIds(ctx context.Context, list []Message) []int64 {

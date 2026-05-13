@@ -34,6 +34,7 @@ type Job interface {
 	AssertJobOwnerAccess(ctx context.Context) error
 	PersonModel(ctx context.Context) (*universal.PersonModel, error)
 	UpdateCategory(ctx context.Context, category *category.CategoryModel) error
+	Delete(ctx context.Context) error
 }
 
 type JobStatus struct {
@@ -281,4 +282,8 @@ func (solidJob *SolidJob) UpdateCategory(ctx context.Context, category *category
 
 func (solidJob *SolidJob) PersonModel(ctx context.Context) (*universal.PersonModel, error) {
 	return solidJob.Job.PersonModel(ctx)
+}
+
+func (solidJob *SolidJob) Delete(ctx context.Context) error {
+	return solidJob.Job.Delete(ctx)
 }

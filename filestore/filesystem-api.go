@@ -15,6 +15,7 @@ type FileSystem interface {
 	Records() Records
 	Init(ctx context.Context) (int64, error)
 	CheckExistence(ctx context.Context) (int64, error)
+	Delete(ctx context.Context) error
 }
 
 type FileSystemAware interface {
@@ -88,6 +89,13 @@ func (addr SolidFileSystem) CheckExistence(ctx context.Context) (int64, error) {
 		return 0, nil
 	}
 	return addr.FileSystem.CheckExistence(ctx)
+}
+
+func (addr SolidFileSystem) Delete(ctx context.Context) error {
+	if addr.FileSystem == nil {
+		return nil
+	}
+	return addr.FileSystem.Delete(ctx)
 }
 
 func (addr SolidFileSystem) ID() int64 {

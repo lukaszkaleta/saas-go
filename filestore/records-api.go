@@ -13,6 +13,7 @@ type Records interface {
 	AddAll(ctx context.Context, model []*RecordModel) ([]Record, error)
 	AddFromUrls(ctx context.Context, urls []string) ([]Record, error)
 	Urls(ctx context.Context) ([]string, error)
+	Delete(ctx context.Context) error
 }
 
 type NoRecords struct {
@@ -36,6 +37,10 @@ func (r NoRecords) AddFromUrls(ctx context.Context, urls []string) ([]Record, er
 
 func (r NoRecords) Urls(ctx context.Context) ([]string, error) {
 	return make([]string, 0), nil
+}
+
+func (r NoRecords) Delete(ctx context.Context) error {
+	return nil
 }
 
 func (NoRecords) Add(ctx context.Context, model *RecordModel) (Record, error) {
