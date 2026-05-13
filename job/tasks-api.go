@@ -15,6 +15,7 @@ type Tasks interface {
 	Completed(ctx context.Context) (*TasksResult, error)
 	WaitingForPayment(ctx context.Context) ([]Task, error)
 	Earnings(ctx context.Context) (map[string]*universal.PriceModel, error)
+	MostUsedClient(ctx context.Context) ([]Job, error)
 }
 
 type TasksResult struct {

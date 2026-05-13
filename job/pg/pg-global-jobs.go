@@ -38,10 +38,7 @@ func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input *job.JobSear
 			websearch_to_tsquery('norwegian', @query) q
 		  WHERE 
 			search_vector @@ q and
-			status_published is not null and 
-			status_closed is null and 
-			status_canceled is null and 
-			status_occupied is null
+			` + WhereStatusIsPublic() + `,
 		  ORDER BY rank DESC
 		  LIMIT 2000
 		)
@@ -53,10 +50,7 @@ func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input *job.JobSear
 		FROM fts_limited p
 		WHERE 
 			p.earth_point <@ earth_box(ll_to_earth(@lat, @lon), @perimeter) and
-			p.status_published is not null and 
-			p.status_closed is null and 
-			p.status_canceled is null and 
-			p.status_occupied is null
+			` + WhereStatusIsPublic() + `
 		ORDER BY
 		  p.rank DESC,
 		  distance ASC
@@ -76,6 +70,15 @@ func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input *job.JobSear
 	return pgGlobalJobs.jobsWithPersons(ctx, rows)
 }
 
+func WhereStatusIsPublic() string {
+	return `
+			status_published is not null and 
+			status_closed is null and 
+			status_canceled is null and 
+			status_occupied is null
+	`
+}
+
 func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([]*job.JobSearchResult, error) {
 	sql := JobColumnsSelect() + `,
 			0 as distance,
@@ -84,10 +87,7 @@ func (pgGlobalJobs *PgGlobalJobs) ByQuery(ctx context.Context, query *string) ([
 			websearch_to_tsquery('norwegian', @query) q
 		  WHERE 
 			search_vector @@ q and
-			status_published is not null and 
-			status_closed is null and 
-			status_canceled is null and 
-			status_occupied is null
+			` + WhereStatusIsPublic() + `
 		  ORDER BY rank DESC
 		  LIMIT 2000
 `
@@ -108,10 +108,7 @@ func (pgGlobalJobs *PgGlobalJobs) NearBy(ctx context.Context, radar *universal.R
 		from job
 		where 
 			earth_point <@ earth_box(ll_to_earth(@lat, @lon), @perimeter) and
-			status_published is not null and 
-			status_closed is null and 
-			status_canceled is null and 
-			status_occupied is null
+			` + WhereStatusIsPublic() + `
 `
 	rows, err := pgGlobalJobs.db.Pool.Query(ctx, sql, pgx.NamedArgs{"lat": radar.Position.Lat, "lon": radar.Position.Lon, "perimeter": radar.Perimeter})
 	if err != nil {
