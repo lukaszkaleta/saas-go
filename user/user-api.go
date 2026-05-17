@@ -14,7 +14,7 @@ type User interface {
 	Model(ctx context.Context) (*UserModel, error)
 	Account() Account
 	Person() universal.Person
-	Address() universal.Address
+	Address(ctx context.Context) universal.Address
 	Settings() UserSettings
 	FileSystem(name string) (filestore.FileSystem, error)
 	Rated() universal.Rated
@@ -119,18 +119,18 @@ func (u SolidUser) Person() universal.Person {
 	return universal.NewSolidPerson(model.Person, nil)
 }
 
-func (u SolidUser) Address() universal.Address {
+func (u SolidUser) Address(ctx context.Context) universal.Address {
 	if u.user != nil {
-		model, err := u.Model(context.Background())
+		model, err := u.Model(ctx)
 		if err != nil {
 			panic(err)
 		}
 		return universal.NewSolidAddress(
 			model.Address,
-			u.user.Address(),
+			u.user.Address(ctx),
 		)
 	}
-	model, err := u.Model(context.Background())
+	model, err := u.Model(ctx)
 	if err != nil {
 		panic(err)
 	}

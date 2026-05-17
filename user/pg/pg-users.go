@@ -72,7 +72,10 @@ func (pgUsers *PgUsers) EstablishAccount(ctx context.Context, model *user.UserMo
 	}
 
 	if userByPhone != nil {
-		userByPhone.Person().Update(ctx, model.Person)
+		err := userByPhone.Person().Update(ctx, model.Person)
+		if err != nil {
+			return userByPhone, err
+		}
 	} else {
 		userByPhone, err = pgUsers.Add(ctx, model.Person)
 		if err != nil {
@@ -80,8 +83,14 @@ func (pgUsers *PgUsers) EstablishAccount(ctx context.Context, model *user.UserMo
 		}
 	}
 
-	userByPhone.Account().Update(ctx, model.Account)
-	userByPhone.Address().Update(ctx, model.Address)
+	err = userByPhone.Account().Update(ctx, model.Account)
+	if err != nil {
+		return userByPhone, err
+	}
+	err = userByPhone.Address(ctx).Update(ctx, model.Address)
+	if err != nil {
+		return userByPhone, err
+	}
 
 	return userByPhone, nil
 }

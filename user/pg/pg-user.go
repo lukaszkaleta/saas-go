@@ -21,7 +21,7 @@ func (pgUser PgUser) ID() int64 {
 	return pgUser.Id
 }
 
-func (pgUser PgUser) Address() universal.Address {
+func (pgUser PgUser) Address(ctx context.Context) universal.Address {
 	return &unversalPg.PgAddress{pgUser.Db, pgUser.TableEntity()}
 }
 
