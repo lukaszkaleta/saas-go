@@ -73,7 +73,7 @@ func (t *PushCloserJob) sendPush(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	personModel := owner.Person().Model(ctx)
+	personModel := owner.Person(ctx).Model(ctx)
 
 	pushMsg := universal.PushMessage{
 		Title: personModel.FirstName,

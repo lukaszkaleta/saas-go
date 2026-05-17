@@ -66,7 +66,7 @@ func (t *PushFinishTask) sendPush(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	personModel := taskUser.Person().Model(ctx)
+	personModel := taskUser.Person(ctx).Model(ctx)
 
 	pushMsg := universal.PushMessage{
 		Title: personModel.FirstName,

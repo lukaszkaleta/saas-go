@@ -72,7 +72,7 @@ func (pgUsers *PgUsers) EstablishAccount(ctx context.Context, model *user.UserMo
 	}
 
 	if userByPhone != nil {
-		err := userByPhone.Person().Update(ctx, model.Person)
+		err := userByPhone.Person(ctx).Update(ctx, model.Person)
 		if err != nil {
 			return userByPhone, err
 		}

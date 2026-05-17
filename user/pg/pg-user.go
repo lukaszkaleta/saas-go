@@ -33,7 +33,7 @@ func (pgUser PgUser) Model(ctx context.Context) (*user.UserModel, error) {
 	return pgx.CollectOneRow(rows, MapUserModel)
 }
 
-func (pgUser PgUser) Person() universal.Person {
+func (pgUser PgUser) Person(ctx context.Context) universal.Person {
 	return &unversalPg.PgPerson{pgUser.Db, pgUser.TableEntity()}
 }
 

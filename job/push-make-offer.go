@@ -66,7 +66,7 @@ func (p *PushMakeOffer) sendPush(ctx context.Context, offer Offer) error {
 	if err != nil {
 		return err
 	}
-	personModel := sender.Person().Model(ctx)
+	personModel := sender.Person(ctx).Model(ctx)
 
 	jobId := strconv.FormatInt(jobModel.ID(), 10)
 	offerId := strconv.FormatInt(offer.ID(), 10)

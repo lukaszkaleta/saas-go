@@ -13,7 +13,7 @@ type User interface {
 	universal.Idable
 	Model(ctx context.Context) (*UserModel, error)
 	Account() Account
-	Person() universal.Person
+	Person(ctx context.Context) universal.Person
 	Address(ctx context.Context) universal.Address
 	Settings() UserSettings
 	FileSystem(name string) (filestore.FileSystem, error)
@@ -101,18 +101,18 @@ func (u SolidUser) Model(ctx context.Context) (*UserModel, error) {
 	return u.model, nil
 }
 
-func (u SolidUser) Person() universal.Person {
+func (u SolidUser) Person(ctx context.Context) universal.Person {
 	if u.user != nil {
-		model, err := u.Model(context.Background())
+		model, err := u.Model(ctx)
 		if err != nil {
 			panic(err)
 		}
 		return universal.NewSolidPerson(
 			model.Person,
-			u.user.Person(),
+			u.user.Person(ctx),
 		)
 	}
-	model, err := u.Model(context.Background())
+	model, err := u.Model(ctx)
 	if err != nil {
 		panic(err)
 	}
