@@ -3,6 +3,7 @@ drop table if exists task_documentation_entry;
 drop table if exists task_filesystem;
 drop table if exists task;
 drop table if exists job_filesystem;
+drop table if exists campaign;
 drop table if exists job_offer;
 drop table if exists job_message_filesystem;
 drop table if exists job_message;

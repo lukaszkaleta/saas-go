@@ -35,6 +35,13 @@ CREATE TABLE job_filesystem (
   job_id bigint not null references job,
   filesystem_id bigint not null references filestore_filesystem
 );
+
+CREATE TABLE campaign (
+  id bigint not null primary key default nextval('job_sequence'),
+  description_value text not null default '',
+  description_image_url text not null default '',
+  tags text[]
+);
 CREATE UNIQUE INDEX job_filesystem_uidx ON job_filesystem USING btree (job_id, filesystem_id);
 CREATE INDEX job_filesystem_job_idx ON job_filesystem USING btree (job_id);
 
