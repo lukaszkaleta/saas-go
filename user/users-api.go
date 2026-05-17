@@ -14,10 +14,14 @@ type Users interface {
 	EstablishAccount(context context.Context, model *UserModel) (User, error)
 }
 
-func UserModels(users []User) []*UserModel {
+func UserModels(ctx context.Context, users []User) ([]*UserModel, error) {
 	var models []*UserModel
 	for _, u := range users {
-		models = append(models, u.Model(context.Background())) // note the = instead of :=
+		model, err := u.Model(ctx)
+		if err != nil {
+			return nil, err
+		}
+		models = append(models, model) // note the = instead of :=
 	}
-	return models
+	return models, nil
 }

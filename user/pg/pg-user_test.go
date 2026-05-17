@@ -38,3 +38,32 @@ func TestPgUser_UpdateSettings(t *testing.T) {
 	}
 	user.Settings().Radar().Update(t.Context(), radarModel)
 }
+
+func TestPgUser_Model(t *testing.T) {
+	teardownSuite, db := pgUserSetupTest(t)
+	defer teardownSuite(t)
+
+	users := PgUsers{Db: db}
+	personModel := &universal.PersonModel{
+		FirstName: "John",
+		LastName:  "Doe",
+		Email:     "john@doe.com",
+		Phone:     "01234",
+	}
+	u, err := users.Add(t.Context(), personModel)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	model, err := u.Model(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if model.Person.FirstName != personModel.FirstName {
+		t.Errorf("expected %s, got %s", personModel.FirstName, model.Person.FirstName)
+	}
+	if model.Person.Phone != personModel.Phone {
+		t.Errorf("expected %s, got %s", personModel.Phone, model.Person.Phone)
+	}
+}

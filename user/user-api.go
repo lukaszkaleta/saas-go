@@ -11,7 +11,7 @@ import (
 
 type User interface {
 	universal.Idable
-	Model(ctx context.Context) *UserModel
+	Model(ctx context.Context) (*UserModel, error)
 	Account() Account
 	Person() universal.Person
 	Address() universal.Address
@@ -22,7 +22,11 @@ type User interface {
 }
 
 func WithUser(ctx context.Context, usr User) context.Context {
-	ctx = context.WithValue(ctx, "current-user", usr.Model(ctx))
+	model, err := usr.Model(ctx)
+	if err != nil {
+		return ctx
+	}
+	ctx = context.WithValue(ctx, "current-user", model)
 	id := usr.ID()
 	return context.WithValue(ctx, universal.CurrentUserKey, &id)
 }
@@ -93,28 +97,44 @@ func NewSolidUser(model *UserModel, user User) User {
 	}
 }
 
-func (u SolidUser) Model(ctx context.Context) *UserModel {
-	return u.model
+func (u SolidUser) Model(ctx context.Context) (*UserModel, error) {
+	return u.model, nil
 }
 
 func (u SolidUser) Person() universal.Person {
 	if u.user != nil {
+		model, err := u.Model(context.Background())
+		if err != nil {
+			panic(err)
+		}
 		return universal.NewSolidPerson(
-			u.Model(context.Background()).Person,
+			model.Person,
 			u.user.Person(),
 		)
 	}
-	return universal.NewSolidPerson(u.Model(context.Background()).Person, nil)
+	model, err := u.Model(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	return universal.NewSolidPerson(model.Person, nil)
 }
 
 func (u SolidUser) Address() universal.Address {
 	if u.user != nil {
+		model, err := u.Model(context.Background())
+		if err != nil {
+			panic(err)
+		}
 		return universal.NewSolidAddress(
-			u.Model(context.Background()).Address,
+			model.Address,
 			u.user.Address(),
 		)
 	}
-	return universal.NewSolidAddress(u.Model(context.Background()).Address, nil)
+	model, err := u.Model(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	return universal.NewSolidAddress(model.Address, nil)
 }
 
 func (u SolidUser) Settings() UserSettings {

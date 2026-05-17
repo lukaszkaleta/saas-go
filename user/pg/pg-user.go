@@ -25,8 +25,12 @@ func (pgUser PgUser) Address() universal.Address {
 	return &unversalPg.PgAddress{pgUser.Db, pgUser.TableEntity()}
 }
 
-func (pgUser PgUser) Model(ctx context.Context) *user.UserModel {
-	return &user.UserModel{}
+func (pgUser PgUser) Model(ctx context.Context) (*user.UserModel, error) {
+	rows, err := pgUser.Db.Pool.Query(ctx, UserSelect()+" where id = $1", pgUser.Id)
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectOneRow(rows, MapUserModel)
 }
 
 func (pgUser PgUser) Person() universal.Person {
