@@ -2,7 +2,7 @@ module github.com/lukaszkaleta/saas-go/filestore
 
 go 1.25.0
 
-require github.com/lukaszkaleta/saas-go/universal v0.2.311
+require github.com/lukaszkaleta/saas-go/universal v0.2.312
 
 replace github.com/lukaszkaleta/saas-go => ../
 
