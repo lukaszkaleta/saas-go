@@ -49,3 +49,7 @@ func (g *GlobalJobsLogger) Search(ctx context.Context, input *JobSearchInput) ([
 	}(time.Now())
 	return g.next.Search(ctx, input)
 }
+
+func (g *GlobalJobsLogger) ActiveCampaignJobs(ctx context.Context) ([]Job, error) {
+	return g.next.ActiveCampaignJobs(ctx)
+}

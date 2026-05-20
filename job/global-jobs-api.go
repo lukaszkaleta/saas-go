@@ -10,6 +10,10 @@ type GlobalJobs interface {
 	universal.FullText[JobSearchResult]
 	Search(ctx context.Context, input *JobSearchInput) ([]*JobSearchResult, error)
 	NearBy(ctx context.Context, position *universal.RadarModel) ([]*JobSearchResult, error)
+
+	// Campaigns
+	ActiveCampaignJobs(ctx context.Context) ([]Job, error)
+
 	ById(ctx context.Context, id int64) (Job, error)
 	ByIds(ctx context.Context, ids []int64) ([]Job, error)
 }

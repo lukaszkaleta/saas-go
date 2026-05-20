@@ -153,6 +153,10 @@ func (globalJobs *PgGlobalJobs) AllActive(ctx context.Context) ([]job.Job, error
 	return pgx.CollectRows(rows, MapJob(globalJobs.db))
 }
 
+func (globalJobs *PgGlobalJobs) ActiveCampaignJobs(ctx context.Context) ([]job.Job, error) {
+	return globalJobs.AllActive(ctx)
+}
+
 func (globalJobs *PgGlobalJobs) allActiveSearch(ctx context.Context) ([]*job.JobSearchResult, error) {
 	query := JobColumnsSelect() + ", 0 as distance, 0 as rank from job where status_published is not null and status_closed is null and status_canceled is null  and status_occupied is null"
 	rows, err := globalJobs.db.Pool.Query(ctx, query)
