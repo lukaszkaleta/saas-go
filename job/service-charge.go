@@ -59,3 +59,53 @@ func (s *SolidServiceCharge) Deactivate(ctx context.Context) error {
 func (s *SolidServiceCharge) IsActive(ctx context.Context) (bool, error) {
 	return s.model.Active, nil
 }
+
+type ServiceChargeSummary struct {
+	Charge       *ServiceChargeModel   `json:"charge"`
+	Price        *universal.PriceModel `json:"price"`
+	WorkerCharge *universal.PriceModel `json:"workerCharge"`
+	WorkerCost   *universal.PriceModel `json:"workerCost"`
+	OwnerCharge  *universal.PriceModel `json:"ownerCharge"`
+	OwnerCost    *universal.PriceModel `json:"ownerCost"`
+}
+
+func NewServiceChargeSummary(charge *ServiceChargeModel, price *universal.PriceModel) *ServiceChargeSummary {
+	c := &ServiceChargeSummary{
+		Charge: charge,
+		Price:  price,
+	}
+	c.WorkerCharge = c.calculate(charge.Worker, price)
+	c.OwnerCharge = c.calculate(charge.Owner, price)
+	c.WorkerCost = &universal.PriceModel{
+		Value:    price.Value - c.WorkerCharge.Value,
+		Currency: price.Currency,
+	}
+	c.OwnerCost = &universal.PriceModel{
+		Value:    price.Value + c.OwnerCharge.Value,
+		Currency: price.Currency,
+	}
+	return c
+}
+
+func (c *ServiceChargeSummary) WorkerPrice() *universal.PriceModel {
+	return c.WorkerCost
+}
+
+func (c *ServiceChargeSummary) OwnerPrice() *universal.PriceModel {
+	return c.OwnerCost
+}
+
+func (c *ServiceChargeSummary) calculate(formula PriceFormula, price *universal.PriceModel) *universal.PriceModel {
+	val := 0
+	switch formula.Mode {
+	case PERCENT:
+		val = price.Value * formula.Value / 100
+	case FIXED:
+		val = formula.Value
+	}
+
+	return &universal.PriceModel{
+		Value:    val,
+		Currency: price.Currency,
+	}
+}
