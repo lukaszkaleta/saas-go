@@ -55,3 +55,17 @@ type Publishable interface {
 	Publisher
 	IsPublic(ctx context.Context) (bool, error)
 }
+
+type Activator interface {
+	Activate(ctx context.Context) error
+}
+
+type Deactivator interface {
+	Deactivate(ctx context.Context) error
+}
+
+type Activable interface {
+	Activator
+	Deactivator
+	IsActive(ctx context.Context) (bool, error)
+}

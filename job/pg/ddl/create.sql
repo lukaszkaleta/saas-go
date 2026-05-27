@@ -1,5 +1,15 @@
 create sequence job_sequence;
 
+CREATE TABLE service_charge (
+    id bigint not null primary key default nextval('job_sequence'),
+    worker_mode text not null default 'PERCENT',
+    worker_value int not null default 0,
+    owner_mode text not null default 'PERCENT',
+    owner_value int not null default 5,
+    active boolean not null default true
+);
+insert into service_charge DEFAULT VALUES;
+
 CREATE TABLE job (
   id bigint not null primary key default nextval('job_sequence'),
   description_value text not null default '',
@@ -13,6 +23,10 @@ CREATE TABLE job (
   position_longitude double precision not null default 0,
   price_value int not null default 0,
   price_currency text not null default 'NOK',
+  price_owner_value int not null default 0,
+  price_owner_mode text not null default 'PERCENT',
+  price_worker_value int not null default 0,
+  price_worker_mode text not null default 'PERCENT',
   rating int not null default 10,
   status_published timestamp,
   status_occupied timestamp,

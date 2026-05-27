@@ -24,6 +24,8 @@ type Job interface {
 	Address() universal.Address
 	Position() universal.Position
 	Price() universal.Price
+	PriceOwner() PriceFormula
+	PriceWorker() PriceFormula
 	Description() universal.Description
 	State() universal.State
 	Offers() Offers
@@ -81,12 +83,21 @@ type JobModel struct {
 	Id          int64                       `json:"id"`
 	Position    *universal.PositionModel    `json:"position"`
 	Price       *universal.PriceModel       `json:"price"`
+	PriceOwner  *PriceFormula               `json:"priceOwner"`
+	PriceWorker *PriceFormula               `json:"priceWorker"`
 	Rating      int                         `json:"rating"`
 	Address     *universal.AddressModel     `json:"address"`
 	Description *universal.DescriptionModel `json:"description"`
 	State       JobStatus                   `json:"state"`
 	Tags        []string                    `json:"tags"`
 	Actions     *universal.ActionsModel     `json:"actions"`
+}
+
+func (m *JobModel) ServiceCharge() *ServiceChargeModel {
+	return &ServiceChargeModel{
+		Owner:  *m.PriceOwner,
+		Worker: *m.PriceWorker,
+	}
 }
 
 func (m JobModel) Hint() *JobHint {
@@ -111,6 +122,8 @@ func EmptyJobModel() *JobModel {
 		Address:     &universal.AddressModel{},
 		Description: universal.EmptyDescriptionModel(),
 		Price:       &universal.PriceModel{},
+		PriceOwner:  &PriceFormula{},
+		PriceWorker: &PriceFormula{},
 	}
 }
 
@@ -168,6 +181,14 @@ func (solidJob *SolidJob) Position() universal.Position {
 		)
 	}
 	return universal.NewSolidPosition(solidJob.model.Position, nil)
+}
+
+func (solidJob *SolidJob) PriceOwner() PriceFormula {
+	return *solidJob.model.PriceOwner
+}
+
+func (solidJob *SolidJob) PriceWorker() PriceFormula {
+	return *solidJob.model.PriceWorker
 }
 
 func (solidJob *SolidJob) Price() universal.Price {

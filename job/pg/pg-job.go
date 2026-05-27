@@ -46,6 +46,22 @@ func (pgJob *PgJob) Model(ctx context.Context) (*job.JobModel, error) {
 	return pgx.CollectOneRow(rows, MapJobModel)
 }
 
+func (pgJob *PgJob) PriceOwner() job.PriceFormula {
+	model, err := pgJob.Model(context.Background())
+	if err != nil {
+		return job.PriceFormula{}
+	}
+	return *model.PriceOwner
+}
+
+func (pgJob *PgJob) PriceWorker() job.PriceFormula {
+	model, err := pgJob.Model(context.Background())
+	if err != nil {
+		return job.PriceFormula{}
+	}
+	return *model.PriceWorker
+}
+
 func (pgJob *PgJob) Address() universal.Address {
 	return &pgUniversal.PgAddress{pgJob.db, pgJob.tableEntity()}
 }
@@ -309,6 +325,10 @@ func MapJobModel(row pgx.CollectableRow) (*job.JobModel, error) {
 		&jobModel.Position.Lon,
 		&jobModel.Price.Value,
 		&jobModel.Price.Currency,
+		&jobModel.PriceOwner.Value,
+		&jobModel.PriceOwner.Mode,
+		&jobModel.PriceWorker.Value,
+		&jobModel.PriceWorker.Mode,
 		&jobModel.Rating,
 		&nullTimePublished,
 		&nullTimeOccupied,
@@ -343,6 +363,10 @@ func JobColumns() []string {
 		"position_longitude",
 		"price_value",
 		"price_currency",
+		"price_owner_value",
+		"price_owner_mode",
+		"price_worker_value",
+		"price_worker_mode",
 		"rating",
 		"status_published",
 		"status_occupied",
@@ -427,6 +451,10 @@ func MapSearchJob() pgx.RowToFunc[*job.JobSearchResult] {
 			&jobModel.Position.Lon,
 			&jobModel.Price.Value,
 			&jobModel.Price.Currency,
+			&jobModel.PriceOwner.Value,
+			&jobModel.PriceOwner.Mode,
+			&jobModel.PriceWorker.Value,
+			&jobModel.PriceWorker.Mode,
 			&jobModel.Rating,
 			&nullTimePublished,
 			&nullTimeOccupied,

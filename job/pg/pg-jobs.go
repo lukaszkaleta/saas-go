@@ -31,7 +31,7 @@ func (pgJobs *PgJobs) ById(ctx context.Context, id int64) (job.Job, error) {
 
 func (pgJobs *PgJobs) Add(ctx context.Context, model *job.JobModel) (job.Job, error) {
 	jobId := int64(0)
-	query := "INSERT INTO job (description_value, description_image_url, position_latitude, position_longitude, address_line_1, address_line_2, address_city, address_postal_code, address_district, price_value, price_currency, rating, tags, action_created_by_id) VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) returning id"
+	query := "INSERT INTO job (description_value, description_image_url, position_latitude, position_longitude, address_line_1, address_line_2, address_city, address_postal_code, address_district, price_value, price_currency, price_owner_value, price_owner_mode, price_worker_value, price_worker_mode, rating, tags, action_created_by_id) VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) returning id"
 	currentUser := user.CurrentUser(ctx)
 	row := pgJobs.db.Pool.QueryRow(
 		ctx,
@@ -47,6 +47,10 @@ func (pgJobs *PgJobs) Add(ctx context.Context, model *job.JobModel) (job.Job, er
 		model.Address.District,
 		model.Price.Value,
 		model.Price.Currency,
+		model.PriceOwner.Value,
+		model.PriceOwner.Mode,
+		model.PriceWorker.Value,
+		model.PriceWorker.Mode,
 		model.Rating,
 		model.Tags,
 		currentUser.Id,

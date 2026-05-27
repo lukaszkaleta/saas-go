@@ -9,4 +9,5 @@ drop table if exists job_message_filesystem;
 drop table if exists job_message;
 drop table if exists job_rating;
 drop table if exists job;
+drop table if exists service_charge;
 drop sequence if exists job_sequence;
