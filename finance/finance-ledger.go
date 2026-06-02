@@ -18,16 +18,8 @@ const (
 
 type FinancialLedger interface {
 	Record(ctx context.Context, entry LedgerEntry) (int64, error)
-
-	// Event helper methods
-	EscrowHold(ctx context.Context, entry LedgerEntry) (int64, error)
-	PayoutRelease(ctx context.Context, entry LedgerEntry) (int64, error)
-	PlatformFee(ctx context.Context, entry LedgerEntry) (int64, error)
-	Payout(ctx context.Context, entry LedgerEntry) (int64, error)
-	Refund(ctx context.Context, entry LedgerEntry) (int64, error)
-	Chargeback(ctx context.Context, entry LedgerEntry) (int64, error)
-	Adjustment(ctx context.Context, entry LedgerEntry) (int64, error)
 	JobView(ctx context.Context, jobID int64) ([]LedgerEntry, error)
-
 	SellerReporting(sellerID int64) SellerReporting
+
+	Events() FinancialEvents
 }
