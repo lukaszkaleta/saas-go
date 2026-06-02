@@ -18,6 +18,8 @@ tags:
 	git tag "category/pg/${VERSION}"
 	git tag "job/${VERSION}"
 	git tag "job/pg/${VERSION}"
+	git tag "finance/${VERSION}"
+	git tag "finance/pg/${VERSION}"
 	git tag "user/${VERSION}"
 	git tag "user/pg/${VERSION}"
 	git push --tags
@@ -34,6 +36,8 @@ reset_build:
 	cd category/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd job && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
 	cd job/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd finance && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd finance/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd user && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
 	cd user/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd payment && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
@@ -54,6 +58,8 @@ build:
 	cd category/pg && go build && cd ../..
 	cd job && go build && cd ..
 	cd job/pg && go build && cd ../..
+	cd finance && go build && cd ..
+	cd finance/pg && go build && cd ../..
 	cd user && go build && cd ..
 	cd user/pg && go build && cd ../..
 	cd payment && go build && cd ../..
@@ -72,6 +78,8 @@ test:
 	cd category/pg && go test && cd ../..
 	cd job && go test && cd ..
 	cd job/pg && go test && cd ../..
+	cd finance && go test && cd ..
+	cd finance/pg && go test && cd ../..
 	cd user && go test && cd ..
 	cd user/pg && go test && cd ../..
 	cd payment && go test && cd ../..

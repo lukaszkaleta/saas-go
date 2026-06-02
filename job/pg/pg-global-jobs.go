@@ -38,7 +38,7 @@ func (pgGlobalJobs *PgGlobalJobs) Search(ctx context.Context, input *job.JobSear
 			websearch_to_tsquery('norwegian', @query) q
 		  WHERE 
 			search_vector @@ q and
-			` + WhereStatusIsPublic() + `,
+			` + WhereStatusIsPublic() + `
 		  ORDER BY rank DESC
 		  LIMIT 2000
 		)
