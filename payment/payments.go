@@ -3,6 +3,10 @@ package payment
 import "context"
 
 type Payments interface {
-	Create(ctx context.Context, offer any) (Intent, error)
+	Creator() PaymentsCreator
 	Search() Search
+}
+
+type PaymentsCreator interface {
+	Create(ctx context.Context, offer any) (Intent, error)
 }

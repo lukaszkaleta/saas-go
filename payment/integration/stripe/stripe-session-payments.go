@@ -14,18 +14,22 @@ import (
 )
 
 type StripeSessionPayments struct {
-	payments       payment.Payments
+	creator        payment.PaymentsCreator
 	successUrl     string
 	failureUrl     string
 	paymentMethods []string
 }
 
-func NewStripeSessionPayments(payments payment.Payments, successUrl string, failureUrl string, paymentMethods []string) payment.Payments {
-	return &StripeSessionPayments{payments: payments, successUrl: successUrl, failureUrl: failureUrl, paymentMethods: paymentMethods}
+func NewStripeSessionPayments(creator payment.PaymentsCreator, successUrl string, failureUrl string, paymentMethods []string) payment.PaymentsCreator {
+	return &StripeSessionPayments{creator: creator, successUrl: successUrl, failureUrl: failureUrl, paymentMethods: paymentMethods}
+}
+
+func (s *StripeSessionPayments) Creator() payment.PaymentsCreator {
+	return s
 }
 
 func (s *StripeSessionPayments) Create(ctx context.Context, offer any) (payment.Intent, error) {
-	intent, err := s.createInternalSession(ctx, offer)
+	intent, err := s.creator.Create(ctx, offer)
 	if err != nil {
 		return nil, err
 	}
@@ -36,14 +40,6 @@ func (s *StripeSessionPayments) Create(ctx context.Context, offer any) (payment.
 	}
 
 	return s.enrichIntent(ctx, intent, stripeId, stripeUrl)
-}
-
-func (s *StripeSessionPayments) Search() payment.Search {
-	return s.payments.Search()
-}
-
-func (s *StripeSessionPayments) createInternalSession(ctx context.Context, offer any) (payment.Intent, error) {
-	return s.payments.Create(ctx, offer)
 }
 
 func (s *StripeSessionPayments) createStripeSession(ctx context.Context, internalIntent payment.Intent) (stripeId string, stripeUrl string, err error) {

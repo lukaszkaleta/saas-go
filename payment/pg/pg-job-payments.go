@@ -24,6 +24,10 @@ func NewPgPayments(db *pg.PgDb, job job.Job) payment.Payments {
 	return &PgPayments{db: db, job: job}
 }
 
+func (p PgPayments) Creator() payment.PaymentsCreator {
+	return p
+}
+
 func (p PgPayments) Create(ctx context.Context, offer any) (payment.Intent, error) {
 
 	ref := uuid.NewString()

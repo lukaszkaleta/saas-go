@@ -11,15 +11,19 @@ import (
 )
 
 type StripeIntentPayments struct {
-	payments payment.Payments
+	creator payment.PaymentsCreator
 }
 
-func NewStripeIntentPayments(payments payment.Payments) payment.Payments {
-	return &StripeIntentPayments{payments: payments}
+func NewStripeIntentPayments(creator payment.PaymentsCreator) payment.PaymentsCreator {
+	return &StripeIntentPayments{creator: creator}
+}
+
+func (s StripeIntentPayments) Creator() payment.PaymentsCreator {
+	return s
 }
 
 func (s StripeIntentPayments) Create(ctx context.Context, offer any) (payment.Intent, error) {
-	intent, err := s.createInternalIntent(ctx, offer)
+	intent, err := s.creator.Create(ctx, offer)
 	if err != nil {
 		return nil, err
 	}
@@ -30,14 +34,6 @@ func (s StripeIntentPayments) Create(ctx context.Context, offer any) (payment.In
 	}
 
 	return s.enrichIntent(ctx, intent, stripeId, clientSecret)
-}
-
-func (s StripeIntentPayments) Search() payment.Search {
-	return s.payments.Search()
-}
-
-func (s StripeIntentPayments) createInternalIntent(ctx context.Context, offer any) (payment.Intent, error) {
-	return s.payments.Create(ctx, offer)
 }
 
 func (s StripeIntentPayments) createStripePaymentIntent(ctx context.Context, internalIntent payment.Intent) (stripeID string, clientSecret string, err error) {
