@@ -23,11 +23,11 @@ func (r *PgDacReporting) SellerEarnings(ctx context.Context, sellerID int64, yea
 	const query = `
 		SELECT
 			seller_id,
-			SUM(CASE WHEN EXTRACT(QUARTER FROM occurred_at)=1 THEN amount ELSE 0 END) q1,
-			SUM(CASE WHEN EXTRACT(QUARTER FROM occurred_at)=2 THEN amount ELSE 0 END) q2,
-			SUM(CASE WHEN EXTRACT(QUARTER FROM occurred_at)=3 THEN amount ELSE 0 END) q3,
-			SUM(CASE WHEN EXTRACT(QUARTER FROM occurred_at)=4 THEN amount ELSE 0 END) q4,
-			SUM(amount) total
+			COALESCE(SUM(CASE WHEN EXTRACT(QUARTER FROM occurred_at)=1 THEN amount ELSE 0 END), 0) q1,
+			COALESCE(SUM(CASE WHEN EXTRACT(QUARTER FROM occurred_at)=2 THEN amount ELSE 0 END), 0) q2,
+			COALESCE(SUM(CASE WHEN EXTRACT(QUARTER FROM occurred_at)=3 THEN amount ELSE 0 END), 0) q3,
+			COALESCE(SUM(CASE WHEN EXTRACT(QUARTER FROM occurred_at)=4 THEN amount ELSE 0 END), 0) q4,
+			COALESCE(SUM(amount), 0) total
 		FROM financial_ledger
 		WHERE seller_id = $1
 		  AND type = $2
@@ -83,11 +83,11 @@ func (r *PgDacReporting) Dac7Report(ctx context.Context, dateRange universal.Dat
 
 			COUNT(DISTINCT fl.job_id) AS number_of_activities,
 
-			SUM(fl.amount) AS total_gross_earnings_minor,
+			COALESCE(SUM(fl.amount), 0) AS total_gross_earnings_minor,
 
-			SUM(COALESCE(fl.fee_amount, 0)) AS total_fees_minor,
+			COALESCE(SUM(COALESCE(fl.fee_amount, 0)), 0) AS total_fees_minor,
 
-			SUM(COALESCE(fl.net_amount, fl.amount - COALESCE(fl.fee_amount, 0)))
+			COALESCE(SUM(COALESCE(fl.net_amount, fl.amount - COALESCE(fl.fee_amount, 0))), 0)
 				AS total_net_earnings_minor
 
 		FROM financial_ledger fl
@@ -168,7 +168,7 @@ func (r *PgDacReporting) PlatformFees(ctx context.Context, dateRange universal.D
 		SELECT
 			seller_id,
 			currency,
-			SUM(fee_amount) AS total_platform_fees_minor
+			COALESCE(SUM(fee_amount), 0) AS total_platform_fees_minor
 
 		FROM financial_ledger
 		WHERE

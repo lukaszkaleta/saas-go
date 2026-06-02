@@ -123,7 +123,7 @@ func (pgTasks *PgTasks) Earnings(ctx context.Context) (map[string]*universal.Pri
 				WHEN t.action_created_at IS NOT NULL THEN 'inProgress'
 				ELSE 'unknown'
 				END AS task_status,
-			SUM(o.price_value) AS total_amount,
+			COALESCE(SUM(o.price_value), 0) AS total_amount,
 			o.price_currency
 		FROM task t
 				 JOIN job_offer o ON o.id = t.offer_id
