@@ -1,6 +1,9 @@
 package universal
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 // API
 type Person interface {
@@ -16,13 +19,16 @@ type Person interface {
 // Model
 
 type PersonModel struct {
-	Id            int64             `json:"id"`
-	FirstName     string            `json:"firstName"`
-	LastName      string            `json:"lastName"`
-	Email         string            `json:"email"`
-	Phone         string            `json:"phone"`
-	Avatar        *DescriptionModel `json:"avatar"`
-	AverageRating int               `json:"rating"`
+	Id                      int64             `json:"id"`
+	FirstName               string            `json:"firstName"`
+	LastName                string            `json:"lastName"`
+	Email                   string            `json:"email"`
+	Phone                   string            `json:"phone"`
+	TaxIdentificationNumber string            `json:"taxIdentificationNumber"`
+	DateOfBirth             *time.Time        `json:"dateOfBirth" omitzero:"true"`
+	CountryCode             string            `json:"countryCode"`
+	Avatar                  *DescriptionModel `json:"avatar"`
+	AverageRating           int               `json:"rating"`
 }
 
 func (model *PersonModel) Change(newModel *PersonModel) {
@@ -30,6 +36,9 @@ func (model *PersonModel) Change(newModel *PersonModel) {
 	model.LastName = newModel.LastName
 	model.Email = newModel.Email
 	model.Phone = newModel.Phone
+	model.TaxIdentificationNumber = newModel.TaxIdentificationNumber
+	model.DateOfBirth = newModel.DateOfBirth
+	model.CountryCode = newModel.CountryCode
 	model.ChangeAverageRating(newModel.AverageRating)
 }
 

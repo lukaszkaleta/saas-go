@@ -20,8 +20,8 @@ func (pgPerson *PgPerson) Ratings() universal.Ratings {
 }
 
 func (pgPerson *PgPerson) Update(ctx context.Context, model *universal.PersonModel) error {
-	query := fmt.Sprintf("update %s set person_first_name = $1, person_last_name = $2, person_email = $3, person_phone = $4 where id = $5", pgPerson.TableEntity.Name)
-	_, err := pgPerson.Db.Pool.Exec(ctx, query, model.FirstName, model.LastName, model.Email, model.Phone, pgPerson.TableEntity.Id)
+	query := fmt.Sprintf("update %s set person_first_name = $1, person_last_name = $2, person_email = $3, person_phone = $4, tax_identification_number = $5, date_of_birth = $6, country_code = $7 where id = $8", pgPerson.TableEntity.Name)
+	_, err := pgPerson.Db.Pool.Exec(ctx, query, model.FirstName, model.LastName, model.Email, model.Phone, model.TaxIdentificationNumber, model.DateOfBirth, model.CountryCode, pgPerson.TableEntity.Id)
 	if err != nil {
 		return err
 	}
@@ -72,6 +72,9 @@ func MapPersonModel(row pgx.CollectableRow) (*universal.PersonModel, error) {
 		&personModel.LastName,
 		&personModel.Email,
 		&personModel.Phone,
+		&personModel.TaxIdentificationNumber,
+		&personModel.DateOfBirth,
+		&personModel.CountryCode,
 		&personModel.Avatar.Value,
 		&personModel.Avatar.ImageUrl,
 		&personModel.AverageRating,
@@ -89,6 +92,9 @@ func PersonColumns() []string {
 		"person_last_name",
 		"person_email",
 		"person_phone",
+		"tax_identification_number",
+		"date_of_birth",
+		"country_code",
 		"avatar_description_value",
 		"avatar_description_image_url",
 		"ratings_average",
