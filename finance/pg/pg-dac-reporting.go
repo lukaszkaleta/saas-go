@@ -15,6 +15,10 @@ type PgDacReporting struct {
 	db *pg.PgDb
 }
 
+func NewPgDacReporting(db *pg.PgDb) *PgDacReporting {
+	return &PgDacReporting{db: db}
+}
+
 func (r *PgDacReporting) SellerEarnings(ctx context.Context, sellerID int64, year int) (finance.SellerEarnings, error) {
 	const query = `
 		SELECT
