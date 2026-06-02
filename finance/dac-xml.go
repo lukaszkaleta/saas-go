@@ -189,7 +189,7 @@ func (s *Dac7Xml) Generate(ctx context.Context, dateRange universal.DateRange) (
 
 		Platform: PlatformXML{
 			PlatformName: "Naborly",
-			TIN:          "YOUR_PLATFORM_TIN",
+			TIN:          "935965322",
 			CountryCode:  "NO",
 		},
 

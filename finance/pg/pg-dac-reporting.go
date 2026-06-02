@@ -36,7 +36,8 @@ func (r *PgDacReporting) SellerEarnings(ctx context.Context, sellerID int64, yea
 		GROUP BY seller_id;
 	`
 
-	start := time.Date(year, 1, 1, 0, 0, 0, 0, time.UTC)
+	y := universal.NewYear(year)
+	start := y.From(time.UTC)
 	end := start.AddDate(1, 0, 0)
 
 	var res finance.SellerEarnings
