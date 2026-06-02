@@ -24,8 +24,8 @@ func NewStripeSessionPayments(payments payment.Payments, successUrl string, fail
 	return &StripeSessionPayments{payments: payments, successUrl: successUrl, failureUrl: failureUrl, paymentMethods: paymentMethods}
 }
 
-func (s *StripeSessionPayments) Create(ctx context.Context, id int64) (payment.Intent, error) {
-	intent, err := s.createInternalSession(ctx, id)
+func (s *StripeSessionPayments) Create(ctx context.Context, offer any) (payment.Intent, error) {
+	intent, err := s.createInternalSession(ctx, offer)
 	if err != nil {
 		return nil, err
 	}
@@ -42,8 +42,8 @@ func (s *StripeSessionPayments) Search() payment.Search {
 	return s.payments.Search()
 }
 
-func (s *StripeSessionPayments) createInternalSession(ctx context.Context, id int64) (payment.Intent, error) {
-	return s.payments.Create(ctx, id)
+func (s *StripeSessionPayments) createInternalSession(ctx context.Context, offer any) (payment.Intent, error) {
+	return s.payments.Create(ctx, offer)
 }
 
 func (s *StripeSessionPayments) createStripeSession(ctx context.Context, internalIntent payment.Intent) (stripeId string, stripeUrl string, err error) {
