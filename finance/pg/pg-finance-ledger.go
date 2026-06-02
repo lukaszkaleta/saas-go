@@ -87,3 +87,9 @@ func (l *PgFinancialLedger) SellerReporting(sellerID int64) finance.SellerReport
 		sellerID: sellerID,
 	}
 }
+
+func (l *PgFinancialLedger) DacReporting() finance.DacReporting {
+	return &PgDacReporting{
+		db: l.db,
+	}
+}

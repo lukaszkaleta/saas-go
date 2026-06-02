@@ -1,11 +1,11 @@
 CREATE TABLE financial_ledger (
     id BIGSERIAL PRIMARY KEY,
     -- seller = who earns money (DPI anchor)
-    seller_id int64 NOT NULL REFERENCES users (id),
+    seller_id BIGINT NOT NULL REFERENCES users (id),
     -- buyer = who pays money
-    buyer_id int64 REFERENCES users (id),
+    buyer_id BIGINT REFERENCES users (id),
     -- related job
-    job_id int64 references job(id),
+    job_id BIGINT references job(id),
     -- event type (defines meaning)
     type SMALLINT NOT NULL,
     /*

@@ -20,6 +20,7 @@ type FinancialLedger interface {
 	Record(ctx context.Context, entry LedgerEntry) (int64, error)
 	JobView(ctx context.Context, jobID int64) ([]LedgerEntry, error)
 	SellerReporting(sellerID int64) SellerReporting
+	DacReporting() DacReporting
 
 	Events() FinancialEvents
 }
