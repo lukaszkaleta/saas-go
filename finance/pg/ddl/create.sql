@@ -9,10 +9,10 @@ CREATE TABLE financial_ledger (
     -- event type (defines meaning)
     type SMALLINT NOT NULL,
     /*
-        1 = escrow_hold
-        2 = payout_release
-        3 = platform_fee
-        4 = payout
+        1 = escrow_hold        -> customer paid
+        2 = payout_release     -> SELLER EARNED (DAC7 SOURCE OF TRUTH)
+        3 = platform_fee       -> revenue
+        4 = payout             -> Stripe transfer only (ignore for DAC7)
         5 = refund
         6 = chargeback
         7 = adjustment

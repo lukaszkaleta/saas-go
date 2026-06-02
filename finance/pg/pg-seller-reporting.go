@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/lukaszkaleta/saas-go/database/pg"
+	"github.com/lukaszkaleta/saas-go/finance"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
@@ -14,14 +15,15 @@ type PgSellerReporting struct {
 
 func (r *PgSellerReporting) SumInPeriod(ctx context.Context, period universal.DateRange) (int64, error) {
 	const query = `
-		SELECT SUM(net_amount)
+		SELECT SUM(amount)
 		FROM financial_ledger
 		WHERE seller_id = $1
-		  AND occurred_at BETWEEN $2 AND $3
+		  AND type = $2
+		  AND occurred_at BETWEEN $3 AND $4
 	`
 
 	var sum *int64
-	err := r.db.Pool.QueryRow(ctx, query, r.sellerID, period.From, period.To).Scan(&sum)
+	err := r.db.Pool.QueryRow(ctx, query, r.sellerID, finance.EventPayoutRelease, period.From, period.To).Scan(&sum)
 	if err != nil {
 		return 0, err
 	}
