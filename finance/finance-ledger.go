@@ -4,16 +4,16 @@ import (
 	"context"
 )
 
-type EventType string
+type EventType int
 
 const (
-	EventEscrowHold    EventType = "escrow_hold"
-	EventPayoutRelease EventType = "payout_release"
-	EventPlatformFee   EventType = "platform_fee"
-	EventPayout        EventType = "payout"
-	EventRefund        EventType = "refund"
-	EventChargeback    EventType = "chargeback"
-	EventAdjustment    EventType = "adjustment"
+	EventEscrowHold    EventType = 1
+	EventPayoutRelease EventType = 2
+	EventPlatformFee   EventType = 3
+	EventPayout        EventType = 4
+	EventRefund        EventType = 5
+	EventChargeback    EventType = 6
+	EventAdjustment    EventType = 7
 )
 
 type FinancialLedger interface {
@@ -27,4 +27,7 @@ type FinancialLedger interface {
 	Refund(ctx context.Context, entry LedgerEntry) (int64, error)
 	Chargeback(ctx context.Context, entry LedgerEntry) (int64, error)
 	Adjustment(ctx context.Context, entry LedgerEntry) (int64, error)
+	JobView(ctx context.Context, jobID int64) ([]LedgerEntry, error)
+
+	SellerReporting(sellerID int64) SellerReporting
 }

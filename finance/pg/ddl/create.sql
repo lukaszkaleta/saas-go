@@ -7,15 +7,15 @@ CREATE TABLE financial_ledger (
     -- related job
     job_id int64 references job(id),
     -- event type (defines meaning)
-    type TEXT NOT NULL,
+    type SMALLINT NOT NULL,
     /*
-        escrow_hold
-        payout_release
-        platform_fee
-        payout
-        refund
-        chargeback
-        adjustment
+        1 = escrow_hold
+        2 = payout_release
+        3 = platform_fee
+        4 = payout
+        5 = refund
+        6 = chargeback
+        7 = adjustment
     */
 
     -- MONEY (minor units, e.g. 100 NOK = 10000)
@@ -43,3 +43,34 @@ CREATE TABLE financial_ledger (
     -- flexible metadata
     metadata JSONB
 );
+
+CREATE UNIQUE INDEX financial_ledger_payment_intent_unique_index
+    ON financial_ledger(stripe_payment_intent_id, type)
+    WHERE stripe_payment_intent_id IS NOT NULL;
+
+CREATE UNIQUE INDEX financial_ledger_transfer_unique_index
+    ON financial_ledger(stripe_transfer_id, type)
+    WHERE stripe_transfer_id IS NOT NULL;
+
+CREATE UNIQUE INDEX financial_ledger_payout_unique_index
+    ON financial_ledger(stripe_payout_id, type)
+    WHERE stripe_payout_id IS NOT NULL;
+
+CREATE UNIQUE INDEX financial_ledger_refund_unique_index
+    ON financial_ledger(stripe_refund_id, type)
+    WHERE stripe_refund_id IS NOT NULL;
+
+CREATE INDEX financial_ledger_seller_occurred_index
+    ON financial_ledger(seller_id, occurred_at);
+
+CREATE INDEX financial_ledger_job_index
+    ON financial_ledger(job_id, occurred_at);
+
+CREATE INDEX financial_ledger_buyer_occurred_index
+    ON financial_ledger(buyer_id, occurred_at);
+
+CREATE INDEX financial_ledger_type_occurred_index
+    ON financial_ledger(type, occurred_at);
+
+CREATE INDEX financial_ledger_occurred_index
+    ON financial_ledger(occurred_at);
