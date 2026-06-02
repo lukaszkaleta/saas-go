@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/finance"
+	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type PgDacReporting struct {
@@ -53,7 +54,7 @@ func (r *PgDacReporting) SellerEarnings(ctx context.Context, sellerID int64, yea
 	return res, nil
 }
 
-func (r *PgDacReporting) Dac7Report(ctx context.Context, start, end time.Time) ([]finance.Dac7ReportRow, error) {
+func (r *PgDacReporting) Dac7Report(ctx context.Context, dateRange universal.DateRange) ([]finance.Dac7ReportRow, error) {
 	const query = `
 		SELECT
 			u.id AS seller_id,
@@ -115,7 +116,7 @@ func (r *PgDacReporting) Dac7Report(ctx context.Context, start, end time.Time) (
 			u.id;
 	`
 
-	rows, err := r.db.Pool.Query(ctx, query, start, end)
+	rows, err := r.db.Pool.Query(ctx, query, dateRange.From, dateRange.To)
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +158,7 @@ func (r *PgDacReporting) Dac7Report(ctx context.Context, start, end time.Time) (
 	return report, nil
 }
 
-func (r *PgDacReporting) PlatformFees(ctx context.Context, start, end time.Time) ([]finance.PlatformFees, error) {
+func (r *PgDacReporting) PlatformFees(ctx context.Context, dateRange universal.DateRange) ([]finance.PlatformFees, error) {
 	const query = `
 		SELECT
 			seller_id,
@@ -173,7 +174,7 @@ func (r *PgDacReporting) PlatformFees(ctx context.Context, start, end time.Time)
 		GROUP BY seller_id, currency;
 	`
 
-	rows, err := r.db.Pool.Query(ctx, query, finance.EventPayoutRelease, start, end)
+	rows, err := r.db.Pool.Query(ctx, query, finance.EventPayoutRelease, dateRange.From, dateRange.To)
 	if err != nil {
 		return nil, err
 	}

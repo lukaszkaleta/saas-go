@@ -5,6 +5,8 @@ import (
 	"encoding/xml"
 	"sort"
 	"time"
+
+	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type DAC7Message struct {
@@ -107,14 +109,14 @@ func NewDac7Xml(repo DacReporting) *Dac7Xml {
 	return &Dac7Xml{repo: repo}
 }
 
-func (s *Dac7Xml) Generate(ctx context.Context, start, end time.Time) ([]byte, error) {
+func (s *Dac7Xml) Generate(ctx context.Context, dateRange universal.DateRange) ([]byte, error) {
 
-	rows, err := s.repo.Dac7Report(ctx, start, end)
+	rows, err := s.repo.Dac7Report(ctx, dateRange)
 	if err != nil {
 		return nil, err
 	}
 
-	fees, err := s.repo.PlatformFees(ctx, start, end)
+	fees, err := s.repo.PlatformFees(ctx, dateRange)
 	if err != nil {
 		return nil, err
 	}

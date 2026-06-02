@@ -3,6 +3,8 @@ package finance
 import (
 	"context"
 	"time"
+
+	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type SellerEarnings struct {
@@ -43,6 +45,6 @@ type PlatformFees struct {
 
 type DacReporting interface {
 	SellerEarnings(ctx context.Context, sellerID int64, year int) (SellerEarnings, error)
-	Dac7Report(ctx context.Context, start, end time.Time) ([]Dac7ReportRow, error)
-	PlatformFees(ctx context.Context, start, end time.Time) ([]PlatformFees, error)
+	Dac7Report(ctx context.Context, dateRange universal.DateRange) ([]Dac7ReportRow, error)
+	PlatformFees(ctx context.Context, dateRange universal.DateRange) ([]PlatformFees, error)
 }
