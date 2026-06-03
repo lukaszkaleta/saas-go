@@ -37,6 +37,12 @@ type Job interface {
 	PersonModel(ctx context.Context) (*universal.PersonModel, error)
 	UpdateCategory(ctx context.Context, category *category.CategoryModel) error
 	Delete(ctx context.Context) error
+	Workers() JobWorkers
+	Statistics() Statistics
+}
+
+type Statistics interface {
+	Clicks() universal.Counter
 }
 
 type JobStatus struct {
@@ -91,6 +97,7 @@ type JobModel struct {
 	State       JobStatus                   `json:"state"`
 	Tags        []string                    `json:"tags"`
 	Actions     *universal.ActionsModel     `json:"actions"`
+	Clicks      int64                       `json:"clicks"`
 }
 
 func (m *JobModel) ServiceCharge() *ServiceChargeModel {
@@ -307,4 +314,12 @@ func (solidJob *SolidJob) PersonModel(ctx context.Context) (*universal.PersonMod
 
 func (solidJob *SolidJob) Delete(ctx context.Context) error {
 	return solidJob.Job.Delete(ctx)
+}
+
+func (solidJob *SolidJob) Workers() JobWorkers {
+	return solidJob.Job.Workers()
+}
+
+func (solidJob *SolidJob) Statistics() Statistics {
+	return solidJob.Job.Statistics()
 }

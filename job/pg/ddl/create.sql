@@ -34,7 +34,8 @@ CREATE TABLE job (
   status_canceled timestamp,
   action_created_by_id bigint not null references users,
   action_created_at timestamp not null default now(),
-  tags text[]
+  tags text[],
+  clicks bigint not null default 0
 );
 
 ALTER TABLE job ADD COLUMN search_vector tsvector;

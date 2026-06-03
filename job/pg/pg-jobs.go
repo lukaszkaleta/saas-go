@@ -104,6 +104,14 @@ func (pgJobs *PgJobs) IdsWithFinishedTasks(ctx context.Context, jobIds []int64) 
 	return pgx.CollectRows(rows, pgx.RowTo[int64])
 }
 
+func (pgJobs *PgJobs) Search() job.JobSearch {
+	return NewPgJobSearch(pgJobs.db)
+}
+
+func (pgJobs *PgJobs) Workers() job.JobWorkers {
+	return NewPgJobWorkers(pgJobs.db)
+}
+
 // Relation
 
 type PgRelationJobs struct {
@@ -162,4 +170,12 @@ func (p PgRelationJobs) IdsWithFinishedTasks(ctx context.Context, jobIds []int64
 		return nil, err
 	}
 	return pgx.CollectRows(rows, pgx.RowTo[int64])
+}
+
+func (p PgRelationJobs) Search() job.JobSearch {
+	return p.Jobs.Search()
+}
+
+func (p PgRelationJobs) Workers() job.JobWorkers {
+	return p.Jobs.Workers()
 }

@@ -12,6 +12,12 @@ type Jobs interface {
 	Add(ctx context.Context, model *JobModel) (Job, error)
 	List(ctx context.Context) ([]Job, error)
 	IdsWithFinishedTasks(ctx context.Context, jobIds []int64) ([]int64, error)
+	Search() JobSearch
+	Workers() JobWorkers
+}
+
+type JobSearch interface {
+	ByQuery(ctx context.Context, query string) ([]Job, error)
 }
 
 func JobModels(ctx context.Context, jobs []Job) []*JobModel {

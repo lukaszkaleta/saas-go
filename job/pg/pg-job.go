@@ -260,6 +260,14 @@ func (pgJob *PgJob) Delete(ctx context.Context) error {
 	return err
 }
 
+func (pgJob *PgJob) Workers() job.JobWorkers {
+	return NewPgJobWorkers(pgJob.db)
+}
+
+func (pgJob *PgJob) Statistics() job.Statistics {
+	return &PgStatistics{Db: pgJob.db, TableEntity: pgJob.tableEntity()}
+}
+
 func (pgJob *PgJob) tableEntity() pg.TableEntity {
 	return pgJob.db.TableEntity("job", pgJob.Id)
 }
@@ -335,6 +343,7 @@ func MapJobModel(row pgx.CollectableRow) (*job.JobModel, error) {
 		&nullTimeClosed,
 		&nullTimeCanceled,
 		&jobModel.Tags,
+		&jobModel.Clicks,
 		&actionCreatedModel.ById,
 		&actionCreatedModel.MadeAt,
 	)
@@ -373,6 +382,7 @@ func JobColumns() []string {
 		"status_closed",
 		"status_canceled",
 		"tags",
+		"clicks",
 		"action_created_by_id",
 		"action_created_at",
 	}
