@@ -97,7 +97,7 @@ type JobModel struct {
 	State                JobStatus                   `json:"state"`
 	Tags                 []string                    `json:"tags"`
 	Actions              *universal.ActionsModel     `json:"actions"`
-	StatisticsClickCount int64                       `json:"statistics_click_count"`
+	StatisticsClickCount int64                       `json:"statisticsClickCount"`
 }
 
 func (m *JobModel) ServiceCharge() *ServiceChargeModel {
