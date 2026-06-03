@@ -86,18 +86,18 @@ func PublicStatuses() []string {
 // JobModel
 
 type JobModel struct {
-	Id          int64                       `json:"id"`
-	Position    *universal.PositionModel    `json:"position"`
-	Price       *universal.PriceModel       `json:"price"`
-	PriceOwner  *PriceFormula               `json:"priceOwner"`
-	PriceWorker *PriceFormula               `json:"priceWorker"`
-	Rating      int                         `json:"rating"`
-	Address     *universal.AddressModel     `json:"address"`
-	Description *universal.DescriptionModel `json:"description"`
-	State       JobStatus                   `json:"state"`
-	Tags        []string                    `json:"tags"`
-	Actions     *universal.ActionsModel     `json:"actions"`
-	Clicks      int64                       `json:"clicks"`
+	Id                   int64                       `json:"id"`
+	Position             *universal.PositionModel    `json:"position"`
+	Price                *universal.PriceModel       `json:"price"`
+	PriceOwner           *PriceFormula               `json:"priceOwner"`
+	PriceWorker          *PriceFormula               `json:"priceWorker"`
+	Rating               int                         `json:"rating"`
+	Address              *universal.AddressModel     `json:"address"`
+	Description          *universal.DescriptionModel `json:"description"`
+	State                JobStatus                   `json:"state"`
+	Tags                 []string                    `json:"tags"`
+	Actions              *universal.ActionsModel     `json:"actions"`
+	StatisticsClickCount int64                       `json:"statistics_click_count"`
 }
 
 func (m *JobModel) ServiceCharge() *ServiceChargeModel {

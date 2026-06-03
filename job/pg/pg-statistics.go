@@ -13,8 +13,7 @@ type PgStatistics struct {
 
 func (s *PgStatistics) Clicks() universal.Counter {
 	return &pgUniversal.PgCounter{
-		Db:          s.Db,
-		TableEntity: s.TableEntity,
-		ColumnName:  "clicks",
+		Db:       s.Db,
+		Relation: s.TableEntity.RelationEntityWithColumnName(s.TableEntity.Name, "statistics_click_count"),
 	}
 }

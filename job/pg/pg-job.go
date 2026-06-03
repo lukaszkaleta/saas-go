@@ -343,7 +343,7 @@ func MapJobModel(row pgx.CollectableRow) (*job.JobModel, error) {
 		&nullTimeClosed,
 		&nullTimeCanceled,
 		&jobModel.Tags,
-		&jobModel.Clicks,
+		&jobModel.StatisticsClickCount,
 		&actionCreatedModel.ById,
 		&actionCreatedModel.MadeAt,
 	)
@@ -382,7 +382,7 @@ func JobColumns() []string {
 		"status_closed",
 		"status_canceled",
 		"tags",
-		"clicks",
+		"statistics_click_count",
 		"action_created_by_id",
 		"action_created_at",
 	}
@@ -471,6 +471,7 @@ func MapSearchJob() pgx.RowToFunc[*job.JobSearchResult] {
 			&nullTimeClosed,
 			&nullTimeCanceled,
 			&jobModel.Tags,
+			&jobModel.StatisticsClickCount,
 			&actionCreated.ById,
 			&actionCreated.MadeAt,
 
