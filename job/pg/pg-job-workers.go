@@ -33,3 +33,18 @@ func (p *PgJobWorkers) Suggest(ctx context.Context, j job.Job) ([]*universal.Per
 	}
 	return pgx.CollectRows(rows, pguniversal.MapPersonModel)
 }
+func (p *PgJobWorkers) Repeat(ctx context.Context, j job.Job) ([]*universal.PersonModel, error) {
+	query := `
+		SELECT DISTINCT ` + pguniversal.MapPersonColumnString(func(c string) string { return "u." + c }) + `
+		FROM users u
+		JOIN task t ON t.user_id = u.id
+		JOIN job j_past ON j_past.id = t.job_id
+		JOIN job j_current ON j_current.action_created_by_id = j_past.action_created_by_id
+		WHERE j_current.id = $1
+	`
+	rows, err := p.db.Pool.Query(ctx, query, j.ID())
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectRows(rows, pguniversal.MapPersonModel)
+}

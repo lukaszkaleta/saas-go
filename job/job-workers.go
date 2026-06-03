@@ -8,4 +8,5 @@ import (
 
 type JobWorkers interface {
 	Suggest(ctx context.Context, job Job) ([]*universal.PersonModel, error)
+	Repeat(ctx context.Context, job Job) ([]*universal.PersonModel, error)
 }
