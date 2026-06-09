@@ -19,6 +19,10 @@ type ChatModel struct {
 	Actions  *universal.ActionsModel `json:"actions"`
 }
 
+type GlobalChats interface {
+	RelationIds(ctx context.Context, chatIds []int64) (map[int64]int64, error)
+}
+
 func (m ChatModel) ID() int64 {
 	return m.Id
 }

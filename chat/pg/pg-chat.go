@@ -14,6 +14,10 @@ type PgChat struct {
 	Id int64
 }
 
+func NewPgChat(db *pg.PgDb, id int64) *PgChat {
+	return &PgChat{db: db, Id: id}
+}
+
 func (c *PgChat) ID() int64 {
 	return c.Id
 }
