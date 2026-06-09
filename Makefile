@@ -22,6 +22,8 @@ tags:
 	git tag "finance/pg/${VERSION}"
 	git tag "user/${VERSION}"
 	git tag "user/pg/${VERSION}"
+	git tag "chat/${VERSION}"
+	git tag "chat/pg/${VERSION}"
 	git push --tags
 
 reset_build:
@@ -40,6 +42,8 @@ reset_build:
 	cd finance/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd user && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
 	cd user/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
+	cd chat && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
+	cd chat/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd payment && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd payment/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd payment/integration/stripe && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../../..
@@ -62,6 +66,8 @@ build:
 	cd finance/pg && go build && cd ../..
 	cd user && go build && cd ..
 	cd user/pg && go build && cd ../..
+	cd chat && go build && cd ..
+	cd chat/pg && go build && cd ../..
 	cd payment && go build && cd ../..
 	cd payment/pg && go build && cd ../..
 	cd payment/integration/stripe && go build && cd ../../..
@@ -82,6 +88,8 @@ test:
 	cd finance/pg && go test && cd ../..
 	cd user && go test && cd ..
 	cd user/pg && go test && cd ../..
+	cd chat && go test && cd ..
+	cd chat/pg && go test && cd ../..
 	cd payment && go test && cd ../..
 	cd payment/pg && go test && cd ../..
 	cd payment/integration/stripe && go test && cd ../../..
