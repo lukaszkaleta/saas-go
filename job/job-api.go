@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/lukaszkaleta/saas-go/category"
+	"github.com/lukaszkaleta/saas-go/chat"
 	"github.com/lukaszkaleta/saas-go/filestore"
 	"github.com/lukaszkaleta/saas-go/messages"
 	"github.com/lukaszkaleta/saas-go/payment"
@@ -39,6 +40,7 @@ type Job interface {
 	Delete(ctx context.Context) error
 	Workers() JobWorkers
 	Statistics() Statistics
+	Chats() chat.ChatsApi
 }
 
 type Statistics interface {
@@ -322,4 +324,11 @@ func (solidJob *SolidJob) Workers() JobWorkers {
 
 func (solidJob *SolidJob) Statistics() Statistics {
 	return solidJob.Job.Statistics()
+}
+
+func (solidJob *SolidJob) Chats() chat.ChatsApi {
+	if solidJob.Job == nil {
+		return nil
+	}
+	return solidJob.Job.Chats()
 }

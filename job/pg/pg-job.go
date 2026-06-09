@@ -8,6 +8,8 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/category"
+	"github.com/lukaszkaleta/saas-go/chat"
+	pgChat "github.com/lukaszkaleta/saas-go/chat/pg"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/filestore"
 	pgFilestore "github.com/lukaszkaleta/saas-go/filestore/pg"
@@ -266,6 +268,13 @@ func (pgJob *PgJob) Workers() job.JobWorkers {
 
 func (pgJob *PgJob) Statistics() job.Statistics {
 	return &PgStatistics{Db: pgJob.db, TableEntity: pgJob.tableEntity()}
+}
+
+func (pgJob *PgJob) Chats() chat.ChatsApi {
+	return pgChat.NewPgChats(
+		pgJob.db,
+		pg.RelationEntity{TableName: "job_chat", ColumnName: "job_id", RelationId: pgJob.Id},
+	)
 }
 
 func (pgJob *PgJob) tableEntity() pg.TableEntity {
