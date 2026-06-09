@@ -9,16 +9,16 @@ import (
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
-type PgAnswerInbox struct {
+type OLDPgAnswerInbox struct {
 	db    *pg.PgDb
 	owner pg.RelationEntity
 }
 
-func NewPgAnswerInbox(db *pg.PgDb, owner pg.RelationEntity) universal.Inbox[messages.Message] {
-	return PgAnswerInbox{db: db, owner: owner}
+func NewOLDPgAnswerInbox(db *pg.PgDb, owner pg.RelationEntity) universal.Inbox[messages.OLDMessage] {
+	return OLDPgAnswerInbox{db: db, owner: owner}
 }
 
-func (pg PgAnswerInbox) Last(ctx context.Context) ([]messages.Message, error) {
+func (pg OLDPgAnswerInbox) Last(ctx context.Context) ([]messages.OLDMessage, error) {
 	currentUserId := universal.CurrentUserId(ctx)
 	sqlTemplate := `
 with my_tasks as (
@@ -37,7 +37,7 @@ with my_tasks as (
 	return pgx.CollectRows(rows, MapMessage(pg.db, pg.owner))
 }
 
-func (pg PgAnswerInbox) CountUnread(ctx context.Context) (int, error) {
+func (pg OLDPgAnswerInbox) CountUnread(ctx context.Context) (int, error) {
 	currentUserId := universal.CurrentUserId(ctx)
 	sqlTemplate := `
 with my_tasks as (

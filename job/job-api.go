@@ -29,7 +29,7 @@ type Job interface {
 	Description() universal.Description
 	State() universal.State
 	Offers() Offers
-	Messages() messages.Messages
+	Messages() messages.OLDMessages
 	MakeTask(ctx context.Context, offerId int64) error
 	Payments() payment.Payments
 	Ratings() universal.Ratings
@@ -254,7 +254,7 @@ func (solidJob *SolidJob) Offers() Offers {
 	return solidJob.Job.Offers()
 }
 
-func (solidJob *SolidJob) Messages() messages.Messages {
+func (solidJob *SolidJob) Messages() messages.OLDMessages {
 	if solidJob.Job == nil {
 		return nil
 	}

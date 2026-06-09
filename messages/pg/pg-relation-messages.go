@@ -2,14 +2,14 @@ package pg
 
 import "github.com/lukaszkaleta/saas-go/database/pg"
 
-type PgRelationMessages struct {
+type OLDPgRelationMessages struct {
 	db       *pg.PgDb
-	Messages *PgMessages
+	Messages *OLDPgMessages
 	relation pg.RelationEntity
 }
 
-func NewPgRelationMessages(pgMessages *PgMessages, relation pg.RelationEntity) PgRelationMessages {
-	return PgRelationMessages{
+func NewOLDPgRelationMessages(pgMessages *OLDPgMessages, relation pg.RelationEntity) OLDPgRelationMessages {
+	return OLDPgRelationMessages{
 		db:       pgMessages.db,
 		relation: relation,
 		Messages: pgMessages,

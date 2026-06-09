@@ -104,7 +104,7 @@ func (pgJob *PgJob) Offers() job.Offers {
 	return &PgOffers{db: pgJob.db, JobId: pgJob.Id}
 }
 
-func (pgJob *PgJob) Messages() messages.Messages {
+func (pgJob *PgJob) Messages() messages.OLDMessages {
 	return pgMessages.NewPgMessages(
 		pgJob.db,
 		pg.RelationEntity{TableName: "job_message", ColumnName: "job_id", RelationId: pgJob.Id},

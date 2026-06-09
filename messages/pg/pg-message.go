@@ -13,20 +13,20 @@ import (
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
-type PgMessage struct {
+type OLDPgMessage struct {
 	db    *pg.PgDb
 	Id    int64
 	Owner pg.RelationEntity
 }
 
-func (m *PgMessage) Acknowledge(ctx context.Context) error {
+func (m *OLDPgMessage) Acknowledge(ctx context.Context) error {
 	currentUserId := universal.CurrentUserId(ctx)
 	query := fmt.Sprintf("update %s set action_read_at = now(), action_read_by_id = @userId where id = @id", m.Owner.TableName)
 	_, err := m.db.Pool.Exec(ctx, query, pgx.NamedArgs{"userId": currentUserId, "id": m.Id})
 	return err
 }
 
-func (m *PgMessage) Model(ctx context.Context) (*messages.MessageModel, error) {
+func (m *OLDPgMessage) Model(ctx context.Context) (*messages.OLDMessageModel, error) {
 	query := fmt.Sprintf(ColumnsSelect()+" from %s where id=@id", m.Owner.TableName)
 	rows, err := m.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": m.Id})
 	if err != nil {
@@ -35,7 +35,7 @@ func (m *PgMessage) Model(ctx context.Context) (*messages.MessageModel, error) {
 	return pgx.CollectOneRow(rows, MapMessageModel)
 }
 
-func (m *PgMessage) FileSystem() filestore.FileSystem {
+func (m *OLDPgMessage) FileSystem() filestore.FileSystem {
 	return pgFilestore.NewPgFileSystem(
 		m.db,
 		pg.RelationEntity{
@@ -46,11 +46,11 @@ func (m *PgMessage) FileSystem() filestore.FileSystem {
 	)
 }
 
-func (m *PgMessage) ID() int64 {
+func (m *OLDPgMessage) ID() int64 {
 	return m.Id
 }
 
-func MapMessageModel(row pgx.CollectableRow) (*messages.MessageModel, error) {
+func MapMessageModel(row pgx.CollectableRow) (*messages.OLDMessageModel, error) {
 	model := messages.EmptyModel()
 
 	actionCreatedModel := universal.EmptyCreatedActionModel()
@@ -76,13 +76,13 @@ func MapMessageModel(row pgx.CollectableRow) (*messages.MessageModel, error) {
 	return model, nil
 }
 
-func MapMessage(db *pg.PgDb, owner pg.RelationEntity) pgx.RowToFunc[messages.Message] {
-	return func(row pgx.CollectableRow) (messages.Message, error) {
+func MapMessage(db *pg.PgDb, owner pg.RelationEntity) pgx.RowToFunc[messages.OLDMessage] {
+	return func(row pgx.CollectableRow) (messages.OLDMessage, error) {
 		model, err := MapMessageModel(row)
 		if err != nil {
 			return nil, err
 		}
-		pgMessage := &PgMessage{db: db, Id: model.Id, Owner: owner}
+		pgMessage := &OLDPgMessage{db: db, Id: model.Id, Owner: owner}
 		return messages.NewSolidMessage(model, pgMessage, model.Id), nil
 	}
 }

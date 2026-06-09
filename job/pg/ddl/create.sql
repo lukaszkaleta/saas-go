@@ -78,21 +78,36 @@ CREATE TABLE job_offer (
 CREATE INDEX job_offer_job_idx ON job_offer USING btree (job_id);
 CREATE INDEX job_offer_job_user_idx ON job_offer USING btree (job_id, action_created_by_id);
 
-CREATE TABLE job_message (
-  id bigint not null primary key default nextval('job_sequence'),
-  owner_id bigint not null references job,
-  -- Always user who started the chat thread
-  user_id bigint not null references users,
-  value TEXT NOT NULL,
-  value_generated boolean NOT NULL default false,
-  action_created_by_id bigint not null references users,
-  action_created_at timestamp not null default now(),
-  action_read_by_id bigint references users,
-  action_read_at timestamp
+CREATE TABLE job_chat (
+    id bigint PRIMARY KEY DEFAULT nextval('job_sequence'),
+    job_id bigint NOT NULL REFERENCES job(id),
+    worker_id bigint NOT NULL REFERENCES users(id),
+    action_created_by_id bigint not null references users,
+    action_created_at timestamp not null default now(),
+    UNIQUE(job_id, worker_id)
 );
-CREATE INDEX message_job_idx ON job_message USING btree (owner_id);
-CREATE INDEX message_action_created_by_idx ON job_message USING btree (action_created_by_id);
-CREATE INDEX message_user_idx ON job_message USING btree (user_id);
+CREATE INDEX job_chat_job_idx ON job_chat(job_id);
+CREATE INDEX job_chat_worker_idx ON job_chat(worker_id);
+
+
+CREATE TABLE job_message (
+    id bigint NOT NULL PRIMARY KEY DEFAULT nextval('job_sequence'),
+    chat_id bigint NOT NULL REFERENCES job_chat(id) ON DELETE CASCADE,
+    value text NOT NULL, value_generated boolean NOT NULL DEFAULT false,
+    action_created_by_id bigint NOT NULL REFERENCES users(id),
+    action_created_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX job_message_chat_idx ON job_message(chat_id, action_created_at);
+CREATE INDEX job_message_created_by_idx ON job_message(action_created_by_id);
+
+CREATE TABLE job_chat_read (
+    chat_id bigint NOT NULL REFERENCES job_chat(id) ON DELETE CASCADE,
+    last_read_message_id bigint REFERENCES job_message(id),
+    action_updated_by_id bigint NOT NULL REFERENCES users(id),
+    action_updated_at timestamp NOT NULL DEFAULT now(),
+    PRIMARY KEY(chat_id, action_updated_by_id)
+);
+CREATE INDEX job_chat_read_user_idx ON job_chat_read(action_updated_by_id);
 
 CREATE TABLE job_message_filesystem (
   job_message_id bigint not null references job_message,

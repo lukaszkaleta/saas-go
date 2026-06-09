@@ -7,14 +7,14 @@ import (
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
-type Message interface {
+type OLDMessage interface {
 	universal.Idable
 	filestore.FileSystemAware
-	Model(ctx context.Context) (*MessageModel, error)
+	Model(ctx context.Context) (*OLDMessageModel, error)
 	Acknowledge(ctx context.Context) error
 }
 
-type MessageModel struct {
+type OLDMessageModel struct {
 	Id             int64                   `json:"id"`
 	OwnerId        int64                   `json:"ownerId"`
 	RecipientId    int64                   `json:"recipientId"`
@@ -23,20 +23,20 @@ type MessageModel struct {
 	Actions        *universal.ActionsModel `json:"actions"`
 }
 
-func EmptyModel() *MessageModel {
+func EmptyModel() *OLDMessageModel {
 	return EmptyOwnerModel(0)
 }
 
-func (m MessageModel) ID() int64 {
+func (m OLDMessageModel) ID() int64 {
 	return m.Id
 }
 
-func (m MessageModel) GetActions() *universal.ActionsModel {
+func (m OLDMessageModel) GetActions() *universal.ActionsModel {
 	return m.Actions
 }
 
-func EmptyOwnerModel(ownerId int64) *MessageModel {
-	return &MessageModel{
+func EmptyOwnerModel(ownerId int64) *OLDMessageModel {
+	return &OLDMessageModel{
 		Id:          0,
 		OwnerId:     ownerId,
 		RecipientId: 0,
@@ -47,35 +47,35 @@ func EmptyOwnerModel(ownerId int64) *MessageModel {
 
 // Solid
 
-type SolidMessage struct {
+type OLDSolidMessage struct {
 	Id      int64
-	model   *MessageModel
-	message Message
+	model   *OLDMessageModel
+	message OLDMessage
 }
 
-func (m *SolidMessage) Acknowledge(ctx context.Context) error {
+func (m *OLDSolidMessage) Acknowledge(ctx context.Context) error {
 	if m.message != nil {
 		return m.message.Acknowledge(ctx)
 	}
 	return nil
 }
 
-func NewSolidMessage(model *MessageModel, message Message, id int64) Message {
-	return &SolidMessage{
+func NewSolidMessage(model *OLDMessageModel, message OLDMessage, id int64) OLDMessage {
+	return &OLDSolidMessage{
 		Id:      id,
 		model:   model,
 		message: message,
 	}
 }
 
-func (m *SolidMessage) FileSystem() filestore.FileSystem {
+func (m *OLDSolidMessage) FileSystem() filestore.FileSystem {
 	return m.message.FileSystem()
 }
 
-func (m *SolidMessage) Model(ctx context.Context) (*MessageModel, error) {
+func (m *OLDSolidMessage) Model(ctx context.Context) (*OLDMessageModel, error) {
 	return m.model, nil
 }
 
-func (m *SolidMessage) ID() int64 {
+func (m *OLDSolidMessage) ID() int64 {
 	return m.Id
 }

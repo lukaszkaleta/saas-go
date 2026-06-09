@@ -9,21 +9,21 @@ import (
 	"github.com/lukaszkaleta/saas-go/user"
 )
 
-type PushMessages struct {
-	messages Messages
+type OLDPushMessages struct {
+	messages OLDMessages
 	users    user.Users
 	sender   *universal.PushSender
 }
 
-func NewPushMessages(messages Messages, users user.Users, sender *universal.PushSender) *PushMessages {
-	return &PushMessages{
+func NewOLDPushMessages(messages OLDMessages, users user.Users, sender *universal.PushSender) *OLDPushMessages {
+	return &OLDPushMessages{
 		messages: messages,
 		users:    users,
 		sender:   sender,
 	}
 }
 
-func (a *PushMessages) sendPush(ctx context.Context, msg Message) error {
+func (a *OLDPushMessages) sendPush(ctx context.Context, msg OLDMessage) error {
 	model, err := msg.Model(ctx)
 	if err != nil {
 		return err
@@ -59,19 +59,19 @@ func (a *PushMessages) sendPush(ctx context.Context, msg Message) error {
 	return nil
 }
 
-func (a *PushMessages) Add(ctx context.Context, model *MessageModel) (Message, error) {
+func (a *OLDPushMessages) Add(ctx context.Context, model *OLDMessageModel) (OLDMessage, error) {
 	return a.messages.Add(ctx, model)
 }
 
-func (a *PushMessages) List(ctx context.Context) ([]Message, error) {
+func (a *OLDPushMessages) List(ctx context.Context) ([]OLDMessage, error) {
 	return a.messages.List(ctx)
 }
 
-func (a *PushMessages) ById(ctx context.Context, id int64) (Message, error) {
+func (a *OLDPushMessages) ById(ctx context.Context, id int64) (OLDMessage, error) {
 	return a.messages.ById(ctx, id)
 }
 
-func (a *PushMessages) AddSimple(ctx context.Context, recipientId int64, value string) (Message, error) {
+func (a *OLDPushMessages) AddSimple(ctx context.Context, recipientId int64, value string) (OLDMessage, error) {
 	msg, err := a.messages.AddSimple(ctx, recipientId, value)
 	pushError := a.sendPush(ctx, msg)
 	if pushError != nil {
@@ -80,22 +80,22 @@ func (a *PushMessages) AddSimple(ctx context.Context, recipientId int64, value s
 	return msg, err
 }
 
-func (a *PushMessages) AddGenerated(ctx context.Context, recipientId int64, value string) (Message, error) {
+func (a *OLDPushMessages) AddGenerated(ctx context.Context, recipientId int64, value string) (OLDMessage, error) {
 	return a.messages.AddGenerated(ctx, recipientId, value)
 }
 
-func (a *PushMessages) ForRecipient(ctx context.Context, recipient universal.Idable) ([]Message, error) {
+func (a *OLDPushMessages) ForRecipient(ctx context.Context, recipient universal.Idable) ([]OLDMessage, error) {
 	return a.messages.ForRecipient(ctx, recipient)
 }
 
-func (a *PushMessages) ForRecipientById(ctx context.Context, id int64) ([]Message, error) {
+func (a *OLDPushMessages) ForRecipientById(ctx context.Context, id int64) ([]OLDMessage, error) {
 	return a.messages.ForRecipientById(ctx, id)
 }
 
-func (a *PushMessages) Acknowledge(ctx context.Context) error {
+func (a *OLDPushMessages) Acknowledge(ctx context.Context) error {
 	return a.messages.Acknowledge(ctx)
 }
 
-func (a *PushMessages) LastQuestions(ctx context.Context) ([]Message, error) {
+func (a *OLDPushMessages) LastQuestions(ctx context.Context) ([]OLDMessage, error) {
 	return a.messages.LastQuestions(ctx)
 }

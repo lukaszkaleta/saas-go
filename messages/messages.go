@@ -6,21 +6,21 @@ import (
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
-type Messages interface {
-	universal.Lister[Message]
-	universal.Idables[Message]
+type OLDMessages interface {
+	universal.Lister[OLDMessage]
+	universal.Idables[OLDMessage]
 	// Adder as default implementation, if you want to intercept
-	universal.Adder[*MessageModel, Message]
-	AddSimple(ctx context.Context, recipientId int64, value string) (Message, error)
-	AddGenerated(ctx context.Context, recipientId int64, value string) (Message, error)
-	ForRecipient(ctx context.Context, recipient universal.Idable) ([]Message, error)
-	ForRecipientById(ctx context.Context, id int64) ([]Message, error)
+	universal.Adder[*OLDMessageModel, OLDMessage]
+	AddSimple(ctx context.Context, recipientId int64, value string) (OLDMessage, error)
+	AddGenerated(ctx context.Context, recipientId int64, value string) (OLDMessage, error)
+	ForRecipient(ctx context.Context, recipient universal.Idable) ([]OLDMessage, error)
+	ForRecipientById(ctx context.Context, id int64) ([]OLDMessage, error)
 	Acknowledge(ctx context.Context) error
-	LastQuestions(ctx context.Context) ([]Message, error)
+	LastQuestions(ctx context.Context) ([]OLDMessage, error)
 	Delete(ctx context.Context) error
 }
 
-func OwnerIds(ctx context.Context, list []Message) []int64 {
+func OwnerIds(ctx context.Context, list []OLDMessage) []int64 {
 	ids := make([]int64, len(list))
 	for _, msg := range list {
 		model, err := msg.Model(ctx)
@@ -32,7 +32,7 @@ func OwnerIds(ctx context.Context, list []Message) []int64 {
 	return ids
 }
 
-func InvolvedUserIds(ctx context.Context, list []Message) []*int64 {
+func OLDInvolvedUserIds(ctx context.Context, list []OLDMessage) []*int64 {
 	idsMap := map[*int64]bool{}
 	for _, msg := range list {
 		model, err := msg.Model(ctx)
@@ -51,8 +51,8 @@ func InvolvedUserIds(ctx context.Context, list []Message) []*int64 {
 	return ids
 }
 
-func Models(ctx context.Context, list []Message) []*MessageModel {
-	models := make([]*MessageModel, len(list))
+func OLDModels(ctx context.Context, list []OLDMessage) []*OLDMessageModel {
+	models := make([]*OLDMessageModel, len(list))
 	for i, msg := range list {
 		model, err := msg.Model(ctx)
 		if err != nil {
@@ -63,8 +63,8 @@ func Models(ctx context.Context, list []Message) []*MessageModel {
 	return models
 }
 
-func ModelsAndOwners(ctx context.Context, list []Message) ([]*MessageModel, []int64) {
-	models := make([]*MessageModel, len(list))
+func OLDModelsAndOwners(ctx context.Context, list []OLDMessage) ([]*OLDMessageModel, []int64) {
+	models := make([]*OLDMessageModel, len(list))
 	ownerIds := make([]int64, len(list))
 	for i, msg := range list {
 		model, err := msg.Model(ctx)

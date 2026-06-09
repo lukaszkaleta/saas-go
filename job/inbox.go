@@ -6,7 +6,7 @@ import (
 )
 
 type JobInbox interface {
-	Messages() universal.Inbox[messages.Message]
+	Messages() universal.Inbox[messages.OLDMessage]
 	Offers() universal.Inbox[Offer]
 }
 
