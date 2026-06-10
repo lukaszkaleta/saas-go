@@ -8,12 +8,12 @@ import (
 )
 
 type PushAddRating struct {
-	ratings universal.Adder[*universal.RatingModel, universal.Rating]
+	ratings universal.Creator[*universal.RatingModel, universal.Rating]
 	users   Users
 	sender  *universal.PushSender
 }
 
-func NewPushAddRating(ratings universal.Adder[*universal.RatingModel, universal.Rating], users Users) *PushAddRating {
+func NewPushAddRating(ratings universal.Creator[*universal.RatingModel, universal.Rating], users Users) *PushAddRating {
 	return &PushAddRating{
 		ratings: ratings,
 		users:   users,
@@ -22,7 +22,7 @@ func NewPushAddRating(ratings universal.Adder[*universal.RatingModel, universal.
 }
 
 func (p *PushAddRating) Add(ctx context.Context, r *universal.RatingModel) (universal.Rating, error) {
-	rating, err := p.ratings.Add(ctx, r)
+	rating, err := p.ratings.Create(ctx, r)
 	if err != nil {
 		return nil, err
 	}

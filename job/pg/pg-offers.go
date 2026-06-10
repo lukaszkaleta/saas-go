@@ -96,7 +96,7 @@ func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.
 }
 
 func (pgOffers *PgOffers) FromUser(ctx context.Context, user universal.Idable) (job.Offer, error) {
-	query := "select * from job_offer where job_id = @jobId and action_created_by_id = @userId order by action_created_at desc limit 1"
+	query := "select * from job_offer where job_id = @jobId and action_created_by_id = @userId and action_rejected_by_id is null order by action_created_at desc limit 1"
 	rows, err := pgOffers.db.Pool.Query(ctx, query, pgx.NamedArgs{"jobId": pgOffers.JobId, "userId": user.ID()})
 	if err != nil {
 		return nil, err

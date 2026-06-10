@@ -22,7 +22,7 @@ func (s *PgRatings) ratingTable() string {
 	return s.ownerTable.Name + "_rating"
 }
 
-func (s *PgRatings) Add(ctx context.Context, r *universal.RatingModel) (universal.Rating, error) {
+func (s *PgRatings) Create(ctx context.Context, r *universal.RatingModel) (universal.Rating, error) {
 	// Map subjectId to the owner table's foreign key column, e.g., job_id
 	subjectColumn := s.ownerTable.Name + "_id"
 	query := fmt.Sprintf("insert into %s (%s, reviewee_id, score, review_text, review_image_url, action_created_by_id) values ($1, $2, $3, $4, $5, $6) returning id", s.ratingTable(), subjectColumn)
@@ -37,7 +37,7 @@ func (s *PgRatings) Add(ctx context.Context, r *universal.RatingModel) (universa
 	// Update users table with ratings_average selected from all job_ratings as average
 	_, err = s.Db.Pool.Exec(ctx, "UPDATE users SET ratings_average = (SELECT AVG(score) FROM job_rating WHERE reviewee_id = $1) WHERE id = $1", r.RevieweeId)
 	if err != nil {
-		// We might want to log this error, but not fail the whole Add operation?
+		// We might want to log this error, but not fail the whole Create operation?
 		// The requirement doesn't specify error handling, but usually, we should at least try.
 		// For now, let's follow the instruction and add the update.
 		return nil, err

@@ -5,7 +5,6 @@ go 1.25.0
 require (
 	firebase.google.com/go/v4 v4.13.0
 	github.com/lukaszkaleta/saas-go/filestore v0.2.315
-	github.com/lukaszkaleta/saas-go/messages v0.2.315
 	github.com/lukaszkaleta/saas-go/payment v0.2.315
 	github.com/lukaszkaleta/saas-go/universal v0.2.315
 	github.com/lukaszkaleta/saas-go/user v0.2.315
@@ -58,7 +57,5 @@ replace github.com/lukaszkaleta/saas-go => ../
 replace github.com/lukaszkaleta/saas-go/universal => ../universal
 
 replace github.com/lukaszkaleta/saas-go/filestore => ../filestore
-
-replace github.com/lukaszkaleta/saas-go/messages => ../messages
 
 replace github.com/lukaszkaleta/saas-go/payment => ../payment

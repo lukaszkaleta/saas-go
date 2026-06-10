@@ -9,8 +9,6 @@ tags:
 	git tag "filestore/${VERSION}"
 	git tag "filestore/pg/${VERSION}"
 	git tag "filestore/integration/aws-s3/${VERSION}"
-	git tag "messages/${VERSION}"
-	git tag "messages/pg/${VERSION}"
 	git tag "payment/${VERSION}"
 	git tag "payment/pg/${VERSION}"
 	git tag "payment/integration/stripe/${VERSION}"
@@ -32,8 +30,6 @@ reset_build:
 	cd universal/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd filestore && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
 	cd filestore/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go mod tidy && go build && cd ../..
-	cd messages && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
-	cd messages/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go mod tidy && go build && cd ../..
 	cd category && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
 	cd category/pg && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ../..
 	cd job && go clean -modcache && rm -r go.sum || true && go mod tidy && go build && cd ..
@@ -56,8 +52,6 @@ build:
 	cd filestore && go build && cd ..
 	cd filestore/pg && go mod tidy && go build && cd ../..
 	cd filestore/integration/aws-s3 && go mod tidy && go build && cd ../../..
-	cd messages && go build && cd ..
-	cd messages/pg && go mod tidy && go build && cd ../..
 	cd category && go build && cd ..
 	cd category/pg && go build && cd ../..
 	cd job && go build && cd ..
@@ -78,8 +72,6 @@ test:
 	cd universal/pg && go test && cd ../..
 	cd filestore && go test && cd ..
 	cd filestore/pg && go test && cd ../..
-	cd messages && go test && cd ..
-	cd messages/pg && go test && cd ../..
 	cd category && go test && cd ..
 	cd category/pg && go test && cd ../..
 	cd job && go test && cd ..

@@ -27,6 +27,10 @@ func (m ChatModel) ID() int64 {
 	return m.Id
 }
 
+func (m ChatModel) GetActions() *universal.ActionsModel {
+	return m.Actions
+}
+
 type SolidChat struct {
 	Id       int64
 	model    *ChatModel

@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/lukaszkaleta/saas-go/chat"
+	pgChat "github.com/lukaszkaleta/saas-go/chat/pg"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/job"
-	"github.com/lukaszkaleta/saas-go/messages"
-	pgMessages "github.com/lukaszkaleta/saas-go/messages/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
@@ -19,8 +19,8 @@ func NewPgJobInbox(db *pg.PgDb) *PgJobInbox {
 	return &PgJobInbox{db: db}
 }
 
-func (p *PgJobInbox) Messages() universal.Inbox[messages.OLDMessage] {
-	return pgMessages.NewOLDPgQuestionInbox(p.db, pg.RelationEntity{})
+func (p *PgJobInbox) Messages() universal.Inbox[chat.Message] {
+	return pgChat.NewPgChatOwnerInbox(p.db)
 }
 
 func (p *PgJobInbox) Offers() universal.Inbox[job.Offer] {

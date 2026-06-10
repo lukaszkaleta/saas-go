@@ -7,7 +7,6 @@ import (
 	"github.com/lukaszkaleta/saas-go/category"
 	"github.com/lukaszkaleta/saas-go/chat"
 	"github.com/lukaszkaleta/saas-go/filestore"
-	"github.com/lukaszkaleta/saas-go/messages"
 	"github.com/lukaszkaleta/saas-go/payment"
 	"github.com/lukaszkaleta/saas-go/universal"
 )
@@ -30,7 +29,6 @@ type Job interface {
 	Description() universal.Description
 	State() universal.State
 	Offers() Offers
-	Messages() messages.OLDMessages
 	MakeTask(ctx context.Context, offerId int64) error
 	Payments() payment.Payments
 	Ratings() universal.Ratings
@@ -40,7 +38,7 @@ type Job interface {
 	Delete(ctx context.Context) error
 	Workers() JobWorkers
 	Statistics() Statistics
-	Chats() chat.ChatsApi
+	Chats() chat.Chats
 }
 
 type Statistics interface {
@@ -256,13 +254,6 @@ func (solidJob *SolidJob) Offers() Offers {
 	return solidJob.Job.Offers()
 }
 
-func (solidJob *SolidJob) Messages() messages.OLDMessages {
-	if solidJob.Job == nil {
-		return nil
-	}
-	return solidJob.Job.Messages()
-}
-
 func (solidJob *SolidJob) Payments() payment.Payments {
 	if solidJob.Job == nil {
 		return nil
@@ -326,7 +317,7 @@ func (solidJob *SolidJob) Statistics() Statistics {
 	return solidJob.Job.Statistics()
 }
 
-func (solidJob *SolidJob) Chats() chat.ChatsApi {
+func (solidJob *SolidJob) Chats() chat.Chats {
 	if solidJob.Job == nil {
 		return nil
 	}

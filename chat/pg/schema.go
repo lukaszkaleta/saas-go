@@ -9,6 +9,6 @@ import (
 //go:embed ddl
 var ddlFs embed.FS
 
-func NewMessagesSchema(db *pg.PgDb) pg.Schema {
-	return pg.NewDefaultSchema(db, ddlFs, "messages")
+func NewChatSchema(db *pg.PgDb) pg.Schema {
+	return pg.NewDefaultSchema(db, ddlFs, "chat")
 }

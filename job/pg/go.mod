@@ -8,8 +8,6 @@ require (
 	github.com/lukaszkaleta/saas-go/filestore v0.2.315
 	github.com/lukaszkaleta/saas-go/filestore/pg v0.2.315
 	github.com/lukaszkaleta/saas-go/job v0.2.315
-	github.com/lukaszkaleta/saas-go/messages v0.2.315
-	github.com/lukaszkaleta/saas-go/messages/pg v0.2.315
 	github.com/lukaszkaleta/saas-go/payment v0.2.315
 	github.com/lukaszkaleta/saas-go/payment/pg v0.2.315
 	github.com/lukaszkaleta/saas-go/universal v0.2.315
@@ -37,10 +35,6 @@ replace github.com/lukaszkaleta/saas-go/universal => ../../universal
 replace github.com/lukaszkaleta/saas-go/database/pg => ../../database/pg
 
 replace github.com/lukaszkaleta/saas-go/universal/pg => ../../universal/pg
-
-replace github.com/lukaszkaleta/saas-go/messages => ../../messages
-
-replace github.com/lukaszkaleta/saas-go/messages/pg => ../../messages/pg
 
 replace github.com/lukaszkaleta/saas-go/filestore/pg => ../../filestore/pg
 

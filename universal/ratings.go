@@ -10,7 +10,7 @@ type Rated interface {
 }
 
 type Ratings interface {
-	Adder[*RatingModel, Rating]
+	Creator[*RatingModel, Rating]
 	ById(ctx context.Context, id int64) (Rating, error)
 	ModelForUser(ctx context.Context, userId int64) (*RatingModel, error)
 	Rated
@@ -28,8 +28,8 @@ type SolidRatings struct {
 	ratings Ratings
 }
 
-func (s SolidRatings) Add(ctx context.Context, r *RatingModel) (Rating, error) {
-	return s.ratings.Add(ctx, r)
+func (s SolidRatings) Create(ctx context.Context, r *RatingModel) (Rating, error) {
+	return s.ratings.Create(ctx, r)
 }
 
 func (s SolidRatings) ById(ctx context.Context, id int64) (Rating, error) {
@@ -59,7 +59,7 @@ func (s SolidRatings) AllModels(ctx context.Context) ([]*RatingModel, error) {
 type DummyRatings struct {
 }
 
-func (dummy DummyRatings) Add(ctx context.Context, r *RatingModel) (Rating, error) {
+func (dummy DummyRatings) Create(ctx context.Context, r *RatingModel) (Rating, error) {
 	return nil, nil
 }
 

@@ -14,8 +14,6 @@ import (
 	"github.com/lukaszkaleta/saas-go/filestore"
 	pgFilestore "github.com/lukaszkaleta/saas-go/filestore/pg"
 	"github.com/lukaszkaleta/saas-go/job"
-	"github.com/lukaszkaleta/saas-go/messages"
-	pgMessages "github.com/lukaszkaleta/saas-go/messages/pg"
 	"github.com/lukaszkaleta/saas-go/payment"
 	pgPayment "github.com/lukaszkaleta/saas-go/payment/pg"
 	"github.com/lukaszkaleta/saas-go/universal"
@@ -104,13 +102,6 @@ func (pgJob *PgJob) Actions() universal.Actions {
 
 func (pgJob *PgJob) Offers() job.Offers {
 	return &PgOffers{db: pgJob.db, JobId: pgJob.Id}
-}
-
-func (pgJob *PgJob) Messages() messages.OLDMessages {
-	return pgMessages.NewPgMessages(
-		pgJob.db,
-		pg.RelationEntity{TableName: "job_message", ColumnName: "job_id", RelationId: pgJob.Id},
-	)
 }
 
 func (pgJob *PgJob) Payments() payment.Payments {
@@ -249,7 +240,7 @@ func (pgJob *PgJob) Delete(ctx context.Context) error {
 	if err := pgJob.FileSystem().Delete(ctx); err != nil {
 		return err
 	}
-	if err := pgJob.Messages().Delete(ctx); err != nil {
+	if err := pgJob.Chats().Delete(ctx); err != nil {
 		return err
 	}
 	query := "DELETE FROM job_category WHERE job_id = $1"
@@ -270,7 +261,7 @@ func (pgJob *PgJob) Statistics() job.Statistics {
 	return &PgStatistics{Db: pgJob.db, TableEntity: pgJob.tableEntity()}
 }
 
-func (pgJob *PgJob) Chats() chat.ChatsApi {
+func (pgJob *PgJob) Chats() chat.Chats {
 	return pgChat.NewPgChats(
 		pgJob.db,
 		pg.RelationEntity{TableName: "job_chat", ColumnName: "job_id", RelationId: pgJob.Id},

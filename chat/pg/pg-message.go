@@ -23,6 +23,38 @@ func (m *PgMessage) ID() int64 {
 	return m.Id
 }
 
+func (m *PgMessage) Acknowledge(ctx context.Context) error {
+	currentUserId := universal.CurrentUserId(ctx)
+	_, err := m.db.Pool.Exec(ctx, `
+		INSERT INTO job_chat_read (
+			chat_id,
+			last_read_message_id,
+			action_updated_by_id,
+			action_updated_at
+		)
+		SELECT
+			jm.chat_id,
+			jm.id,
+			@currentUserId,
+			now()
+		FROM job_message jm
+		WHERE jm.id = @messageId
+		ON CONFLICT (chat_id, action_updated_by_id)
+		DO UPDATE
+		SET
+			last_read_message_id = GREATEST(
+				job_chat_read.last_read_message_id,
+				EXCLUDED.last_read_message_id
+			),
+			action_updated_at = now()
+	`, pgx.NamedArgs{
+		"messageId":     m.Id,
+		"currentUserId": currentUserId,
+	})
+
+	return err
+}
+
 func (m *PgMessage) Model(ctx context.Context) (*chat.MessageModel, error) {
 	query := ColumnsSelect() + " from job_message where id=@id"
 	rows, err := m.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": m.Id})

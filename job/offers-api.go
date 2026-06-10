@@ -81,11 +81,12 @@ func (m MessagesOfferMaker) Make(ctx context.Context, model *OfferModel) (Offer,
 		offerMessage,
 	)
 
-	jobCreatedById, err := universal.CreatedById[OfferModel](ctx, offer)
+	userId := offerModel.Actions.CreatedById()
+	jobChat, err := m.job.Chats().Create(ctx, *userId)
 	if err != nil {
 		return nil, err
 	}
-	_, err = m.job.Messages().AddGenerated(ctx, jobCreatedById, message)
+	_, err = jobChat.Messages().AddGenerated(ctx, message)
 	if err != nil {
 		return nil, err
 	}
