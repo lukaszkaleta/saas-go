@@ -63,22 +63,30 @@ CREATE TABLE campaign (
 CREATE TABLE job_offer (
   id bigint not null primary key default nextval('job_sequence'),
   job_id bigint not null references job,
-
-  price_value int not null default 0,
-  price_currency text not null default 'NOK',
-  description_value text not null default '',
-  description_image_url text not null default '',
-
+  status text,
   rating int not null default 0,
-  action_created_by_id bigint not null references users,
-  action_created_at timestamp not null default now(),
-  action_accepted_by_id bigint references users,
-  action_accepted_at timestamp,
-  action_rejected_by_id bigint references users,
-  action_rejected_at timestamp
+  accepted_offer_revision_id bigint
 );
 CREATE INDEX job_offer_job_idx ON job_offer USING btree (job_id);
 CREATE INDEX job_offer_job_user_idx ON job_offer USING btree (job_id, action_created_by_id);
+
+CREATE TABLE job_offer_revision (
+    id bigint not null primary key default nextval('job_sequence'),
+    job_offer_id bigint not null references job_offer,
+    price_value int not null,
+    price_currency text not null default 'NOK',
+    description_value text not null default '',
+    description_image_url text not null default '',
+    action_create_by_id bigint not null references users,
+    action_created_at timestamp not null default now(),
+    action_accepted_by_id bigint references users,
+    action_accepted_at timestamp,
+    action_rejected_by_id bigint references users,
+    action_rejected_at timestamp
+);
+
+CREATE INDEX job_offer_revision_offer_idx
+    ON job_offer_revision(job_offer_id);
 
 CREATE TABLE task (
   id bigint not null primary key default nextval('job_sequence'),

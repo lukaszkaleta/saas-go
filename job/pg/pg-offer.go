@@ -45,11 +45,23 @@ func (pgOffer *PgOffer) Reject(ctx context.Context) error {
 }
 
 func (pgOffer *PgOffer) Accepted() (bool, error) {
-	return true, nil
+	query := "select action_accepted_by_id is not null from job_offer where id = @id"
+	var accepted bool
+	err := pgOffer.db.Pool.QueryRow(context.Background(), query, pgx.NamedArgs{"id": pgOffer.Id}).Scan(&accepted)
+	if err != nil {
+		return false, err
+	}
+	return accepted, nil
 }
 
 func (pgOffer *PgOffer) Rejected() (bool, error) {
-	return false, nil
+	query := "select action_rejected_by_id is not null from job_offer where id = @id"
+	var rejected bool
+	err := pgOffer.db.Pool.QueryRow(context.Background(), query, pgx.NamedArgs{"id": pgOffer.Id}).Scan(&rejected)
+	if err != nil {
+		return false, err
+	}
+	return rejected, nil
 }
 
 func (pgOffer *PgOffer) Model(ctx context.Context) (*job.OfferModel, error) {
