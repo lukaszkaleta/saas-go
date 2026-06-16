@@ -5,7 +5,7 @@ import (
 )
 
 type Chats interface {
-	Create(ctx context.Context, workerId int64) (Chat, error)
+	Ensure(ctx context.Context, workerId int64) (Chat, error)
 	Delete(ctx context.Context) error
 	ById(ctx context.Context, id int64) (Chat, error)
 	LastMessages(ctx context.Context) ([]Message, error)

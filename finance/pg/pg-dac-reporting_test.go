@@ -22,7 +22,7 @@ func financeSetupTest(tb testing.TB) (func(tb testing.TB), *pg.PgDb) {
 	pguser.NewUserSchema(db).Drop()
 	pgfilestore.NewFilestoreSchema(db).Drop()
 
-	// Create required schemas in order
+	// Ensure required schemas in order
 	pgfilestore.NewFilestoreSchema(db).Create()
 	pguser.NewUserSchema(db).Create()
 	pgjob.NewJobSchema(db).Create()
@@ -42,7 +42,7 @@ func TestDacReporting_SellerEarnings(t *testing.T) {
 
 	ctx := t.Context()
 
-	// 1. Create a seller
+	// 1. Ensure a seller
 	var sellerID int64
 	err := db.Pool.QueryRow(ctx, "INSERT INTO users (person_first_name) VALUES ('Seller') RETURNING id").Scan(&sellerID)
 	if err != nil {

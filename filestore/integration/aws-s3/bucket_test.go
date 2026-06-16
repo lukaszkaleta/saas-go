@@ -66,7 +66,7 @@ func TestBucket_PresignedUrl(t *testing.T) {
 		bytes.NewReader(fileBytes),
 	)
 	if err != nil {
-		slog.Error("Create request failed")
+		slog.Error("Ensure request failed")
 		t.Fail()
 	}
 

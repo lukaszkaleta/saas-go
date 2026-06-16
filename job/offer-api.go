@@ -146,7 +146,7 @@ func (m *MessagesOfferAcceptor) Accept(ctx context.Context) error {
 		slog.Error("Failed to get creator ID for message", "error", err)
 		return nil // Main operation succeeded
 	}
-	jobChat, err := m.job.Chats().Create(ctx, userId)
+	jobChat, err := m.job.Chats().Ensure(ctx, userId)
 	if err != nil {
 		slog.Error("Failed to get chat for job", "error", err)
 		return err
@@ -245,7 +245,7 @@ func (m *MessagesOfferRejecter) Reject(ctx context.Context) error {
 		return nil // Main operation succeeded
 	}
 	// AddSimple message that offer is rejected
-	jobChat, err := m.job.Chats().Create(ctx, userId)
+	jobChat, err := m.job.Chats().Ensure(ctx, userId)
 	if err != nil {
 		slog.Error("Failed to get chat for job", "error", err)
 		return nil

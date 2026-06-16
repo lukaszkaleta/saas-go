@@ -102,7 +102,7 @@ func (c *PgChats) findChatId(ctx context.Context, workerId int64) (int64, error)
 	return id, nil
 }
 
-func (c *PgChats) Create(ctx context.Context, workerId int64) (chat.Chat, error) {
+func (c *PgChats) Ensure(ctx context.Context, workerId int64) (chat.Chat, error) {
 	currentUserId := universal.CurrentUserId(ctx)
 
 	id, err := c.findChatId(ctx, workerId)
