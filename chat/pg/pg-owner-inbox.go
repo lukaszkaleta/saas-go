@@ -61,7 +61,7 @@ JOIN job j
 	ON j.id = jc.job_id
 LEFT JOIN job_chat_read jcr
 	ON jcr.chat_id = jc.id
-	AND jcr.user_id = @currentUserId
+	AND jcr.action_updated_by_id = @currentUserId
 WHERE j.action_created_by_id = @currentUserId
 AND EXISTS (
 	SELECT 1
