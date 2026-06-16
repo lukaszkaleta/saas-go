@@ -63,10 +63,12 @@ CREATE TABLE campaign (
 CREATE TABLE job_offer (
   id bigint not null primary key default nextval('job_sequence'),
   job_id bigint not null references job,
+
   price_value int not null default 0,
   price_currency text not null default 'NOK',
   description_value text not null default '',
   description_image_url text not null default '',
+
   rating int not null default 0,
   action_created_by_id bigint not null references users,
   action_created_at timestamp not null default now(),

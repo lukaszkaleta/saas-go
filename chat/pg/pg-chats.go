@@ -64,6 +64,19 @@ func (c *PgChats) ById(ctx context.Context, id int64) (chat.Chat, error) {
 	return chat.NewSolidChat(model, pgChat, id, pgChat.Messages()), nil
 }
 
+func (c *PgChats) ByWorkerId(ctx context.Context, id int64) (chat.Chat, error) {
+	chatId, err := c.findChatId(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if chatId == 0 {
+		return nil, pgx.ErrNoRows
+	}
+
+	return c.ById(ctx, chatId)
+}
+
 func NewPgChats(db *pg.PgDb, owner pg.RelationEntity) chat.Chats {
 	return &PgChats{
 		db:    db,
