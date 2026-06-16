@@ -1,11 +1,12 @@
 package universal
 
 import (
+	"context"
 	"time"
 )
 
 type Action interface {
-	Model() *ActionModel
+	Model(ctx context.Context) *ActionModel
 }
 
 type ActionModel struct {

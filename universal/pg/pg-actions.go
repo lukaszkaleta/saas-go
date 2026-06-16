@@ -2,7 +2,6 @@ package pg
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"time"
 
@@ -21,20 +20,32 @@ type PgActions struct {
 }
 
 func (p PgActions) WithName(name string) universal.Action {
-	return nil
+	return &PgAction{
+		db:          p.db,
+		tableEntity: p.tableEntity,
+		name:        name,
+	}
 }
 
 func (p PgActions) Created() universal.Action {
 	return p.WithName("created")
 }
 
-func (p PgActions) List() map[string]*universal.Action {
-	//TODO implement me
-	panic("implement me")
+func (p PgActions) List(ctx context.Context) map[string]*universal.Action {
+	model, err := p.Model(ctx)
+	if err != nil {
+		return nil
+	}
+	actions := make(map[string]*universal.Action)
+	for name := range model.List {
+		action := p.WithName(name)
+		actions[name] = &action
+	}
+	return actions
 }
 
 func (p PgActions) Model(ctx context.Context) (*universal.ActionsModel, error) {
-	sql := fmt.Sprintf("select * from %s where id = @id", p.tableEntity.Name)
+	sql := "select * from " + p.tableEntity.Name + " where id = @id"
 	rows, err := p.db.Pool.Query(ctx, sql, pgx.NamedArgs{"id": p.tableEntity.Id})
 	if err != nil {
 		return nil, err

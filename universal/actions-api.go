@@ -21,7 +21,7 @@ func (am *ActionsModel) GetActions() *ActionsModel {
 }
 
 type Actions interface {
-	List() map[string]*Action
+	List(ctx context.Context) map[string]*Action
 	WithName(name string) Action
 	Created() Action
 	Model(ctx context.Context) (*ActionsModel, error)
@@ -71,8 +71,8 @@ func (s *SolidActions) Model(ctx context.Context) (*ActionsModel, error) {
 	return s.model, nil
 }
 
-func (s *SolidActions) List() map[string]*Action {
-	return s.actions.List()
+func (s *SolidActions) List(ctx context.Context) map[string]*Action {
+	return s.actions.List(ctx)
 }
 
 func (s *SolidActions) WithName(name string) Action {
