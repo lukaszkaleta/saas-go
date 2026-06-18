@@ -2,18 +2,20 @@ package filestore
 
 import (
 	"context"
+
+	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 // API
 
 type Records interface {
+	universal.Deleter
 	Add(ctx context.Context, model *RecordModel) (Record, error)
 	AddFromName(ctx context.Context, name string) (Record, error)
 	AddFromUrl(ctx context.Context, url string) (Record, error)
 	AddAll(ctx context.Context, model []*RecordModel) ([]Record, error)
 	AddFromUrls(ctx context.Context, urls []string) ([]Record, error)
 	Urls(ctx context.Context) ([]string, error)
-	Delete(ctx context.Context) error
 }
 
 type NoRecords struct {

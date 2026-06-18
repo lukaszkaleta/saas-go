@@ -117,12 +117,13 @@ func (pgJob *PgJob) MakeTask(ctx context.Context, offerId int64) error {
 	if err != nil {
 		return err
 	}
-	userId, err := universal.CreatedById[job.OfferModel](ctx, offer)
+	offerModel, err := offer.Model(ctx)
 	if err != nil {
 		return err
 	}
-	model := &job.TaskModel{UserId: userId, JobId: pgJob.Id, OfferId: offer.ID()}
-	_, err = NewPgTasks(pgJob.db, userId).Create(ctx, model)
+	workerId := offerModel.WorkerId
+	model := &job.TaskModel{UserId: workerId, JobId: pgJob.Id, OfferId: offer.ID()}
+	_, err = NewPgTasks(pgJob.db, workerId).Create(ctx, model)
 	if err != nil {
 		return err
 	}
@@ -138,11 +139,11 @@ func (pgJob *PgJob) Close(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	userId, err := universal.CreatedById[job.OfferModel](ctx, acceptedOffer)
+	acceptedOfferModel, err := acceptedOffer.Model(ctx)
 	if err != nil {
 		return err
 	}
-	task, err := NewPgTasks(pgJob.db, userId).ByJobId(ctx, pgJob.Id)
+	task, err := NewPgTasks(pgJob.db, acceptedOfferModel.WorkerId).ByJobId(ctx, pgJob.Id)
 	if err != nil {
 		return err
 	}
@@ -173,11 +174,11 @@ func (pgJob *PgJob) Cancel(ctx context.Context) error {
 	if acceptedOffer == nil {
 		return nil
 	}
-	userId, err := universal.CreatedById[job.OfferModel](ctx, acceptedOffer)
+	acceptedOfferModel, err := acceptedOffer.Model(ctx)
 	if err != nil {
 		return err
 	}
-	task, err := NewPgTasks(pgJob.db, userId).ByJobId(ctx, pgJob.Id)
+	task, err := NewPgTasks(pgJob.db, acceptedOfferModel.WorkerId).ByJobId(ctx, pgJob.Id)
 	if err != nil {
 		return err
 	}

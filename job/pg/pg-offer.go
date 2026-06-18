@@ -2,13 +2,13 @@ package pgjob
 
 import (
 	"context"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
 	"github.com/lukaszkaleta/saas-go/job"
 	"github.com/lukaszkaleta/saas-go/universal"
 	pgUniversal "github.com/lukaszkaleta/saas-go/universal/pg"
-	"github.com/lukaszkaleta/saas-go/user"
 )
 
 type PgOffer struct {
@@ -20,57 +20,65 @@ func (pgOffer *PgOffer) ID() int64 {
 	return pgOffer.Id
 }
 
+func (pgOffer *PgOffer) Create(ctx context.Context, workerId int64) (job.Offer, error) {
+	return nil, nil // Not implemented for single offer
+}
+
 func (pgOffer *PgOffer) Actions() universal.Actions {
 	return pgUniversal.NewPgActions(pgOffer.db, pgOffer.tableEntity())
 }
 
 func (pgOffer *PgOffer) Accept(ctx context.Context) error {
-	currentUser := user.CurrentUser(ctx)
-	query := "update job_offer set action_accepted_at = now(), action_accepted_by_id = @userId where id = @id"
-	_, err := pgOffer.db.Pool.Exec(ctx, query, pgx.NamedArgs{"id": pgOffer.Id, "userId": currentUser.Id})
-	if err != nil {
-		return err
-	}
-	return nil
+	return pgOffer.Actions().WithName(job.Accepted).Execute(ctx)
 }
 
 func (pgOffer *PgOffer) Reject(ctx context.Context) error {
-	currentUser := user.CurrentUser(ctx)
-	query := "update job_offer set action_rejected_at = now(), action_rejected_by_id = @userId where id = @id"
-	_, err := pgOffer.db.Pool.Exec(ctx, query, pgx.NamedArgs{"id": pgOffer.Id, "userId": currentUser.Id})
-	if err != nil {
-		return err
-	}
-	return nil
+	return pgOffer.Actions().WithName(job.Rejected).Execute(ctx)
 }
 
 func (pgOffer *PgOffer) Accepted() (bool, error) {
-	query := "select action_accepted_by_id is not null from job_offer where id = @id"
-	var accepted bool
-	err := pgOffer.db.Pool.QueryRow(context.Background(), query, pgx.NamedArgs{"id": pgOffer.Id}).Scan(&accepted)
-	if err != nil {
-		return false, err
+	actionModel := pgOffer.Actions().WithName(job.Accepted).Model(context.Background())
+	if actionModel == nil {
+		return false, nil
 	}
-	return accepted, nil
+	return actionModel.Exists(), nil
 }
 
 func (pgOffer *PgOffer) Rejected() (bool, error) {
-	query := "select action_rejected_by_id is not null from job_offer where id = @id"
-	var rejected bool
-	err := pgOffer.db.Pool.QueryRow(context.Background(), query, pgx.NamedArgs{"id": pgOffer.Id}).Scan(&rejected)
-	if err != nil {
-		return false, err
+	actionModel := pgOffer.Actions().WithName(job.Rejected).Model(context.Background())
+	if actionModel == nil {
+		return false, nil
 	}
-	return rejected, nil
+	return actionModel.Exists(), nil
+}
+
+func (pgOffer *PgOffer) Revisions() job.OfferRevisions {
+	return NewPgOfferRevisions(pgOffer.db, pgOffer.Id)
 }
 
 func (pgOffer *PgOffer) Model(ctx context.Context) (*job.OfferModel, error) {
-	query := "select * from job_offer where job_id = @jobId"
-	rows, err := pgOffer.db.Pool.Query(ctx, query, pgx.NamedArgs{"jobId": pgOffer.Id})
+	query := "select " + OfferColumnString() + " from job_offer where id = @id"
+	rows, err := pgOffer.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": pgOffer.Id})
 	if err != nil {
 		return nil, err
 	}
 	return pgx.CollectOneRow(rows, MapOfferModel)
+}
+
+func OfferColumns() []string {
+	return []string{
+		"id",
+		"job_id",
+		"worker_id",
+		"status",
+		"rating",
+		"accepted_offer_revision_id",
+		"last_offer_revision_id",
+	}
+}
+
+func OfferColumnString() string {
+	return strings.Join(OfferColumns(), ",")
 }
 
 func (pgOffer *PgOffer) tableEntity() pg.TableEntity {
@@ -79,32 +87,19 @@ func (pgOffer *PgOffer) tableEntity() pg.TableEntity {
 
 func MapOfferModel(row pgx.CollectableRow) (*job.OfferModel, error) {
 	offerModel := job.EmptyOfferModel()
-	actionCreatedModel := universal.EmptyCreatedActionModel()
-	actionAcceptedModel := universal.EmptyActionModel(job.Accepted)
-	actionRejectedModel := universal.EmptyActionModel(job.Rejected)
 	err := row.Scan(
 		&offerModel.Id,
 		&offerModel.JobId,
-		&offerModel.Price.Value,
-		&offerModel.Price.Currency,
-		&offerModel.Description.Value,
-		&offerModel.Description.ImageUrl,
+		&offerModel.WorkerId,
+		&offerModel.Status,
 		&offerModel.Rating,
-		&actionCreatedModel.ById,
-		&actionCreatedModel.MadeAt,
-		&actionAcceptedModel.ById,
-		&actionAcceptedModel.MadeAt,
-		&actionRejectedModel.ById,
-		&actionRejectedModel.MadeAt,
+		&offerModel.AcceptedRevisionId,
+		&offerModel.LastRevisionId,
 	)
-	offerModel.Actions.List[actionCreatedModel.Name] = actionCreatedModel
-	offerModel.Actions.List[actionAcceptedModel.Name] = actionCreatedModel
-	offerModel.Actions.List[actionRejectedModel.Name] = actionCreatedModel
 	if err != nil {
 		return nil, err
 	}
 	return offerModel, nil
-
 }
 
 func MapOffer(db *pg.PgDb) pgx.RowToFunc[job.Offer] {
@@ -114,6 +109,10 @@ func MapOffer(db *pg.PgDb) pgx.RowToFunc[job.Offer] {
 			return nil, err
 		}
 		pgOffer := &PgOffer{db: db, Id: model.Id}
+		actions, err := pgOffer.Actions().Model(context.Background())
+		if err == nil {
+			model.Actions = actions
+		}
 		solidOffer := job.NewSolidOffer(model, pgOffer)
 		return solidOffer, nil
 	}

@@ -3,17 +3,19 @@ package job
 import (
 	"context"
 	"log/slog"
-	"time"
 
 	"github.com/lukaszkaleta/saas-go/universal"
 )
 
 type Offer interface {
 	universal.Idable
-	universal.Acceptable
-	universal.Rejectable
-	universal.ActionsAware
 	universal.ModelAware[OfferModel]
+	universal.Creator[int64, Offer]
+	Revisions() OfferRevisions
+	Accepted() (bool, error)
+	Rejected() (bool, error)
+	Accept(ctx context.Context) error
+	Reject(ctx context.Context) error
 }
 
 const Created = "created"
@@ -22,12 +24,16 @@ const Accepted = "accepted"
 
 type OfferModel struct {
 	universal.Idable
-	Id          int64                       `json:"id"`
-	JobId       int64                       `json:"jobId"`
-	Price       *universal.PriceModel       `json:"price"`
-	Description *universal.DescriptionModel `json:"description"`
-	Rating      int                         `json:"rating"`
-	Actions     *universal.ActionsModel     `json:"actions"`
+	Id                 int64                       `json:"id"`
+	JobId              int64                       `json:"jobId"`
+	WorkerId           int64                       `json:"workerId"`
+	AcceptedRevisionId *int64                      `json:"acceptedRevisionId"`
+	LastRevisionId     *int64                      `json:"lastRevisionId"`
+	Status             string                      `json:"status"`
+	Rating             int                         `json:"rating"`
+	Price              *universal.PriceModel       `json:"price"`
+	Description        *universal.DescriptionModel `json:"description"`
+	Actions            *universal.ActionsModel     `json:"actions"`
 }
 
 func (m OfferModel) GetActions() *universal.ActionsModel {
@@ -40,15 +46,18 @@ func EmptyOfferModel() *OfferModel {
 		JobId:       0,
 		Price:       universal.EmptyPriceModel(),
 		Description: universal.EmptyDescriptionModel(),
-		Rating:      0,
+		Actions:     universal.EmptyActionsModel(),
 	}
-	om.Actions = universal.EmptyActionsModel()
 	return om
 }
 
 //
 // Solid
 //
+
+func (s *SolidOffer) Create(ctx context.Context, in int64) (Offer, error) {
+	return s.Offer.Create(ctx, in)
+}
 
 func NewSolidOffer(model *OfferModel, offer Offer) Offer {
 	return &SolidOffer{
@@ -69,126 +78,28 @@ func (s *SolidOffer) ID() int64 {
 	return s.Id
 }
 
-func (s *SolidOffer) Accept(ctx context.Context) error {
-	if s.Offer != nil {
-		err := s.Offer.Accept(ctx)
-		if err != nil {
-			return err
-		}
-	}
-	now := time.Now()
-	s.model.Actions.List[Accepted] = &universal.ActionModel{
-		ById:   universal.CurrentUserId(ctx),
-		MadeAt: &now,
-		Name:   Accepted,
-	}
-	return nil
-}
-
-func (s *SolidOffer) Reject(ctx context.Context) error {
-	if s.Offer != nil {
-		err := s.Offer.Reject(ctx)
-		if err != nil {
-			return err
-		}
-	}
-	now := time.Now()
-	s.model.Actions.List[Rejected] = &universal.ActionModel{
-		ById:   universal.CurrentUserId(ctx),
-		MadeAt: &now,
-		Name:   Rejected,
-	}
-	return nil
-}
-
-func (s *SolidOffer) Accepted() (bool, error) {
-	actionModel := s.model.Actions.List[Accepted]
-	if actionModel == nil {
-		return false, nil
-	}
-	return actionModel.Exists(), nil
-}
-
-func (s *SolidOffer) Rejected() (bool, error) {
-	actionModel := s.model.Actions.List[Rejected]
-	if actionModel == nil {
-		return false, nil
-	}
-	return actionModel.Exists(), nil
-}
-
 func (s *SolidOffer) Model(ctx context.Context) (*OfferModel, error) {
 	return s.model, nil
 }
 
-func (s *SolidOffer) Actions() universal.Actions {
-	return s.Offer.Actions()
+func (s *SolidOffer) Revisions() OfferRevisions {
+	return s.Offer.Revisions()
 }
 
-//
-// When accepting offer we need to send a message
-//
-
-type MessagesOfferAcceptor struct {
-	inner universal.Acceptor
-	job   Job
+func (s *SolidOffer) Accepted() (bool, error) {
+	return s.Offer.Accepted()
 }
 
-func (m *MessagesOfferAcceptor) Accept(ctx context.Context) error {
-	err := m.inner.Accept(ctx)
-	if err != nil {
-		return err
-	}
-
-	// Check who created offer
-	userId, err := universal.CreatedById[OfferModel](ctx, m.inner)
-	if err != nil {
-		slog.Error("Failed to get creator ID for message", "error", err)
-		return nil // Main operation succeeded
-	}
-	jobChat, err := m.job.Chats().Ensure(ctx, userId)
-	if err != nil {
-		slog.Error("Failed to get chat for job", "error", err)
-		return err
-	}
-	_, err = jobChat.Messages().AddGenerated(ctx, "Offer accepted")
-	if err != nil {
-		slog.Error("Failed to add message", "error", err)
-		return nil // Main operation succeeded
-	}
-	return nil
+func (s *SolidOffer) Rejected() (bool, error) {
+	return s.Offer.Rejected()
 }
 
-func NewMessagesOfferAcceptor(job Job, inner universal.Acceptor) universal.Acceptor {
-	return &MessagesOfferAcceptor{
-		inner: inner,
-		job:   job,
-	}
+func (s *SolidOffer) Accept(ctx context.Context) error {
+	return s.Offer.Accept(ctx)
 }
 
-//
-// When accepting offer job will be moved to Occupied state
-//
-
-type ApproveOfferAcceptor struct {
-	inner universal.Acceptor
-	job   Job
-}
-
-func (m *ApproveOfferAcceptor) Accept(ctx context.Context) error {
-	err := m.inner.Accept(ctx)
-	if err != nil {
-		return err
-	}
-	err = m.job.State().Change(ctx, JobOccupied)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func NewApproveOfferAcceptor(job Job, inner universal.Acceptor) universal.Acceptor {
-	return &ApproveOfferAcceptor{job: job, inner: inner}
+func (s *SolidOffer) Reject(ctx context.Context) error {
+	return s.Offer.Reject(ctx)
 }
 
 //
@@ -220,47 +131,5 @@ func NewTaskOnOfferAccept(job Job, offerId int64, inner universal.Acceptor) univ
 		inner:   inner,
 		offerId: offerId,
 		job:     job,
-	}
-}
-
-//
-// When rejecting offer we need to generate message
-//
-
-type MessagesOfferRejecter struct {
-	inner Offer
-	job   Job
-}
-
-func (m *MessagesOfferRejecter) Reject(ctx context.Context) error {
-	err := m.inner.Reject(ctx)
-	if err != nil {
-		return err
-	}
-
-	// Check who created offer
-	userId, err := universal.CreatedById[OfferModel](ctx, m.inner)
-	if err != nil {
-		slog.Error("Failed to get creator ID for message", "error", err)
-		return nil // Main operation succeeded
-	}
-	// AddSimple message that offer is rejected
-	jobChat, err := m.job.Chats().Ensure(ctx, userId)
-	if err != nil {
-		slog.Error("Failed to get chat for job", "error", err)
-		return nil
-	}
-	_, err = jobChat.Messages().AddGenerated(ctx, "Offer rejected")
-	if err != nil {
-		slog.Error("Failed to add message", "error", err)
-		return nil // Main operation succeeded
-	}
-	return nil
-}
-
-func NewMessagesOfferRejecter(job Job, inner Offer) universal.Rejecter {
-	return &MessagesOfferRejecter{
-		inner: inner,
-		job:   job,
 	}
 }

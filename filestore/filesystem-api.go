@@ -10,12 +10,12 @@ import (
 
 type FileSystem interface {
 	universal.Idable
+	universal.Deleter
 	Model(ctx context.Context) (*FileSystemModel, error)
 	Update(ctx context.Context, newModel *FileSystemModel) error
 	Records() Records
 	Init(ctx context.Context) (int64, error)
 	CheckExistence(ctx context.Context) (int64, error)
-	Delete(ctx context.Context) error
 }
 
 type FileSystemAware interface {

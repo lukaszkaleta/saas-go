@@ -32,15 +32,19 @@ func (p PgPayments) Create(ctx context.Context, offer any) (payment.Intent, erro
 
 	ref := uuid.NewString()
 	accepted := offer.(job.Offer)
-	offerModel, err := accepted.Model(ctx)
+	revision, err := accepted.Revisions().Accepted(ctx)
 	if err != nil {
 		return nil, err
 	}
-	amount := offerModel.Price.Value
+	revisionModel, err := revision.Model(ctx)
+	if err != nil {
+		return nil, err
+	}
+	amount := revisionModel.Price.Value
 	if amount <= 0 {
 		return nil, ErrInvalidAmount
 	}
-	payeeId := offerModel.Actions.CreatedById()
+	payeeId := revisionModel.Actions.CreatedById()
 	payerId := universal.CurrentUserId(ctx)
 
 	const query = `

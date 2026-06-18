@@ -39,3 +39,10 @@ func (p PgAction) Model(ctx context.Context) *universal.ActionModel {
 
 	return nil
 }
+
+func (p PgAction) Execute(ctx context.Context) error {
+	userId := universal.CurrentUserId(ctx)
+	sql := "update " + p.tableEntity.Name + " set action_" + p.name + "_at = now(), action_" + p.name + "_by_id = @userId where id = @id"
+	_, err := p.db.Pool.Exec(ctx, sql, pgx.NamedArgs{"id": p.tableEntity.Id, "userId": userId})
+	return err
+}

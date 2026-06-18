@@ -53,12 +53,7 @@ func (t *PushCloserJob) sendPush(ctx context.Context) error {
 		return err
 	}
 
-	userId := offerModel.Actions.CreatedById()
-	if userId == nil {
-		return nil
-	}
-
-	recipient, err := t.users.ById(ctx, *userId)
+	recipient, err := t.users.ById(ctx, offerModel.WorkerId)
 	if err != nil {
 		return err
 	}

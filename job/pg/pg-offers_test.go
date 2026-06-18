@@ -29,12 +29,19 @@ func TestPgOffers_TestFlow(t *testing.T) {
 	}
 
 	ctx = user.WithUser(ctx, WorkUser)
-	offerModel := &job.OfferModel{
+	revisionModel := &job.OfferRevisionModel{
 		Description: &universal.DescriptionModel{Value: "I will do it"},
 		Price:       &universal.PriceModel{Value: price.Value - 1, Currency: price.Currency},
-		Rating:      10,
 	}
-	offer, err := newJob.Offers().Make(ctx, offerModel)
+	revision, err := newJob.Offers().Make(ctx, WorkUser.ID(), revisionModel)
+	if err != nil {
+		t.Error(err)
+	}
+	if revision == nil {
+		t.Error("revision was nil")
+	}
+
+	offer, err := newJob.Offers().FromUser(ctx, WorkUser)
 	if err != nil {
 		t.Error(err)
 	}
@@ -73,4 +80,14 @@ func TestPgOffers_TestFlow(t *testing.T) {
 		t.Error(err)
 	}
 
+	acceptedOffer, err := newJob.Offers().Accepted(ctx)
+	if err != nil {
+		t.Error(err)
+	}
+	if acceptedOffer == nil {
+		t.Error("acceptedOffer was nil")
+	}
+	if acceptedOffer.ID() != offer.ID() {
+		t.Error("acceptedOffer ID mismatch")
+	}
 }

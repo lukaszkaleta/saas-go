@@ -63,9 +63,11 @@ CREATE TABLE campaign (
 CREATE TABLE job_offer (
   id bigint not null primary key default nextval('job_sequence'),
   job_id bigint not null references job,
+  worker_id bigint not null references users,
   status text,
   rating int not null default 0,
-  accepted_offer_revision_id bigint
+  accepted_offer_revision_id bigint,
+  last_offer_revision_id bigint
 );
 CREATE INDEX job_offer_job_idx ON job_offer USING btree (job_id);
 CREATE INDEX job_offer_job_user_idx ON job_offer USING btree (job_id, action_created_by_id);

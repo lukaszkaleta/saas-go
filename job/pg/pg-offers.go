@@ -2,6 +2,7 @@ package pgjob
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -16,16 +17,20 @@ type PgOffers struct {
 }
 
 func (pgOffers *PgOffers) ById(ctx context.Context, id int64) (job.Offer, error) {
-	query := "select * from job_offer where job_id = @jobId and id = @id"
+	query := "select " + OfferColumnString() + " from job_offer where job_id = @jobId and id = @id"
 	rows, err := pgOffers.db.Pool.Query(ctx, query, pgx.NamedArgs{"jobId": pgOffers.JobId, "id": id})
 	if err != nil {
 		return nil, err
 	}
-	return pgx.CollectOneRow(rows, MapOffer(pgOffers.db))
+	res, err := pgx.CollectOneRow(rows, MapOffer(pgOffers.db))
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	return res, err
 }
 
 func (pgOffers *PgOffers) Waiting(ctx context.Context) ([]job.Offer, error) {
-	query := "select * from job_offer where job_id = $1 and action_accepted_at is null and action_rejected_at is null"
+	query := "select " + OfferColumnString() + " from job_offer where job_id = $1 and status = 'waiting'"
 	rows, err := pgOffers.db.Pool.Query(ctx, query, pgOffers.JobId)
 	if err != nil {
 		return nil, err
@@ -34,7 +39,7 @@ func (pgOffers *PgOffers) Waiting(ctx context.Context) ([]job.Offer, error) {
 }
 
 func (pgOffers *PgOffers) Accepted(ctx context.Context) (job.Offer, error) {
-	query := "select * from job_offer where job_id = $1 and action_accepted_at is not null"
+	query := "select " + OfferColumnString() + " from job_offer where job_id = $1 and accepted_offer_revision_id is not null"
 	rows, err := pgOffers.db.Pool.Query(ctx, query, pgOffers.JobId)
 	if err != nil {
 		return nil, err
@@ -49,59 +54,32 @@ func (pgOffers *PgOffers) Accepted(ctx context.Context) (job.Offer, error) {
 	return collectRows[0], nil
 }
 
-func (pgOffers *PgOffers) Make(ctx context.Context, model *job.OfferModel) (job.Offer, error) {
-	offerId := int64(0)
-	currentUser := user.CurrentUser(ctx)
-
-	waitingOffer, err := pgOffers.waitingOfferFromUser(ctx, currentUser)
+func (pgOffers *PgOffers) Make(ctx context.Context, workerId int64, model *job.OfferRevisionModel) (job.OfferRevision, error) {
+	offerFromUser, err := pgOffers.FromUser(ctx, universal.JustId{Id: workerId})
 	if err != nil {
 		return nil, err
 	}
-	if waitingOffer != nil {
-		return waitingOffer, nil
+	if offerFromUser == nil {
+		offerFromUser, err = pgOffers.Create(ctx, workerId)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	query := "INSERT INTO job_offer (job_id, price_value, price_currency, description_value, action_created_by_id) VALUES( $1, $2, $3, $4, $5 ) returning id"
-	row := pgOffers.db.Pool.QueryRow(
-		ctx,
-		query,
-		pgOffers.JobId,
-		model.Price.Value,
-		model.Price.Currency,
-		model.Description.Value,
-		currentUser.Id,
-	)
-	err = row.Scan(&offerId)
-	if err != nil {
-		return nil, err
-	}
-	pgOffer := PgOffer{
-		db: pgOffers.db,
-		Id: offerId,
-	}
-	actionsList := make(map[string]*universal.ActionModel)
-	actionsList[job.Created] = universal.NowActionModelForUser(job.Created, &currentUser.Id)
-
-	actions := universal.ActionsModel{List: actionsList}
-	offerModel := job.OfferModel{
-		Id:          offerId,
-		Description: model.Description,
-		Price:       model.Price,
-	}
-	offerModel.Actions = &actions
-	return job.NewSolidOffer(
-		&offerModel,
-		&pgOffer,
-	), nil
+	return offerFromUser.Revisions().Create(ctx, *model)
 }
 
 func (pgOffers *PgOffers) FromUser(ctx context.Context, user universal.Idable) (job.Offer, error) {
-	query := "select * from job_offer where job_id = @jobId and action_created_by_id = @userId and action_rejected_by_id is null order by action_created_at desc limit 1"
+	query := "select " + OfferColumnString() + " from job_offer where job_id = @jobId and worker_id = @userId limit 1"
 	rows, err := pgOffers.db.Pool.Query(ctx, query, pgx.NamedArgs{"jobId": pgOffers.JobId, "userId": user.ID()})
 	if err != nil {
 		return nil, err
 	}
-	return pgx.CollectOneRow(rows, MapOffer(pgOffers.db))
+	res, err := pgx.CollectOneRow(rows, MapOffer(pgOffers.db))
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	return res, err
 }
 
 func (pgOffers *PgOffers) Delete(ctx context.Context) error {
@@ -110,8 +88,8 @@ func (pgOffers *PgOffers) Delete(ctx context.Context) error {
 	return err
 }
 
-func (pgOffers *PgOffers) waitingOfferFromUser(ctx context.Context, user *user.UserModel) (job.Offer, error) {
-	query := "select * from job_offer where job_id = @jobId and action_accepted_at is null and action_rejected_at is null and action_created_by_id = @userId limit 1"
+func (pgOffers *PgOffers) waitingOfferFromWorker(ctx context.Context, user *user.UserModel) (job.Offer, error) {
+	query := "select " + OfferColumnString() + " from job_offer where job_id = @jobId and action_accepted_at is null and worker_id = @userId limit 1"
 	rows, err := pgOffers.db.Pool.Query(ctx, query, pgx.NamedArgs{"jobId": pgOffers.JobId, "userId": user.ID()})
 	if err != nil {
 		return nil, err
@@ -124,4 +102,13 @@ func (pgOffers *PgOffers) waitingOfferFromUser(ctx context.Context, user *user.U
 		return nil, nil
 	}
 	return offers[0], nil
+}
+
+func (pgOffers *PgOffers) Create(ctx context.Context, workerId int64) (job.Offer, error) {
+	query := "INSERT INTO job_offer (job_id, worker_id) VALUES ($1, $2) RETURNING " + OfferColumnString()
+	rows, err := pgOffers.db.Pool.Query(ctx, query, pgOffers.JobId, workerId)
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectOneRow(rows, MapOffer(pgOffers.db))
 }

@@ -9,19 +9,20 @@ import (
 	"github.com/lukaszkaleta/saas-go/user"
 )
 
-type PushRejectedOffer struct {
-	inner universal.Rejecter
-	users user.Users
-	offer Offer
+type PushRejectedOfferRevision struct {
+	inner    universal.Rejecter
+	users    user.Users
+	offer    Offer
+	revision OfferRevision
 }
 
-func (m *PushRejectedOffer) Reject(ctx context.Context) error {
+func (m *PushRejectedOfferRevision) Reject(ctx context.Context) error {
 	err := m.inner.Reject(ctx)
 	if err != nil {
 		return err
 	}
 
-	userId, err := universal.CreatedById[OfferModel](ctx, m.offer)
+	userId, err := universal.CreatedById[OfferRevisionModel](ctx, m.revision)
 	if err != nil {
 		// Even if we fail to get userId for push, the main operation succeeded
 		slog.Error("Failed to get creator ID for push notification", "error", err)
@@ -56,10 +57,11 @@ func (m *PushRejectedOffer) Reject(ctx context.Context) error {
 	return nil
 }
 
-func NewPushRejectedOffer(users user.Users, offer Offer, inner universal.Rejecter) universal.Rejecter {
-	return &PushRejectedOffer{
-		inner: inner,
-		users: users,
-		offer: offer,
+func NewPushRejectedOffer(users user.Users, offer Offer, revision OfferRevision, inner universal.Rejecter) universal.Rejecter {
+	return &PushRejectedOfferRevision{
+		inner:    inner,
+		users:    users,
+		offer:    offer,
+		revision: revision,
 	}
 }

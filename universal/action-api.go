@@ -7,6 +7,7 @@ import (
 
 type Action interface {
 	Model(ctx context.Context) *ActionModel
+	Execute(ctx context.Context) error
 }
 
 type ActionModel struct {
@@ -50,6 +51,10 @@ type SolidAction struct {
 	action Action
 }
 
-func (action *SolidAction) Model() *ActionModel {
+func (action *SolidAction) Model(ctx context.Context) *ActionModel {
 	return action.model
+}
+
+func (action *SolidAction) Execute(ctx context.Context) error {
+	return action.action.Execute(ctx)
 }

@@ -10,9 +10,10 @@ import (
 )
 
 type PushAcceptedOffer struct {
-	inner universal.Acceptor
-	users user.Users
-	offer Offer
+	inner    universal.Acceptor
+	users    user.Users
+	offer    Offer
+	revision OfferRevision
 }
 
 func (m *PushAcceptedOffer) Accept(ctx context.Context) error {
@@ -21,7 +22,7 @@ func (m *PushAcceptedOffer) Accept(ctx context.Context) error {
 		return err
 	}
 
-	userId, err := universal.CreatedById[OfferModel](ctx, m.offer)
+	userId, err := universal.CreatedById[OfferRevisionModel](ctx, m.offer)
 	if err != nil {
 		// Even if we fail to get userId for push, the main operation succeeded
 		slog.Error("Failed to get creator ID for push notification", "error", err)
@@ -56,10 +57,11 @@ func (m *PushAcceptedOffer) Accept(ctx context.Context) error {
 	return nil
 }
 
-func NewPushAcceptedOffer(users user.Users, offer Offer, inner universal.Acceptor) universal.Acceptor {
+func NewPushAcceptedOffer(users user.Users, offer Offer, revision OfferRevision, inner universal.Acceptor) universal.Acceptor {
 	return &PushAcceptedOffer{
-		inner: inner,
-		users: users,
-		offer: offer,
+		inner:    inner,
+		users:    users,
+		offer:    offer,
+		revision: revision,
 	}
 }

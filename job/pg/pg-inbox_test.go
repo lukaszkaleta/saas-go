@@ -31,11 +31,11 @@ func TestPgOfferInbox_Last(t *testing.T) {
 
 	// User 2 makes an offer for User 1's job
 	ctx2 := user.WithUser(t.Context(), WorkUser)
-	offerModel := &job.OfferModel{
+	revisionModel := &job.OfferRevisionModel{
 		Description: &universal.DescriptionModel{Value: "Offer by User 2"},
 		Price:       &universal.PriceModel{Value: 90, Currency: "USD"},
 	}
-	_, err = newJob.Offers().Make(ctx2, offerModel)
+	_, err = newJob.Offers().Make(ctx2, WorkUser.ID(), revisionModel)
 	if err != nil {
 		t.Fatal(err)
 	}

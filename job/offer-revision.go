@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
 	"github.com/lukaszkaleta/saas-go/universal"
@@ -119,4 +120,114 @@ func (s *SolidOfferRevision) Actions() universal.Actions {
 		return s.OfferRevision.Actions()
 	}
 	return nil
+}
+
+//
+// When rejecting offer revision we need to generate message
+//
+
+type MessagesOfferRejecter struct {
+	inner OfferRevision
+	offer Offer
+	job   Job
+}
+
+func (m *MessagesOfferRejecter) Reject(ctx context.Context) error {
+	err := m.inner.Reject(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Check who created offer
+	userId, err := universal.CreatedById[OfferRevisionModel](ctx, m.inner)
+	if err != nil {
+		slog.Error("Failed to get creator ID for message", "error", err)
+		return nil // Main operation succeeded
+	}
+	// AddSimple message that offer is rejected
+	jobChat, err := m.job.Chats().Ensure(ctx, userId)
+	if err != nil {
+		slog.Error("Failed to get chat for job", "error", err)
+		return nil
+	}
+	_, err = jobChat.Messages().AddGenerated(ctx, "Offer rejected")
+	if err != nil {
+		slog.Error("Failed to add message", "error", err)
+		return nil // Main operation succeeded
+	}
+	return nil
+}
+
+func NewMessagesOfferRejecter(job Job, offer Offer, inner OfferRevision) universal.Rejecter {
+	return &MessagesOfferRejecter{
+		inner: inner,
+		offer: offer,
+		job:   job,
+	}
+}
+
+//
+// When accepting offer we need to send a message
+//
+
+type MessagesOfferRevisionAcceptor struct {
+	inner universal.Acceptor
+	job   Job
+}
+
+func (m *MessagesOfferRevisionAcceptor) Accept(ctx context.Context) error {
+	err := m.inner.Accept(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Check who created offer
+	userId, err := universal.CreatedById[OfferRevisionModel](ctx, m.inner)
+	if err != nil {
+		slog.Error("Failed to get creator ID for message", "error", err)
+		return nil // Main operation succeeded
+	}
+	jobChat, err := m.job.Chats().Ensure(ctx, userId)
+	if err != nil {
+		slog.Error("Failed to get chat for job", "error", err)
+		return err
+	}
+	_, err = jobChat.Messages().AddGenerated(ctx, "Offer accepted")
+	if err != nil {
+		slog.Error("Failed to add message", "error", err)
+		return nil // Main operation succeeded
+	}
+	return nil
+}
+
+func NewMessagesOfferRevisionAcceptor(job Job, inner universal.Acceptor) universal.Acceptor {
+	return &MessagesOfferRevisionAcceptor{
+		inner: inner,
+		job:   job,
+	}
+}
+
+//
+// When accepting offer job will be moved to Occupied state
+//
+
+type ApproveOfferRevisionAcceptor struct {
+	inner universal.Acceptor
+	job   Job
+}
+
+func (m *ApproveOfferRevisionAcceptor) Accept(ctx context.Context) error {
+	err := m.inner.Accept(ctx)
+	if err != nil {
+		return err
+	}
+	err = m.job.State().Change(ctx, JobOccupied)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func NewApproveOfferAcceptor(job Job, inner universal.Acceptor) universal.Acceptor {
+	return &ApproveOfferRevisionAcceptor{job: job, inner: inner}
 }

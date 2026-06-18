@@ -25,21 +25,21 @@ func NewPushMakeOffer(inner OfferMaker, job Job, users user.Users) *PushMakeOffe
 	}
 }
 
-func (p *PushMakeOffer) Make(ctx context.Context, model *OfferModel) (Offer, error) {
-	offer, err := p.inner.Make(ctx, model)
+func (p *PushMakeOffer) Make(ctx context.Context, workerId int64, model *OfferRevisionModel) (OfferRevision, error) {
+	revision, err := p.inner.Make(ctx, workerId, model)
 	if err != nil {
 		return nil, err
 	}
 
-	pushErr := p.sendPush(ctx, offer)
+	pushErr := p.sendPush(ctx, revision)
 	if pushErr != nil {
 		slog.Error("Can not send push", "Error", pushErr.Error())
 	}
 
-	return offer, nil
+	return revision, nil
 }
 
-func (p *PushMakeOffer) sendPush(ctx context.Context, offer Offer) error {
+func (p *PushMakeOffer) sendPush(ctx context.Context, revision OfferRevision) error {
 	jobModel, err := p.job.Model(ctx)
 	if err != nil {
 		return err
@@ -69,12 +69,14 @@ func (p *PushMakeOffer) sendPush(ctx context.Context, offer Offer) error {
 	personModel := sender.Person(ctx).Model(ctx)
 
 	jobId := strconv.FormatInt(jobModel.ID(), 10)
-	offerId := strconv.FormatInt(offer.ID(), 10)
+	revisionModel, err := revision.Model(ctx)
+	offerId := strconv.FormatInt(revisionModel.OfferId, 10)
+	revisionId := strconv.FormatInt(revision.ID(), 10)
 
 	pushMsg := universal.PushMessage{
 		Title: personModel.FirstName,
 		Body:  "Send you an offer",
-		Link:  "https://naborly.no/offer/" + jobId + "/" + offerId,
+		Link:  "https://naborly.no/offer/" + jobId + "/" + offerId + "/" + revisionId,
 	}
 
 	p.sender.SendAsync(ctx, accountModel.FirebaseToken, pushMsg)

@@ -8,7 +8,6 @@ import (
 	"github.com/lukaszkaleta/saas-go/job"
 	"github.com/lukaszkaleta/saas-go/universal"
 	pgUniversal "github.com/lukaszkaleta/saas-go/universal/pg"
-	"github.com/lukaszkaleta/saas-go/user"
 )
 
 type PgOfferRevision struct {
@@ -24,44 +23,44 @@ func (pgRevision *PgOfferRevision) Actions() universal.Actions {
 	return pgUniversal.NewPgActions(pgRevision.db, pgRevision.tableEntity())
 }
 
-func (pgRevision *PgOfferRevision) Accept(ctx context.Context) error {
-	currentUser := user.CurrentUser(ctx)
-	query := "update job_offer_revision set action_accepted_at = now(), action_accepted_by_id = @userId where id = @id"
-	_, err := pgRevision.db.Pool.Exec(ctx, query, pgx.NamedArgs{"id": pgRevision.Id, "userId": currentUser.Id})
+func (p *PgOfferRevision) Accept(ctx context.Context) error {
+	err := p.Actions().WithName(job.Accepted).Execute(ctx)
 	if err != nil {
 		return err
 	}
-	return nil
+
+	model, err := p.Model(ctx)
+	if err != nil {
+		return err
+	}
+
+	query := "update job_offer set accepted_offer_revision_id = @revisionId, last_offer_revision_id = @revisionId where id = @offerId"
+	_, err = p.db.Pool.Exec(ctx, query, pgx.NamedArgs{
+		"revisionId": p.Id,
+		"offerId":    model.OfferId,
+	})
+
+	return err
 }
 
-func (pgRevision *PgOfferRevision) Reject(ctx context.Context) error {
-	currentUser := user.CurrentUser(ctx)
-	query := "update job_offer_revision set action_rejected_at = now(), action_rejected_by_id = @userId where id = @id"
-	_, err := pgRevision.db.Pool.Exec(ctx, query, pgx.NamedArgs{"id": pgRevision.Id, "userId": currentUser.Id})
-	if err != nil {
-		return err
-	}
-	return nil
+func (p *PgOfferRevision) Reject(ctx context.Context) error {
+	return p.Actions().WithName(job.Rejected).Execute(ctx)
 }
 
 func (pgRevision *PgOfferRevision) Accepted() (bool, error) {
-	query := "select action_accepted_by_id is not null from job_offer_revision where id = @id"
-	var accepted bool
-	err := pgRevision.db.Pool.QueryRow(context.Background(), query, pgx.NamedArgs{"id": pgRevision.Id}).Scan(&accepted)
-	if err != nil {
-		return false, err
+	actionModel := pgRevision.Actions().WithName(job.Accepted).Model(context.Background())
+	if actionModel == nil {
+		return false, nil
 	}
-	return accepted, nil
+	return actionModel.Exists(), nil
 }
 
 func (pgRevision *PgOfferRevision) Rejected() (bool, error) {
-	query := "select action_rejected_by_id is not null from job_offer_revision where id = @id"
-	var rejected bool
-	err := pgRevision.db.Pool.QueryRow(context.Background(), query, pgx.NamedArgs{"id": pgRevision.Id}).Scan(&rejected)
-	if err != nil {
-		return false, err
+	actionModel := pgRevision.Actions().WithName(job.Rejected).Model(context.Background())
+	if actionModel == nil {
+		return false, nil
 	}
-	return rejected, nil
+	return actionModel.Exists(), nil
 }
 
 func (pgRevision *PgOfferRevision) Model(ctx context.Context) (*job.OfferRevisionModel, error) {

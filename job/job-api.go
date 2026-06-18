@@ -20,6 +20,7 @@ type Job interface {
 	universal.Closable
 	universal.Cancelable
 	universal.Publishable
+	universal.Deleter
 	Model(ctx context.Context) (*JobModel, error)
 	Address() universal.Address
 	Position() universal.Position
@@ -35,7 +36,6 @@ type Job interface {
 	AssertJobOwnerAccess(ctx context.Context) error
 	PersonModel(ctx context.Context) (*universal.PersonModel, error)
 	UpdateCategory(ctx context.Context, category *category.CategoryModel) error
-	Delete(ctx context.Context) error
 	Workers() JobWorkers
 	Statistics() Statistics
 	Chats() chat.Chats
