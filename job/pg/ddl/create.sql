@@ -70,7 +70,7 @@ CREATE TABLE job_offer (
   last_offer_revision_id bigint
 );
 CREATE INDEX job_offer_job_idx ON job_offer USING btree (job_id);
-CREATE INDEX job_offer_job_user_idx ON job_offer USING btree (job_id, action_created_by_id);
+CREATE INDEX job_offer_job_worker_idx ON job_offer USING btree (job_id, worker_id);
 
 CREATE TABLE job_offer_revision (
     id bigint not null primary key default nextval('job_sequence'),

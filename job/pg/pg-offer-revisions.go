@@ -45,7 +45,7 @@ func (p *PgOfferRevisions) Create(ctx context.Context, model job.OfferRevisionMo
 }
 
 func (p *PgOfferRevisions) List(ctx context.Context) ([]job.OfferRevision, error) {
-	query := "select * from job_offer_revision where job_offer_id = @offerId order by action_created_at desc"
+	query := "select " + OfferRevisionColumnString() + " from job_offer_revision where job_offer_id = @offerId order by action_created_at desc"
 	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"offerId": p.offerId})
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (p *PgOfferRevisions) List(ctx context.Context) ([]job.OfferRevision, error
 }
 
 func (p *PgOfferRevisions) ById(ctx context.Context, id int64) (job.OfferRevision, error) {
-	query := "select * from job_offer_revision where id = @id"
+	query := "select " + OfferRevisionColumnString() + " from job_offer_revision where id = @id"
 	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": id})
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func (p *PgOfferRevisions) ById(ctx context.Context, id int64) (job.OfferRevisio
 }
 
 func (p *PgOfferRevisions) FromUser(ctx context.Context, id int64) (job.OfferRevision, error) {
-	query := "select * from job_offer_revision where job_offer_id = @offerId and action_create_by_id = @userId order by action_created_at desc"
+	query := "select " + OfferRevisionColumnString() + " from job_offer_revision where job_offer_id = @offerId and action_create_by_id = @userId order by action_created_at desc"
 	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"offerId": p.offerId, "userId": id})
 	if err != nil {
 		return nil, err
@@ -81,7 +81,7 @@ func (p *PgOfferRevisions) FromUser(ctx context.Context, id int64) (job.OfferRev
 
 func (p *PgOfferRevisions) NewestFromWorker(ctx context.Context) (job.OfferRevision, error) {
 	query := `
-		SELECT r.* 
+		SELECT ` + OfferRevisionColumnString("r") + ` 
 		FROM job_offer_revision r
 		JOIN job_offer o ON r.job_offer_id = o.id
 		JOIN job j ON o.job_id = j.id
@@ -101,7 +101,7 @@ func (p *PgOfferRevisions) NewestFromWorker(ctx context.Context) (job.OfferRevis
 }
 
 func (p *PgOfferRevisions) Accepted(ctx context.Context) (job.OfferRevision, error) {
-	query := "select * from job_offer_revision where job_offer_id = @offerId and action_accepted_by_id is not null"
+	query := "select " + OfferRevisionColumnString() + " from job_offer_revision where job_offer_id = @offerId and action_accepted_by_id is not null"
 	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"offerId": p.offerId})
 	if err != nil {
 		return nil, err
@@ -115,7 +115,7 @@ func (p *PgOfferRevisions) Accepted(ctx context.Context) (job.OfferRevision, err
 
 func (p *PgOfferRevisions) NewestFromOwner(ctx context.Context) (job.OfferRevision, error) {
 	query := `
-		SELECT r.* 
+		SELECT ` + OfferRevisionColumnString("r") + ` 
 		FROM job_offer_revision r
 		JOIN job_offer o ON r.job_offer_id = o.id
 		JOIN job j ON o.job_id = j.id

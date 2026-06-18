@@ -33,7 +33,7 @@ type PgOfferInbox struct {
 
 func (p PgOfferInbox) Last(ctx context.Context) ([]job.Offer, error) {
 	query := `
-		SELECT jo.* 
+		SELECT ` + OfferColumnString("jo") + ` 
 		FROM job_offer jo
 		JOIN job j ON jo.job_id = j.id
 		WHERE j.action_created_by_id = @userId 

@@ -2,6 +2,7 @@ package pgjob
 
 import (
 	"context"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/lukaszkaleta/saas-go/database/pg"
@@ -64,7 +65,7 @@ func (pgRevision *PgOfferRevision) Rejected() (bool, error) {
 }
 
 func (pgRevision *PgOfferRevision) Model(ctx context.Context) (*job.OfferRevisionModel, error) {
-	query := "select * from job_offer_revision where id = @id"
+	query := "select " + OfferRevisionColumnString() + " from job_offer_revision where id = @id"
 	rows, err := pgRevision.db.Pool.Query(ctx, query, pgx.NamedArgs{"id": pgRevision.Id})
 	if err != nil {
 		return nil, err
@@ -74,6 +75,36 @@ func (pgRevision *PgOfferRevision) Model(ctx context.Context) (*job.OfferRevisio
 
 func (pgRevision *PgOfferRevision) tableEntity() pg.TableEntity {
 	return pgRevision.db.TableEntity("job_offer_revision", pgRevision.Id)
+}
+
+func OfferRevisionColumns() []string {
+	return []string{
+		"id",
+		"job_offer_id",
+		"price_value",
+		"price_currency",
+		"description_value",
+		"description_image_url",
+		"action_create_by_id",
+		"action_created_at",
+		"action_accepted_by_id",
+		"action_accepted_at",
+		"action_rejected_by_id",
+		"action_rejected_at",
+	}
+}
+
+func OfferRevisionColumnString(alias ...string) string {
+	prefix := ""
+	if len(alias) > 0 {
+		prefix = alias[0] + "."
+	}
+	columns := OfferRevisionColumns()
+	aliased := make([]string, len(columns))
+	for i, col := range columns {
+		aliased[i] = prefix + col
+	}
+	return strings.Join(aliased, ",")
 }
 
 func MapOfferRevisionModel(row pgx.CollectableRow) (*job.OfferRevisionModel, error) {

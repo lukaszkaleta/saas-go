@@ -77,8 +77,17 @@ func OfferColumns() []string {
 	}
 }
 
-func OfferColumnString() string {
-	return strings.Join(OfferColumns(), ",")
+func OfferColumnString(alias ...string) string {
+	prefix := ""
+	if len(alias) > 0 {
+		prefix = alias[0] + "."
+	}
+	columns := OfferColumns()
+	aliased := make([]string, len(columns))
+	for i, col := range columns {
+		aliased[i] = prefix + col
+	}
+	return strings.Join(aliased, ",")
 }
 
 func (pgOffer *PgOffer) tableEntity() pg.TableEntity {

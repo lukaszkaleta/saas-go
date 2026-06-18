@@ -27,7 +27,7 @@ type PgOfferOutbox struct {
 
 func (p PgOfferOutbox) Last(ctx context.Context) ([]job.Offer, error) {
 	query := `
-		SELECT jo.* 
+		SELECT ` + OfferColumnString("jo") + ` 
 		FROM job_offer jo
 		JOIN job j ON jo.job_id = j.id
 		WHERE jo.action_created_by_id = @userId
@@ -45,7 +45,7 @@ func (p PgOfferOutbox) Last(ctx context.Context) ([]job.Offer, error) {
 
 func (p PgOfferOutbox) Old(ctx context.Context) ([]job.Offer, error) {
 	query := `
-		SELECT jo.* 
+		SELECT ` + OfferColumnString("jo") + ` 
 		FROM job_offer jo
 		JOIN job j ON jo.job_id = j.id
 		WHERE jo.action_created_by_id = @userId 
