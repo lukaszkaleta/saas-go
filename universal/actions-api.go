@@ -47,10 +47,16 @@ func CreatedNowActions(ctx context.Context) *ActionsModel {
 }
 
 func (am *ActionsModel) Created() *ActionModel {
+	if am == nil || am.List == nil {
+		return nil
+	}
 	return am.WithName("created")
 }
 
 func (am *ActionsModel) WithName(name string) *ActionModel {
+	if am == nil || am.List == nil {
+		return nil
+	}
 	return am.List[name]
 }
 
@@ -59,7 +65,11 @@ func (am *ActionsModel) ID() int64 {
 }
 
 func (am *ActionsModel) CreatedById() *int64 {
-	return am.Created().ById
+	created := am.Created()
+	if created == nil {
+		return nil
+	}
+	return created.ById
 }
 
 type SolidActions struct {
@@ -133,4 +143,12 @@ func CreatedByIdFromModels[T ActionsAwareModel](models []*T) []*int64 {
 		ids[i] = id
 	}
 	return ids
+}
+
+func (am *ActionsModel) CreatedByIdValue() int64 {
+	id := am.CreatedById()
+	if id == nil {
+		return 0
+	}
+	return *id
 }
