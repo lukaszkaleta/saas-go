@@ -10,7 +10,7 @@ import (
 
 type Messages interface {
 	universal.Creator[string, Message]
-	AddGenerated(ctx context.Context, value string) (Message, error)
+	AddGenerated(ctx context.Context, value string, reason string) (Message, error)
 	List(ctx context.Context) ([]Message, error)
 	ById(ctx context.Context, id int64) (Message, error)
 	Acknowledge(ctx context.Context) error

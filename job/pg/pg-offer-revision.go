@@ -35,9 +35,10 @@ func (p *PgOfferRevision) Accept(ctx context.Context) error {
 		return err
 	}
 
-	query := "update job_offer set accepted_offer_revision_id = @revisionId, last_offer_revision_id = @revisionId where id = @offerId"
+	query := "update job_offer set accepted_offer_revision_id = @revisionId, last_offer_revision_id = @revisionId, status = @status where id = @offerId"
 	_, err = p.db.Pool.Exec(ctx, query, pgx.NamedArgs{
 		"revisionId": p.Id,
+		"status":     job.Accepted,
 		"offerId":    model.OfferId,
 	})
 
@@ -45,7 +46,23 @@ func (p *PgOfferRevision) Accept(ctx context.Context) error {
 }
 
 func (p *PgOfferRevision) Reject(ctx context.Context) error {
-	return p.Actions().WithName(job.Rejected).Execute(ctx)
+	err := p.Actions().WithName(job.Rejected).Execute(ctx)
+	if err != nil {
+		return err
+	}
+
+	model, err := p.Model(ctx)
+	if err != nil {
+		return err
+	}
+
+	query := "update job_offer set status = @status where id = @offerId"
+	_, err = p.db.Pool.Exec(ctx, query, pgx.NamedArgs{
+		"status":  job.Rejected,
+		"offerId": model.OfferId,
+	})
+
+	return err
 }
 
 func (pgRevision *PgOfferRevision) Accepted() (bool, error) {
@@ -85,7 +102,7 @@ func OfferRevisionColumns() []string {
 		"price_currency",
 		"description_value",
 		"description_image_url",
-		"action_create_by_id",
+		"action_created_by_id",
 		"action_created_at",
 		"action_accepted_by_id",
 		"action_accepted_at",

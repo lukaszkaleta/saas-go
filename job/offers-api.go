@@ -87,7 +87,7 @@ func (m MessagesOfferMaker) Make(ctx context.Context, workerId int64, model *Off
 	if err != nil {
 		return nil, err
 	}
-	_, err = jobChat.Messages().AddGenerated(ctx, message)
+	_, err = jobChat.Messages().AddGenerated(ctx, message, "offer")
 	if err != nil {
 		return nil, err
 	}
@@ -106,4 +106,26 @@ func ModelsAndJobIds(ctx context.Context, list []Offer) ([]*OfferModel, []int64)
 		jobIds[i] = model.JobId
 	}
 	return models, jobIds
+}
+
+func Dtos(ctx context.Context, list []Offer) ([]*OfferDto, error) {
+	dtos := make([]*OfferDto, len(list))
+	for i, o := range list {
+		model, err := o.Model(ctx)
+		if err != nil {
+			return nil, err
+		}
+		dto := &OfferDto{OfferModel: model}
+		if model.LastRevisionId != nil {
+			revision, err := o.Revisions().ById(ctx, *model.LastRevisionId)
+			if err == nil && revision != nil {
+				rm, err := revision.Model(ctx)
+				if err == nil {
+					dto.Revision = rm
+				}
+			}
+		}
+		dtos[i] = dto
+	}
+	return dtos, nil
 }

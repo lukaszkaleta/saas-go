@@ -17,7 +17,7 @@ type PgMessages struct {
 }
 
 func (m *PgMessages) Create(ctx context.Context, in string) (chat.Message, error) {
-	return m.insert(ctx, in, false)
+	return m.insert(ctx, in, "")
 }
 
 func (m *PgMessages) ById(ctx context.Context, id int64) (chat.Message, error) {
@@ -63,11 +63,11 @@ func (m *PgMessages) Acknowledge(ctx context.Context) error {
 	return err
 }
 
-func (m *PgMessages) AddGenerated(ctx context.Context, value string) (chat.Message, error) {
-	return m.insert(ctx, value, true)
+func (m *PgMessages) AddGenerated(ctx context.Context, value string, reason string) (chat.Message, error) {
+	return m.insert(ctx, value, reason)
 }
 
-func (m *PgMessages) insert(ctx context.Context, in string, generated bool) (chat.Message, error) {
+func (m *PgMessages) insert(ctx context.Context, in string, generated string) (chat.Message, error) {
 	query := "insert into job_message (chat_id, value, value_generated, action_created_by_id, action_created_at) values (@chatId, @value, @valueGenerated, @byId, @at) returning id"
 	args := pgx.NamedArgs{
 		"chatId":         m.chatId,

@@ -16,7 +16,7 @@ type MessageModel struct {
 	Id             int64                   `json:"id"`
 	ChatId         int64                   `json:"chatId"`
 	Value          string                  `json:"value"`
-	ValueGenerated bool                    `json:"valueGenerated"`
+	ValueGenerated string                  `json:"valueGenerated"`
 	Actions        *universal.ActionsModel `json:"actions"`
 }
 

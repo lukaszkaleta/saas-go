@@ -17,12 +17,12 @@ type OfferRevision interface {
 }
 
 type OfferRevisionModel struct {
-	universal.Idable
-	Id          int64                       `json:"id"`
-	OfferId     int64                       `json:"offerId"`
-	Price       *universal.PriceModel       `json:"price"`
-	Description *universal.DescriptionModel `json:"description"`
-	Actions     *universal.ActionsModel     `json:"actions"`
+	universal.Idable `json:"-"`
+	Id               int64                       `json:"id"`
+	OfferId          int64                       `json:"offerId"`
+	Price            *universal.PriceModel       `json:"price"`
+	Description      *universal.DescriptionModel `json:"description"`
+	Actions          *universal.ActionsModel     `json:"actions"`
 }
 
 func (m OfferRevisionModel) GetActions() *universal.ActionsModel {
@@ -150,7 +150,7 @@ func (m *MessagesOfferRejecter) Reject(ctx context.Context) error {
 		slog.Error("Failed to get chat for job", "error", err)
 		return nil
 	}
-	_, err = jobChat.Messages().AddGenerated(ctx, "Offer rejected")
+	_, err = jobChat.Messages().AddGenerated(ctx, "Offer rejected", "offer rejected")
 	if err != nil {
 		slog.Error("Failed to add message", "error", err)
 		return nil // Main operation succeeded
@@ -192,7 +192,7 @@ func (m *MessagesOfferRevisionAcceptor) Accept(ctx context.Context) error {
 		slog.Error("Failed to get chat for job", "error", err)
 		return err
 	}
-	_, err = jobChat.Messages().AddGenerated(ctx, "Offer accepted")
+	_, err = jobChat.Messages().AddGenerated(ctx, "Offer accepted", "offer accepted")
 	if err != nil {
 		slog.Error("Failed to add message", "error", err)
 		return nil // Main operation succeeded

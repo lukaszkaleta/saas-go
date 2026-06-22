@@ -20,16 +20,47 @@ func NewPgOfferRevisions(db *pg.PgDb, offerId int64) job.OfferRevisions {
 }
 
 func (p *PgOfferRevisions) Create(ctx context.Context, model job.OfferRevisionModel) (job.OfferRevision, error) {
-	query := "INSERT INTO job_offer_revision (job_offer_id, price_value, price_currency, description_value, action_create_by_id) VALUES( $1, $2, $3, $4, $5 ) returning id"
-	var revisionId int64
+	currentUserId := universal.CurrentUserId(ctx)
+
+	checkQuery := `
+		SELECT id 
+		FROM job_offer_revision 
+		WHERE job_offer_id = $1 
+		  AND price_value = $2 
+		  AND price_currency = $3 
+		  AND description_value = $4 
+		  AND action_created_by_id = $5 
+		LIMIT 1`
+
+	var existingId int64
 	err := p.db.Pool.QueryRow(
+		ctx,
+		checkQuery,
+		p.offerId,
+		model.Price.Value,
+		model.Price.Currency,
+		model.Description.Value,
+		currentUserId,
+	).Scan(&existingId)
+
+	if err == nil {
+		return p.ById(ctx, existingId)
+	}
+
+	if !errors.Is(err, pgx.ErrNoRows) {
+		return nil, err
+	}
+
+	query := "INSERT INTO job_offer_revision (job_offer_id, price_value, price_currency, description_value, action_created_by_id) VALUES( $1, $2, $3, $4, $5 ) returning id"
+	var revisionId int64
+	err = p.db.Pool.QueryRow(
 		ctx,
 		query,
 		p.offerId,
 		model.Price.Value,
 		model.Price.Currency,
 		model.Description.Value,
-		universal.CurrentUserId(ctx),
+		currentUserId,
 	).Scan(&revisionId)
 	if err != nil {
 		return nil, err
@@ -67,7 +98,7 @@ func (p *PgOfferRevisions) ById(ctx context.Context, id int64) (job.OfferRevisio
 }
 
 func (p *PgOfferRevisions) FromUser(ctx context.Context, id int64) (job.OfferRevision, error) {
-	query := "select " + OfferRevisionColumnString() + " from job_offer_revision where job_offer_id = @offerId and action_create_by_id = @userId order by action_created_at desc"
+	query := "select " + OfferRevisionColumnString() + " from job_offer_revision where job_offer_id = @offerId and action_created_by_id = @userId order by action_created_at desc"
 	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"offerId": p.offerId, "userId": id})
 	if err != nil {
 		return nil, err
@@ -86,7 +117,7 @@ func (p *PgOfferRevisions) NewestFromWorker(ctx context.Context) (job.OfferRevis
 		JOIN job_offer o ON r.job_offer_id = o.id
 		JOIN job j ON o.job_id = j.id
 		WHERE r.job_offer_id = @offerId 
-		  AND r.action_create_by_id != j.action_created_by_id
+		  AND r.action_created_by_id != j.action_created_by_id
 		ORDER BY r.action_created_at DESC 
 		LIMIT 1`
 	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"offerId": p.offerId})
@@ -120,7 +151,7 @@ func (p *PgOfferRevisions) NewestFromOwner(ctx context.Context) (job.OfferRevisi
 		JOIN job_offer o ON r.job_offer_id = o.id
 		JOIN job j ON o.job_id = j.id
 		WHERE r.job_offer_id = @offerId 
-		  AND r.action_create_by_id = j.action_created_by_id
+		  AND r.action_created_by_id = j.action_created_by_id
 		ORDER BY r.action_created_at DESC 
 		LIMIT 1`
 	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"offerId": p.offerId})

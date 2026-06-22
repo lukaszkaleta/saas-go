@@ -37,9 +37,7 @@ func (p PgOfferInbox) Last(ctx context.Context) ([]job.Offer, error) {
 		FROM job_offer jo
 		JOIN job j ON jo.job_id = j.id
 		WHERE j.action_created_by_id = @userId 
-		  AND jo.action_accepted_at IS NULL 
-		  AND jo.action_rejected_at IS NULL
-		ORDER BY jo.action_created_at DESC
+		  AND jo.status = 'created'
 	`
 	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"userId": universal.CurrentUserId(ctx)})
 	if err != nil {
@@ -54,8 +52,7 @@ func (p PgOfferInbox) CountUnread(ctx context.Context) (int, error) {
 		FROM job_offer jo
 		JOIN job j ON jo.job_id = j.id
 		WHERE j.action_created_by_id = @userId 
-		  AND jo.action_accepted_at IS NULL 
-		  AND jo.action_rejected_at IS NULL
+		  and jo.status = 'created'
 	`
 	var count int
 	err := p.db.Pool.QueryRow(ctx, query, pgx.NamedArgs{"userId": universal.CurrentUserId(ctx)}).Scan(&count)

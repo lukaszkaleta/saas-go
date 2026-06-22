@@ -64,7 +64,7 @@ CREATE TABLE job_offer (
   id bigint not null primary key default nextval('job_sequence'),
   job_id bigint not null references job,
   worker_id bigint not null references users,
-  status text,
+  status text not null default 'created',
   rating int not null default 0,
   accepted_offer_revision_id bigint,
   last_offer_revision_id bigint
@@ -79,7 +79,7 @@ CREATE TABLE job_offer_revision (
     price_currency text not null default 'NOK',
     description_value text not null default '',
     description_image_url text not null default '',
-    action_create_by_id bigint not null references users,
+    action_created_by_id bigint not null references users,
     action_created_at timestamp not null default now(),
     action_accepted_by_id bigint references users,
     action_accepted_at timestamp,
