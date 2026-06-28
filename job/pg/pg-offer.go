@@ -118,10 +118,6 @@ func MapOffer(db *pg.PgDb) pgx.RowToFunc[job.Offer] {
 			return nil, err
 		}
 		pgOffer := &PgOffer{db: db, Id: model.Id}
-		actions, err := pgOffer.Actions().Model(context.Background())
-		if err == nil {
-			model.Actions = actions
-		}
 		solidOffer := job.NewSolidOffer(model, pgOffer)
 		return solidOffer, nil
 	}

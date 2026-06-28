@@ -29,25 +29,19 @@ type OfferDto struct {
 
 type OfferModel struct {
 	universal.Idable   `json:"-"`
-	Id                 int64                   `json:"id"`
-	JobId              int64                   `json:"jobId"`
-	WorkerId           int64                   `json:"workerId"`
-	AcceptedRevisionId *int64                  `json:"acceptedRevisionId"`
-	LastRevisionId     *int64                  `json:"lastRevisionId"`
-	Status             string                  `json:"status"`
-	Rating             int                     `json:"rating"`
-	Actions            *universal.ActionsModel `json:"actions"`
-}
-
-func (m OfferModel) GetActions() *universal.ActionsModel {
-	return m.Actions
+	Id                 int64  `json:"id"`
+	JobId              int64  `json:"jobId"`
+	WorkerId           int64  `json:"workerId"`
+	AcceptedRevisionId *int64 `json:"acceptedRevisionId"`
+	LastRevisionId     *int64 `json:"lastRevisionId"`
+	Status             string `json:"status"`
+	Rating             int    `json:"rating"`
 }
 
 func EmptyOfferModel() *OfferModel {
 	om := &OfferModel{
-		Id:      0,
-		JobId:   0,
-		Actions: universal.EmptyActionsModel(),
+		Id:    0,
+		JobId: 0,
 	}
 	return om
 }
