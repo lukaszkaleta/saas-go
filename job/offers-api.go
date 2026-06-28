@@ -108,7 +108,7 @@ func ModelsAndJobIds(ctx context.Context, list []Offer) ([]*OfferModel, []int64)
 	return models, jobIds
 }
 
-func Dtos(ctx context.Context, list []Offer) ([]*OfferDto, error) {
+func MakeOfferDtos(ctx context.Context, list []Offer) ([]*OfferDto, error) {
 	dtos := make([]*OfferDto, len(list))
 	for i, o := range list {
 		model, err := o.Model(ctx)
