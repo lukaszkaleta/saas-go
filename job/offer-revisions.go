@@ -15,4 +15,5 @@ type OfferRevisions interface {
 	NewestFromWorker(ctx context.Context) (OfferRevision, error)
 	NewestFromOwner(ctx context.Context) (OfferRevision, error)
 	Accepted(ctx context.Context) (OfferRevision, error)
+	Newest(ctx context.Context) (OfferRevision, error)
 }

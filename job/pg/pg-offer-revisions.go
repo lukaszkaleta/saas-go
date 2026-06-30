@@ -164,3 +164,16 @@ func (p *PgOfferRevisions) NewestFromOwner(ctx context.Context) (job.OfferRevisi
 	}
 	return res, err
 }
+
+func (p *PgOfferRevisions) Newest(ctx context.Context) (job.OfferRevision, error) {
+	query := "select " + OfferRevisionColumnString() + " from job_offer_revision where job_offer_id = @offerId order by action_created_at desc limit 1"
+	rows, err := p.db.Pool.Query(ctx, query, pgx.NamedArgs{"offerId": p.offerId})
+	if err != nil {
+		return nil, err
+	}
+	res, err := pgx.CollectOneRow(rows, MapOfferRevision(p.db))
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	return res, err
+}
